@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
 </head>
 <body>
-    <div class="bg-image w-full h-screen bg-cover bg-center bg-no-repeat flex flex-col" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
+    <div class="bg-image w-full bg-cover bg-center bg-no-repeat flex flex-col" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
         <!-- Main Content Area -->
         <div class="flex-1 flex items-center justify-center px-4 py-6 sm:py-8 lg:py-12">
             <div class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8">
