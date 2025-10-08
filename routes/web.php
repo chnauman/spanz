@@ -24,3 +24,13 @@ Route::get('/forgot-password', function () {
 
 // Protected routes
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
+Route::get('/pages/product', function () {
+    return view('pages.product');
+});
+Route::get('/pages/home', function () {
+    return view('pages.home');
+});
+Route::get('/pages/dashboard', function () {
+    return view('pages.dashboard');
+});
