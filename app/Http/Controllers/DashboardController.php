@@ -28,6 +28,6 @@ class DashboardController extends Controller
             $data['active_subscription'] = $user->getActiveSubscription();
         }
 
-        return view('dashboard', $data);
+        return view('admin.dashboard', $data);
     }
 }

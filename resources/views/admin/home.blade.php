@@ -1,129 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spanz</title>
-    <link rel="stylesheet" href="{{ asset('css/output.css') }}">
-</head>
-<body>
-   <div class="bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
-        <!-- Navbar -->
-        <nav class="bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}') absolute top-0 left-0 w-full z-50">
-            <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">                
-                    <!-- Logo -->
-                    <div class="flex-shrink-0">
-                        <a href="#" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
-                    </div>
+@extends('layouts.master')
+@section('title', 'Home - Spanz')
+@section('content')
+@include('components.mainheader')
 
-                    <!-- Desktop Menu -->
-                    <div class="hidden md:flex space-x-6">
-                        <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
-                        <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
-                        <a href="#" class="text-white hover:text-blue-400">About</a>
-                    </div>
-
-                    <!-- Right Actions -->
-                    <div class="hidden md:flex items-center space-x-4">
-                        <a href="#" class="text-white hover:text-blue-400">Claim Your Company</a>
-                        <a href="#" class="text-white hover:text-blue-400">Start Advertising</a>
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
-                                Dashboard
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="inline">
-                                @csrf
-                                <button type="submit" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
-                                    Logout
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('login') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
-                                Login
-                            </a>
-                            <a href="{{ route('register') }}" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
-                                Register
-                            </a>
-                        @endauth
-                    </div>
-
-                    <!-- Mobile Burger -->
-                    <div class="md:hidden">
-                        <button id="menu-btn" class="text-white focus:outline-none">
-                            <!-- Icon -->
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" 
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden bg-[#092c47] text-white px-4 py-4 space-y-3">
-                <a href="#" class="block hover:text-blue-300">For Buyers ▾</a>
-                <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
-                <a href="#" class="block hover:text-blue-300">About</a>
-                <a href="#" class="block hover:text-blue-300">Claim Your Company</a>
-                <a href="#" class="block hover:text-blue-300">Start Advertising</a>
-                @auth
-                    <a href="{{ route('dashboard') }}" class="w-full border border-white text-white px-3 py-2 rounded hover:bg-white hover:text-black text-center block">
-                        Dashboard
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <button type="submit" class="w-full bg-blue-700 text-white px-3 py-2 rounded hover:bg-blue-800 text-center block">
-                            Logout
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="w-full border border-white text-white px-3 py-2 rounded hover:bg-white hover:text-black text-center block">
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}" class="w-full bg-blue-700 text-white px-3 py-2 rounded hover:bg-blue-800 text-center block">
-                        Register
-                    </a>
-                @endauth
-            </div>
-        </nav><!-- Hero main content (centered) -->
-            <div class="mt-28">
-                <div class="container mx-auto px-4 text-center">
-                    <h2 class="text-3xl sm:text-6xl text-[#0D6AED] font-bold leading-tight">SPANZ</h2>
-                    <p class="text-white mt-3 text-sm sm:text-lg">Search the largest network of trusted suppliers</p>
-
-                    <!-- Search row: mobile stacked, sm inline -->
-                    <div class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-0 justify-center max-w-xl mx-auto">
-                        <!-- dropdown button -->
-                        <div class="w-full sm:w-auto">
-                            <button class="flex items-center justify-between w-full sm:w-40 px-3 py-2 bg-gray-100 border border-gray-300 text-gray-700">
-                            Suppliers
-                            <svg class="w-4 h-4 ml-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 011.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                            </svg>
-                            </button>
-                        </div>
-
-                        <!-- input -->
-                        <input type="search" placeholder="By Category, Company or Brand..." class="w-full sm:w-96 px-3 py-2 border border-gray-300 text-gray-700 focus:outline-none"/>
-
-                        <!-- search button -->
-                        <div class="w-full sm:w-auto sm:ml-3">
-                            <button class="w-full sm:w-auto px-4 py-2 bg-[#0D6AED] text-white">Search</button>
-                        </div>
-                    </div>
-
-                    <!-- CTA row below search -->
-                    <div class="flex p-6 pb-14 justify-center gap-2 flex-wrap">
-                        <span class="text-white text-sm sm:text-base">New to SPANZ?</span>
-                        <span class="text-[#0D6AED] text-sm sm:text-base">Join FREE for FULL Access</span>
-                    </div>
-                </div>
-            </div>
-    </div>
-    <div class="text-blue-950 font-semibold text-xl flex justify-center py-5 text-center px-3">
+<div class="text-blue-950 font-semibold text-xl flex justify-center py-5 text-center px-3">
         <span>For 125+ years, SPANZ has connected buyers with industrial suppliers</span>        
     </div>
 
@@ -206,28 +86,249 @@
     </div>
     <div class="bg-gray-100 mt-10 pb-10">
         <div class="flex justify-center">
-            <h1 class="text-2xl sm:text-3xl my-10 lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0">Browse RFX Categories</h1>            
+            <h1 class="text-2xl sm:text-3xl my-10 lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0">Browse Supplier Categories</h1>            
         </div>
         <!-- grid layout for all categories -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 w-full px-5 md:px-28 lg:px-28 ml-auto mr-auto">
-        @foreach($categories as $category)
             <div>
-                <div class="font-semibold pb-4 {{ $category->name === 'Custom Manufacturing & Fabricating' ? 'w-44' : '' }}">
-                    <h2>{{ $category->name }}</h2>
+                <div class="font-semibold pb-4">
+                    <h2>Adhesives & Sealants</h2>
                 </div>
                 <div class="text-sm">
+                    
                     <ul>
-                        @foreach($category->subcategories as $subcategory)
-                            <li>
-                                <a href="/{{ strtolower(str_replace([' ', '&', '/'], ['-', '', ''], $subcategory->name)) }}">
-                                    {{ $subcategory->name }}
-                                </a>
-                            </li>
-                        @endforeach
+                       <li><a href="/adhesives">Adhesives</a></li>
+                        <li><a href="/adhesive-tapes">Adhesive Tapes</a></li>
+                        <li><a href="/tapes">Tapes</a></li>
+                        <li><a href="/pressure-sensitive-tapes">Pressure Sensitive Tapes</a></li>
+                        <li><a href="/adhesive-dispensing-equipment">Adhesive Dispensing Equipment</a></li>
                     </ul>
                 </div>
             </div>
-        @endforeach
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Automation & Electronics</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/automation-equipment">Automation Equipment</a></li>
+                        <li><a href="/printed-circuit-boards">Printed Circuit Boards (PCB)</a></li>
+                        <li><a href="/electronic-enclosures">Electronic Enclosures</a></li>
+                        <li><a href="/cleanrooms">Cleanrooms</a></li>
+                        <li><a href="/emi-rfi-shielding">EMI/RFI Shielding</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Chemicals</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/coating">Coating</a></li>
+                        <li><a href="/desiccants">Desiccants</a></li>
+                        <li><a href="/corrosion-resistant-coatings">Corrosion Resistant Coatings</a></li>
+                        <li><a href="/optical-coatings">Optical Coatings</a></li>
+                        <li><a href="/ptfe-coatings">PTFE Coatings</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4 w-44">
+                    <h2>Custom Manufacturing & Fabricating</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/metal-fabrication">Metal Fabrication</a></li>
+                        <li><a href="/cnc-machining">CNC Machining</a></li>
+                        <li><a href="/metal-stampings">Metal Stampings</a></li>
+                        <li><a href="/screw-machine-products">Screw Machine Products</a></li>
+                        <li><a href="/tube-fabricating">Tube Fabricating</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Electrical & Power Generation</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/batteries">Batteries</a></li>
+                        <li><a href="/transformers">Transformers</a></li>
+                        <li><a href="/magnets">Magnets</a></li>
+                        <li><a href="/custom-transformers">Custom Transformers</a></li>
+                        <li><a href="/neodymium-magnets">Neodymium Magnets</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Engineering & Consulting</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/engineering-services">Engineering Services</a></li>
+                        <li><a href="/prototypes">Prototypes</a></li>
+                        <li><a href="/rapid-prototyping-services">Rapid Prototyping Services</a></li>
+                        <li><a href="/product-development">Product Development</a></li>
+                        <li><a href="/exporters-importers">Exporters, Importers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Hardware</h2>
+                </div>
+                <div class="text-sm ">
+                    <ul>
+                        <li><a href="/fasteners">Fasteners</a></li>
+                        <li><a href="/gaskets">Gaskets</a></li>
+                        <li><a href="/bolts">Bolts</a></li>
+                        <li><a href="/o-rings">O Rings</a></li>
+                        <li><a href="/hinges">Hinges</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Instruments & Controls</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/laboratory-equipment-supplies">Laboratory Equipment & Supplies</a></li>
+                        <li><a href="/flow-meters">Flow Meters</a></li>
+                        <li><a href="/sensors">Sensors</a></li>
+                        <li><a href="/calibration-services">Calibration Services</a></li>
+                        <li><a href="/leak-detectors">Leak Detectors</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Machinery, Tools & Supplies</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li>Special & Custom Machinery</li>
+                        <li>Bearings</li>
+                        <li>Gears</li>
+                        <li>Brushes</li>
+                        <li>Springs</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Materials Handling</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/special-custom-machinery">Special & Custom Machinery</a></li>
+                        <li><a href="/bearings">Bearings</a></li>
+                        <li><a href="/gears">Gears</a></li>
+                        <li><a href="/brushes">Brushes</a></li>
+                        <li><a href="/springs">Springs</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Metals & Metal Products</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/aluminum">Aluminum</a></li>
+                        <li><a href="/steel-service-centers">Steel Service Centers</a></li>
+                        <li><a href="/stainless-steel">Stainless Steel</a></li>
+                        <li><a href="/wire-forms">Wire Forms</a></li>
+                        <li><a href="/powdered-metal-parts">Powdered Metal Parts</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Plants & Facility Equipment</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/electric-heaters">Electric Heaters</a></li>
+                        <li><a href="/nameplates">Nameplates</a></li>
+                        <li><a href="/industrial-vacuum-cleaners">Industrial Vacuum Cleaners</a></li>
+                        <li><a href="/dust-collecting-systems">Dust Collecting Systems</a></li>
+                        <li><a href="/noise-control">Noise Control</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Plastics & Rubber</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/injection-molded-plastics">Injection Molded Plastics</a></li>
+                        <li><a href="/molded-plastics">Molded Plastics</a></li>
+                        <li><a href="/molded-rubber-goods">Molded Rubber Goods</a></li>
+                        <li><a href="/extruded-plastics">Extruded Plastics</a></li>
+                        <li><a href="/custom-injection-molded-plastics">Custom Injection Molded Plastics</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Process Equipment</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/heat-exchangers">Heat Exchangers</a></li>
+                        <li><a href="/pressure-vessels">Pressure Vessels</a></li>
+                        <li><a href="/misers">Misers</a></li>
+                        <li><a href="/ovens">Ovens</a></li>
+                        <li><a href="/heating-elements">Heating Elements</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Pumps, Valves & Accessories</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/ball-valves">Ball Valves</a></li>
+                        <li><a href="/pumps">Pumps</a></li>
+                        <li><a href="/plastic-tubing">Plastic Tubing</a></li>
+                        <li><a href="/stainless-steel-tubing">Stainless Steel Tubing</a></li>
+                        <li><a href="/vacuum-pumps">Vacuum Pumps</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Other</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/apparel">Apparel</a></li>
+                        <li><a href="/medical">Medical</a></li>
+                        <li><a href="/marine">Marine</a></li>
+                        <li><a href="/signs">Signs</a></li>
+                        <li><a href="/point-of-purchase-displays">Point Of Purchase Displays</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="font-semibold pb-4">
+                    <h2>Services</h2>
+                </div>
+                <div class="text-sm">
+                    <ul>
+                        <li><a href="/pump-repair-services">Pump Repair Services</a></li>
+                        <li><a href="/machinery-rebuilders">Machinery Rebuilders</a></li>
+                        <li><a href="/boiler-renting">Boiler Renting</a></li>
+                        <li><a href="/spindle-rebuilding-repairing">Spindle Rebuilding & Repairing</a></li>
+                        <li><a href="/advertising-novelties-specialties">Advertising Novelties & Specialties</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
     <section class="bg-gradient-to-r from-[#092C47] to-[#21435E] py-16 px-6">
@@ -317,101 +418,4 @@
                 </footer>
         </div>
     </section>
-<section class="bg-[#092C47] text-white py-10 px-5">
-    <div class="flex flex-col md:flex-row md:justify-evenly gap-8 md:gap-0">
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>For Buyers</span>
-            </div>
-            <div>
-                <ul class="space-y-3">                    
-                    <li><a href="#" class="hover:underline">Supplier Discovery</a></li>
-                    <li><a href="#" class="hover:underline">Product Catalogs</a></li>
-                    <li><a href="#" class="hover:underline">CAD</a></li>
-                    <li><a href="#" class="hover:underline">Diversity</a></li>
-                    <li><a href="#" class="hover:underline">Instant Quotes</a></li>
-                    <li><a href="#" class="hover:underline">Buyer & Engineer Reviews</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>Industry Insights</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Topic</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Index</a></li>
-                    <li><a href="#" class="hover:underline">Guides</a></li>
-                    <li><a href="#" class="hover:underline">White Papers</a></li>
-                    <li><a href="#" class="hover:underline">Certification Glossary</a></li>
-                    <li><a href="#" class="hover:underline">Subscribe</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>For Business</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Advertise</a></li>
-                    <li><a href="#" class="hover:underline">Content & Data Services</a></li>
-                    <li><a href="#" class="hover:underline">Marketing Services</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Reviews</a></li>
-                    <li><a href="#" class="hover:underline">Claim Your Company Profile</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Analytics</a></li>
-                    <li><a href="#" class="hover:underline">Events & Webinars</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>Site Map</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Categories</a></li>
-                    <li><a href="#" class="hover:underline">Featured Companies</a></li>
-                    <li><a href="#" class="hover:underline">Featured Categories</a></li>
-                    <li><a href="#" class="hover:underline">Featured Products</a></li>
-                    <li><a href="#" class="hover:underline">Featured Catalogs</a></li>
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>About Us</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">SPANZ Brand Center</a></li>
-                    <li><a href="#" class="hover:underline">Careers</a></li>
-                    <li><a href="#" class="hover:underline">Press Room</a></li>
-                    <li><a href="#" class="hover:underline">Sign Up</a></li>
-                    <li><a href="#" class="hover:underline">Sign In</a></li>
-                    <li><a href="#" class="hover:underline">Contact</a></li>
-                    <li><a href="#" class="hover:underline">Help Center</a></li>
-                </ul>
-            </div>
-        </div>   
-    </div>
-    <div class="text-center text-sm pt-10">
-        <span class="px-5">Copyright © 2025 SPANZ Publishing Company. All Rights Reserved. See Terms And Conditions, Privacy Statement and California Do Not Track Notice. Website Last Motified September 3, 2025.
-            SPANZ Register and SPANZ Regional are part of spanz.Com. SPANZ is a registered trademark of SPANZ Publishing Company.
-        </span>
-    </div>     
-</section>
-<script>
-  const menuBtn = document.getElementById("menu-btn");
-  const mobileMenu = document.getElementById("mobile-menu");
-
-  menuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-  });
-</script>
-
-    
-</body>
-</html>
+@endsection

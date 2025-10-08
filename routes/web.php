@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\CategoryController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index']);
@@ -24,6 +25,11 @@ Route::get('/forgot-password', function () {
 
 // Protected routes
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
+// Admin Category Management Routes
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('categories', CategoryController::class);
+});
 
 Route::get('/pages/product', function () {
     return view('pages.product');
