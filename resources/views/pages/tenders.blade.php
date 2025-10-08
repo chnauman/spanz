@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Product - Spanz')
+@section('title', 'Tenders - Spanz')
 @section('content')
 @include('components.headermid')
 
