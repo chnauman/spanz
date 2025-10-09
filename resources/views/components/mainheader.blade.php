@@ -14,8 +14,42 @@
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-6">
-                    <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
-                    <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
+                    <!-- Buyers dropdown -->
+                    <div class="relative">
+                        <button id="buyersBtn" type="button"
+                            class="text-white hover:text-blue-400 flex items-center gap-1 focus:outline-none"
+                            onclick="toggleBuyersDropdown()">
+                            <span>For Buyers</span>
+                            <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div id="buyersDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-lg z-50">
+                            <a href="{{ url('buyers') }}" class="block px-4 py-2 hover:bg-gray-100">Browse Buyers</a>
+                            <a href="{{ url('buyers/orders') }}" class="block px-4 py-2 hover:bg-gray-100">My Orders</a>
+                            <a href="{{ url('buyers/watchlist') }}" class="block px-4 py-2 hover:bg-gray-100">Watchlist</a>
+                        </div>
+                    </div>
+
+                    <!-- Suppliers dropdown -->
+                    <div class="relative">
+                        <button id="suppliersBtn" type="button"
+                            class="text-white hover:text-blue-400 flex items-center gap-1 focus:outline-none"
+                            onclick="toggleSuppliersDropdown()">
+                            <span>For Suppliers</span>
+                            <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div id="suppliersDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-lg z-50">
+                            <a href="{{ url('suppliers') }}" class="block px-4 py-2 hover:bg-gray-100">Browse Suppliers</a>
+                            <a href="{{ url('suppliers/add') }}" class="block px-4 py-2 hover:bg-gray-100">Add Supplier</a>
+                            <a href="{{ url('suppliers/orders') }}" class="block px-4 py-2 hover:bg-gray-100">Order Management</a>
+                        </div>
+                    </div>
+
                     <a href="#" class="text-white hover:text-blue-400">About</a>
                 </div>
 
@@ -99,3 +133,32 @@
         </div>
     </div>
 </div>
+
+{{-- dropdown toggle script --}}
+<script>
+    function toggleSuppliersDropdown() {
+        const dd = document.getElementById('suppliersDropdown');
+        if (!dd) return;
+        dd.classList.toggle('hidden');
+    }
+    function toggleBuyersDropdown() {
+        const dd = document.getElementById('buyersDropdown');
+        if (!dd) return;
+        dd.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function (e) {
+        const btn = document.getElementById('suppliersBtn');
+        const dd = document.getElementById('suppliersDropdown');
+        const buyersBtn = document.getElementById('buyersBtn');
+        const buyersDd = document.getElementById('buyersDropdown');
+        if (!btn || !dd) return;
+        // if click outside button and dropdown, hide it
+        if (!btn.contains(e.target) && !dd.contains(e.target)) {
+            dd.classList.add('hidden');
+        }
+        if (buyersBtn && buyersDd && !buyersBtn.contains(e.target) && !buyersDd.contains(e.target)) {
+            buyersDd.classList.add('hidden');
+        }
+    });
+</script>
