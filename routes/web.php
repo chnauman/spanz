@@ -25,21 +25,38 @@ Route::get('/forgot-password', function () {
 // Protected routes
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
-Route::get('/pages/tenders', function () {
+Route::get('/tenders', function () {
     return view('pages.tenders');
 });
-Route::get('/pages/home', function () {
+
+Route::get('/', function () {
     return view('pages.home');
 });
+
 Route::get('/pages/activetenders', function () {
     return view('pages.activetenders');
 });
-Route::get('/pages/tenderposting', function () {
+
+Route::get('/tenderposting', function () {
     return view('pages.tenderposting');
-});
+})->name('tenderposting');
+
 Route::get('/pages/becomesupplier', function () {
     return view('pages.becomesupplier');
 });
-Route::get('/pages/pricing', function () {
+
+Route::get('/pricing', function () {
     return view('pages.pricing');
+});
+
+Route::get('/pages/login', function () {
+    return view('pages.login');
+});
+
+Route::get('/createac', function () {
+    return view('pages.createac');
+})->name('createac');
+
+Route::get('/pages/compreg', function () {
+    return view('pages.compreg');
 });

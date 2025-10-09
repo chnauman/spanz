@@ -1,0 +1,76 @@
+@extends('layouts.bg')
+@section('title', 'Create Account')
+@section('content')
+
+<div class="flex-1 flex items-center justify-center px-4 py-6 sm:py-8 lg:py-12">
+            <div
+                class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8">
+                <div class="text-center mb-4 sm:mb-6">
+                    <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2">SPANZ</h1>
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Join SPANZ</h2>
+                    <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">Enter your business
+                        email and choose a password.</span>
+                </div>
+
+                <form class="space-y-3 sm:space-y-4" method="post" action="#">
+                    <div>
+                        <label for="email"
+                            class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="password"
+                            class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Password</label>
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+                    <div>
+                        <label for="conpassword"
+                            class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm Password</label>
+                        <input type="password" id="conpassword" name="conpassword" required
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div
+                        class="flex  xs:flex-row xs:items-center xs:justify-between justify-between gap-2 sm:gap-0 pt-2">
+                        <label class="flex items-center">
+                            <input type="checkbox"
+                                class="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <span class="ml-2 text-xs sm:text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <!-- <a href="#"
+                            class="text-xs sm:text-sm text-blue-600 hover:text-blue-500 transition-colors underline xs:no-underline xs:hover:underline">Forgot
+                            password?</a> -->
+                    </div>
+
+                    <button type="submit" class="w-full mt-4 sm:mt-6 bg-[#0D6AED] text-white py-2 sm:py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium text-sm sm:text-base">
+                        Sign in
+                    </button>
+                </form>
+
+                <div class="mt-4 sm:mt-6 text-center">
+                    <p class="text-xs sm:text-sm text-gray-600">
+                        Already have an account?<br class="xs:hidden">
+                        <a href="#" class="text-blue-600 hover:text-blue-500 font-medium transition-colors">Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center px-4 py-3 sm:py-4">
+            <div class="bg-black bg-opacity-60 rounded-md sm:rounded-lg px-3 sm:px-4 py-2 inline-block max-w-full">
+                <p class="text-white text-xs sm:text-sm leading-relaxed">
+                    <span class="block sm:inline">©2025 SPANZ Publishing Company. All rights reserved.</span>
+                    <span class="block sm:inline sm:ml-1 mt-1 sm:mt-0">
+                        See <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Terms &
+                            Conditions</a> and
+                        <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Privacy
+                            Statement</a>.
+                    </span>
+                </p>
+            </div>
+        </footer>
+        @endsection

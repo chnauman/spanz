@@ -1,4 +1,7 @@
-<div class="bg-image bg-cover bg-center" style="background-image:url({{ asset('spanz-img/spanz-bg.jpg') }})">
+@php
+    $bgImage = "spanz-img/spanz-bg.jpg";
+@endphp
+<div class="bg-image bg-cover bg-center" style="background-image: url('{{ asset($bgImage) }}');">
     <!-- Navbar -->
     <nav class="bg-image bg-cover bg-center"
         style="background-image:url('./spanz-img/spanz-bg.jpg') absolute top-0 left-0 w-full z-50">
@@ -6,7 +9,7 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
-                    <a href="#" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
+                    <a href="{{ url('/') }}" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
                 </div>
 
                 <!-- Desktop Menu -->
@@ -18,9 +21,9 @@
 
                 <!-- Right Actions -->
                 <div class="hidden md:flex items-center space-x-4">
-                    <a href="#" class="text-white hover:text-blue-400">Claim Your Company</a>
-                    <a href="#" class="text-white hover:text-blue-400">Start Advertising</a>
-                    <button class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
+                    <a href="{{ url('pricing') }}" class="text-white hover:text-blue-400">Pricing</a>
+                    <a href="{{ url('tenders') }}" class="text-white hover:text-blue-400">Tenders</a>
+                    <button class=" border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                         Login
                     </button>
                     <button class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
