@@ -1,95 +1,132 @@
-@extends('layouts.dashlayout')
-@section('title', 'Create Category - Spanz')
+@extends('layouts.admin')
+@section('title', 'Create Category - SPANZ')
 @section('content')
-<div class="block lg:grid lg:grid-cols-12 w-full h-screen">
-    <div class="hidden lg:block lg:col-span-2 bg-gradient-to-l from-[#092C48] to-[#1b3963]">
-        @include('admin.partials.sidebar')
-    </div>
-    
-    <div class="lg:col-span-10 bg-gray-50 p-6 h-screen overflow-auto">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900">Create New Category</h1>
-            <p class="text-gray-600 mt-3 text-lg">Add a new product category to your system</p>
-        </div>
+<div class="bg-gray-100 min-h-screen p-4 sm:p-6 lg:p-8">
+    <div class="w-full">
+        <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
+                <h1 class="text-xl sm:text-2xl font-bold">Create New Category</h1>
+            </div>
 
-        <!-- Form -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <form action="{{ route('admin.categories.store') }}" method="POST">
+            <!-- Back Button -->
+            <div class="mt-4 sm:mt-6">
+                <a href="{{ route('admin.categories.index') }}" 
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    ← Back to Categories
+                </a>
+            </div>
+
+            <!-- Form Container -->
+            <div class="mt-6">
+            
+            <form action="{{ route('admin.categories.store') }}" method="POST" class="p-6">
                 @csrf
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Left Column -->
-                    <div class="space-y-6">
-                        <!-- Category Name -->
-                        <div>
-                            <label for="name" class="block text-lg font-medium text-gray-700 mb-3">
-                                Category Name <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" 
-                                   id="name" 
-                                   name="name" 
-                                   value="{{ old('name') }}"
-                                   class="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D6AED] focus:border-transparent @error('name') border-red-500 @enderror"
-                                   placeholder="Enter category name"
-                                   required>
-                            @error('name')
-                                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Parent Category -->
-                        <div>
-                            <label for="parent_category_id" class="block text-lg font-medium text-gray-700 mb-3">
-                                Parent Category
-                            </label>
-                            <select id="parent_category_id" 
-                                    name="parent_category_id"
-                                    class="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D6AED] focus:border-transparent @error('parent_category_id') border-red-500 @enderror">
-                                <option value="">Select a parent category (optional)</option>
-                                @foreach($parentCategories as $parentCategory)
-                                    <option value="{{ $parentCategory->id }}" {{ old('parent_category_id') == $parentCategory->id ? 'selected' : '' }}>
-                                        {{ $parentCategory->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('parent_category_id')
-                                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="space-y-6">
-                        <!-- Description -->
-                        <div>
-                            <label for="description" class="block text-lg font-medium text-gray-700 mb-3">
-                                Description
-                            </label>
-                            <textarea id="description" 
-                                      name="description" 
-                                      rows="8"
-                                      class="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D6AED] focus:border-transparent @error('description') border-red-500 @enderror"
-                                      placeholder="Enter category description">{{ old('description') }}</textarea>
-                            @error('description')
-                                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
+                <!-- Category Name -->
+                <div class="mb-6">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                        Category Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           id="name" 
+                           name="name" 
+                           value="{{ old('name') }}"
+                           placeholder="Enter category name"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror">
+                    @error('name')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex justify-end space-x-6 mt-12 pt-8 border-t border-gray-200">
-                    <a href="{{ route('admin.categories.index') }}" 
-                       class="px-8 py-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-lg font-medium">
+                <!-- Description -->
+                <div class="mb-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                    </label>
+                    <textarea id="description" 
+                              name="description" 
+                              rows="4"
+                              placeholder="Enter category description (optional)"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                    @error('description')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Parent Category -->
+                <div class="mb-6">
+                    <label for="parent_category_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Parent Category
+                    </label>
+                    <select id="parent_category_id" 
+                            name="parent_category_id"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('parent_category_id') border-red-500 @enderror">
+                        <option value="">Select parent category (optional)</option>
+                        @foreach($parentCategories as $parent)
+                            <option value="{{ $parent->id }}" {{ old('parent_category_id') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">Leave empty to create a main category</p>
+                    @error('parent_category_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Status -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Status</label>
+                    <div class="flex space-x-6">
+                        <div class="flex items-center">
+                            <input type="radio" 
+                                   id="active" 
+                                   name="is_active" 
+                                   value="1" 
+                                   {{ old('is_active', '1') == '1' ? 'checked' : '' }}
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <label for="active" class="ml-2 text-sm text-gray-700">Active</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" 
+                                   id="inactive" 
+                                   name="is_active" 
+                                   value="0" 
+                                   {{ old('is_active') == '0' ? 'checked' : '' }}
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <label for="inactive" class="ml-2 text-sm text-gray-700">Inactive</label>
+                        </div>
+                    </div>
+                    @error('is_active')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
+                    <button type="button" 
+                            onclick="window.location.href='{{ route('admin.categories.index') }}'"
+                            class="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                         Cancel
-                    </a>
+                    </button>
                     <button type="submit" 
-                            class="px-8 py-4 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200 text-lg font-medium">
+                            class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                         Create Category
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- Help Section -->
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-blue-800 mb-2">📋 Category Guidelines</h4>
+            <ul class="text-sm text-blue-700 space-y-1">
+                <li>• Use clear, descriptive names for categories</li>
+                <li>• Main categories don't have a parent category</li>
+                <li>• Subcategories must have a parent category</li>
+                <li>• Inactive categories won't appear in product listings</li>
+            </ul>
+            </div>
         </div>
     </div>
 </div>

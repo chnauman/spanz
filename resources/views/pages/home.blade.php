@@ -68,9 +68,9 @@
         </div>
 
         <div class="flex justify-center">
-            <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5 rounded-sm">
+            <a href="{{ route('company.register') }}" class="bg-[#0D6AED] text-white px-4 py-2 mt-5 rounded-sm hover:bg-blue-700 transition-colors">
                 Claim your company profile
-            </button>
+            </a>
         </div>
     </div>
     <div class="flex flex-col md:flex-row lg:justify-center text-blue-950 px-4 md:pl-40 pt-10 gap-6 md:gap-0">
@@ -412,9 +412,9 @@
                     <button class="bg-[#0D6AED] text-white text-sm px-4 py-2 rounded-sm flex items-center gap-2 hover:bg-blue-600 transition">
                         🔍 Start Sourcing Suppliers
                     </button>
-                    <button class="border border-white text-white text-sm px-4 py-2 rounded flex items-center gap-2 hover:bg-white hover:text-blue-900 transition">
+                    <a href="{{ route('company.register') }}" class="border border-white text-white text-sm px-4 py-2 rounded flex items-center gap-2 hover:bg-white hover:text-blue-900 transition">
                         Claim Your Company Profile →
-                    </button>
+                    </a>
                 </footer>
         </div>
     </section>

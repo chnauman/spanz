@@ -67,6 +67,24 @@
             }
         }
 
+        // Toggle Tender Dropdown
+        function toggleTenderDropdown() {
+            const dropdown = document.getElementById('tenderDropdown');
+            const arrow = document.getElementById('tenderDropdownArrow');
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                dropdown.style.maxHeight = dropdown.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                dropdown.style.maxHeight = '0px';
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 300);
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
         // Toggle Categories Dropdown
         function toggleCategoriesDropdown() {
             const dropdown = document.getElementById('categoriesDropdown');
@@ -133,6 +151,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const buyerDropdown = document.getElementById('buyerDropdown');
             const supplierDropdown = document.getElementById('supplierDropdown');
+            const tenderDropdown = document.getElementById('tenderDropdown');
             const categoriesDropdown = document.getElementById('categoriesDropdown');
             
             // Set initial max-height to 0 for smooth animations
@@ -141,6 +160,9 @@
             }
             if (supplierDropdown) {
                 supplierDropdown.style.maxHeight = '0px';
+            }
+            if (tenderDropdown) {
+                tenderDropdown.style.maxHeight = '0px';
             }
             if (categoriesDropdown) {
                 categoriesDropdown.style.maxHeight = '0px';

@@ -10,9 +10,19 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
+        // Redirect to interests page if user hasn't set interests yet
+        if (!$user->isAdmin() && !$user->interests_set) {
+            return redirect()->route('user.interests');
+        }
+        
         $data = [
             'user' => $user,
         ];
+        
+        // Add company details check for non-admin users
+        if (!$user->isAdmin() && !$user->companyDetail) {
+            $data['needs_company_profile'] = true;
+        }
 
         // Add role-specific data
         if ($user->isAdmin()) {
@@ -21,6 +31,17 @@ class DashboardController extends Controller
                 ->count();
             $data['total_users'] = \App\Models\User::count();
             $data['total_subscriptions'] = \App\Models\UserSubscription::where('is_active', true)->count();
+            $data['total_tenders'] = \App\Models\Tender::count();
+            $data['active_tenders'] = \App\Models\Tender::where('status', 'active')->count();
+        } else {
+            // For non-admin users, show tender-related data
+            $data['my_tenders'] = $user->tenders()->count();
+            $data['my_invitations'] = $user->tenderInvitations()->count();
+            $data['recent_tenders'] = \App\Models\Tender::where('status', 'active')
+                ->where('deadline', '>', now())
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
         }
 
         if ($user->isSupplier() || $user->isSubSupplier()) {

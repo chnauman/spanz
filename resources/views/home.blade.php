@@ -21,12 +21,13 @@
                     <div class="hidden md:flex space-x-6">
                         <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
                         <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
+                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <a href="#" class="text-white hover:text-blue-400">Claim Your Company</a>
+                        <a href="{{ route('company.register') }}" class="text-white hover:text-blue-400">Claim Your Company</a>
                         <a href="#" class="text-white hover:text-blue-400">Start Advertising</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
@@ -67,7 +68,7 @@
                 <a href="#" class="block hover:text-blue-300">For Buyers ▾</a>
                 <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
                 <a href="#" class="block hover:text-blue-300">About</a>
-                <a href="#" class="block hover:text-blue-300">Claim Your Company</a>
+                <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="w-full border border-white text-white px-3 py-2 rounded hover:bg-white hover:text-black text-center block">
@@ -188,9 +189,9 @@
         </div>
 
         <div class="flex justify-center">
-            <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5 rounded-sm">
+            <a href="{{ route('company.register') }}" class="bg-[#0D6AED] text-white px-4 py-2 mt-5 rounded-sm inline-block">
                 Claim your company profile
-            </button>
+            </a>
         </div>
     </div>
     <div class="flex flex-col md:flex-row lg:justify-center text-blue-950 px-4 md:pl-40 pt-10 gap-6 md:gap-0">

@@ -168,12 +168,134 @@
                 </div>
             </div>
 
-        @elseif($user->isBuyer())
-            <!-- Buyer Dashboard -->
-            <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Buyer Dashboard</h3>
-                <p class="text-gray-600">Welcome to your buyer dashboard. You can manage your company details and browse tenders here.</p>
+        @else
+            <!-- User Dashboard with Company Management -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Company Profile Section -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Company Profile</h3>
+                            @if($user->companyDetail)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Profile Complete
+                                </span>
+                            @else
+                                <a href="{{ route('company.register') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                    Complete Profile
+                                </a>
+                            @endif
+                        </div>
+                        
+                        @if($user->companyDetail)
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Company Name</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ $user->companyDetail->company_name }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Website</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">
+                                        @if($user->companyDetail->website)
+                                            <a href="{{ $user->companyDetail->website }}" target="_blank" class="text-indigo-600 hover:text-indigo-500">
+                                                {{ $user->companyDetail->website }}
+                                            </a>
+                                        @else
+                                            Not provided
+                                        @endif
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Description</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ $user->companyDetail->description }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Address</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ $user->companyDetail->address }}</dd>
+                                </div>
+                            </div>
+                        @else
+                            <div class="text-center py-6">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">No company profile</h3>
+                                <p class="mt-1 text-sm text-gray-500">Get started by completing your company profile.</p>
+                                <div class="mt-6">
+                                    <a href="{{ route('company.register') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                        Complete Profile
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="space-y-6">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">My Tenders</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Total Tenders</span>
+                                <span class="text-lg font-semibold text-gray-900">{{ $my_tenders ?? 0 }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Active Tenders</span>
+                                <span class="text-lg font-semibold text-green-600">{{ $user->tenders()->where('status', 'active')->count() }}</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Invitations</span>
+                                <span class="text-lg font-semibold text-blue-600">{{ $my_invitations ?? 0 }}</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 space-y-2">
+                            <a href="{{ route('tenders.create') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                Post New Tender
+                            </a>
+                            <a href="{{ route('tenders.my-tenders') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                View My Tenders
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- Recent Activity -->
+            @if(isset($recent_tenders) && $recent_tenders->count() > 0)
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Tenders</h3>
+                <div class="space-y-4">
+                    @foreach($recent_tenders as $tender)
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-900">{{ $tender->title }}</h4>
+                                <p class="text-sm text-gray-500 mt-1">{{ Str::limit($tender->description, 100) }}</p>
+                                <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500">
+                                    <span>Budget: ${{ number_format($tender->budget, 2) }}</span>
+                                    <span>Deadline: {{ $tender->deadline->format('M d, Y') }}</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $tender->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                        {{ ucfirst($tender->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <a href="{{ route('tenders.show', $tender) }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="mt-4">
+                    <a href="{{ route('tenders.index') }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
+                        View all tenders →
+                    </a>
+                </div>
+            </div>
+            @endif
         @endif
     </div>
 </div>

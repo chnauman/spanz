@@ -24,6 +24,9 @@ class User extends Authenticatable
         'role',
         'is_approved',
         'parent_supplier_id',
+        'is_buyer',
+        'is_supplier',
+        'interests_set',
     ];
 
     /**
@@ -47,6 +50,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_approved' => 'boolean',
+            'is_buyer' => 'boolean',
+            'is_supplier' => 'boolean',
+            'interests_set' => 'boolean',
         ];
     }
 
@@ -79,6 +85,26 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function interests()
+    {
+        return $this->hasMany(UserInterest::class);
+    }
+
+    public function tenders()
+    {
+        return $this->hasMany(Tender::class);
+    }
+
+    public function tenderInvitations()
+    {
+        return $this->hasMany(TenderInvitation::class);
+    }
+
+    public function savedTenders()
+    {
+        return $this->hasMany(SavedTender::class);
     }
 
     // Role-based methods
