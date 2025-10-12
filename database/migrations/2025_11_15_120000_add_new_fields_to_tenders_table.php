@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('tenders', function (Blueprint $table) {
             $table->string('request_type')->nullable()->after('title');
-            $table->string('contact_email')->nullable()->after('requirements');
-            $table->string('contact_phone')->nullable()->after('contact_email');
+            //$table->string('contact_email')->nullable()->after('requirements');
+            //$table->string('contact_phone')->nullable()->after('contact_email');
             $table->json('categories')->nullable()->after('contact_phone'); // Store dynamic categories as JSON
             $table->json('attachments')->nullable()->after('categories'); // Store file paths as JSON
         });
