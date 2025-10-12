@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\UserInterest;
 use App\Models\TenderInvitation;
 use App\Models\SavedTender;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TenderInvitationMail;
@@ -32,15 +33,30 @@ class TenderController extends Controller
             ->where('status', 'active')
             ->where('deadline', '>', now());
 
-        // Apply filters
+        // Apply category filter
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
+        // Apply location filter
         if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+            $locations = is_array($request->location) ? $request->location : [$request->location];
+            $query->where(function($q) use ($locations) {
+                foreach ($locations as $location) {
+                    $q->orWhere('location', 'like', '%' . $location . '%');
+                }
+            });
         }
 
+        // Apply company type filter (using role field)
+        if ($request->filled('company_type')) {
+            $companyTypes = is_array($request->company_type) ? $request->company_type : [$request->company_type];
+            $query->whereHas('user', function($userQuery) use ($companyTypes) {
+                $userQuery->whereIn('role', $companyTypes);
+            });
+        }
+
+        // Apply search filter
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
@@ -52,28 +68,46 @@ class TenderController extends Controller
                       $categoryQuery->where('name', 'like', '%' . $searchTerm . '%');
                   })
                   ->orWhereHas('user', function($userQuery) use ($searchTerm) {
-                      $userQuery->where('name', 'like', '%' . $searchTerm . '%');
+                      $userQuery->where('name', 'like', '%' . $searchTerm . '%')
+                               ->orWhere('company_name', 'like', '%' . $searchTerm . '%');
                   });
             });
         }
 
         $tenders = $query->orderBy('created_at', 'desc')->paginate(12);
-        $categories = Category::where('is_active', true)->get();
         
-        // Sample locations for filter
-        $locations = [
-            'California-South',
-            'Colorado', 
-            'Florida',
-            'Iowa',
-            'Louisiana',
-            'Michigan',
-            'North Carolina',
-            'Ohio-North',
-            'Oregon'
-        ];
+        // Get all categories for display (we'll handle pagination in JavaScript)
+        $allCategories = Category::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+        
+        // Get dynamic locations from actual tender data
+        $allLocations = Tender::where('status', 'active')
+            ->where('deadline', '>', now())
+            ->whereNotNull('location')
+            ->where('location', '!=', '')
+            ->distinct()
+            ->pluck('location')
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
+        
+        // Handle pagination for categories (10 per page)
+        $categoryPage = $request->get('category_page', 1);
+        $categoriesPerPage = 10;
+        $startIndex = ($categoryPage - 1) * $categoriesPerPage;
+        $categories = $allCategories->slice($startIndex, $categoriesPerPage);
+        $hasMoreCategories = $allCategories->count() > ($categoryPage * $categoriesPerPage);
+        
+        // Handle pagination for locations (5 per page)
+        $locationPage = $request->get('location_page', 1);
+        $locationsPerPage = 5;
+        $startLocationIndex = ($locationPage - 1) * $locationsPerPage;
+        $locations = collect($allLocations)->slice($startLocationIndex, $locationsPerPage)->values()->toArray();
+        $hasMoreLocations = count($allLocations) > ($locationPage * $locationsPerPage);
             
-        return view('tenders.search', compact('tenders', 'categories', 'locations'));
+        return view('tenders.search', compact('tenders', 'categories', 'locations', 'hasMoreCategories', 'hasMoreLocations', 'allCategories', 'allLocations'));
     }
 
     public function create()
@@ -175,7 +209,10 @@ class TenderController extends Controller
     public function detail(Tender $tender)
     {
         $tender->load(['user', 'category']);
-        return view('tenders.detail', compact('tender'));
+        $subscriptions = Subscription::where('is_active', true)
+            ->where('name', '!=', 'Basic')
+            ->get();
+        return view('tenders.detail', compact('tender', 'subscriptions'));
     }
 
     public function myTenders()
@@ -186,6 +223,16 @@ class TenderController extends Controller
             ->paginate(10);
             
         return view('tenders.my-tenders', compact('tenders'));
+    }
+
+    public function savedTenders()
+    {
+        $savedTenders = Auth::user()->savedTenders()
+            ->with(['tender.user', 'tender.category'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+            
+        return view('tenders.saved', compact('savedTenders'));
     }
 
     public function invitations()

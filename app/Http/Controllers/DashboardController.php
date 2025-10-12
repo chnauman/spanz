@@ -24,6 +24,13 @@ class DashboardController extends Controller
             $data['needs_company_profile'] = true;
         }
 
+        // Add recent tenders for all users
+        $data['recent_tenders'] = \App\Models\Tender::where('status', 'active')
+            ->where('deadline', '>', now())
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         // Add role-specific data
         if ($user->isAdmin()) {
             $data['pending_approvals'] = \App\Models\User::where('is_approved', false)
@@ -37,11 +44,6 @@ class DashboardController extends Controller
             // For non-admin users, show tender-related data
             $data['my_tenders'] = $user->tenders()->count();
             $data['my_invitations'] = $user->tenderInvitations()->count();
-            $data['recent_tenders'] = \App\Models\Tender::where('status', 'active')
-                ->where('deadline', '>', now())
-                ->orderBy('created_at', 'desc')
-                ->limit(5)
-                ->get();
         }
 
         if ($user->isSupplier() || $user->isSubSupplier()) {

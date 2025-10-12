@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/tenders', [TenderController::class, 'store'])->name('tenders.store');
     Route::get('/tenders/{tender}', [TenderController::class, 'show'])->name('tenders.show');
     Route::get('/my-tenders', [TenderController::class, 'myTenders'])->name('tenders.my-tenders');
+    Route::get('/saved-tenders', [TenderController::class, 'savedTenders'])->name('tenders.saved');
     Route::get('/tender-invitations', [TenderController::class, 'invitations'])->name('tenders.invitations');
     Route::get('/tender-invitations/{invitation}/view', [TenderController::class, 'viewInvitation'])->name('tenders.invitation.view');
     
@@ -57,11 +58,25 @@ Route::middleware('auth')->group(function () {
     Route::post('/tenders/{tender}/save', [TenderController::class, 'saveTender'])->name('tenders.save');
     Route::delete('/tenders/{tender}/unsave', [TenderController::class, 'unsaveTender'])->name('tenders.unsave');
     Route::get('/tenders/{tender}/saved-status', [TenderController::class, 'isTenderSaved'])->name('tenders.saved-status');
+    
+    // Subscription Request Routes
+    Route::get('/subscriptions', [\App\Http\Controllers\SubscriptionRequestController::class, 'index'])->name('subscriptions.index');
+    Route::post('/subscription-requests/{subscription}', [\App\Http\Controllers\SubscriptionRequestController::class, 'request'])->name('subscription-requests.request');
+    Route::get('/subscription-requests', [\App\Http\Controllers\SubscriptionRequestController::class, 'myRequests'])->name('subscription-requests.my-requests');
+    Route::delete('/subscription-requests/{request}', [\App\Http\Controllers\SubscriptionRequestController::class, 'cancelRequest'])->name('subscription-requests.cancel');
+    Route::get('/subscription-requests/status', [\App\Http\Controllers\SubscriptionRequestController::class, 'checkStatus'])->name('subscription-requests.status');
 });
 
 // Admin Category Management Routes
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class);
+    
+    // Subscription Management Routes
+    Route::get('subscription-requests', [\App\Http\Controllers\Admin\SubscriptionController::class, 'requests'])->name('subscription-requests');
+    Route::post('subscriptions/approve-request/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'approveRequest'])->name('subscriptions.approve-request');
+    Route::post('subscriptions/decline-request/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'declineRequest'])->name('subscriptions.decline-request');
+    Route::get('subscriptions/requests/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'showRequest'])->name('subscriptions.show-request');
+    Route::resource('subscriptions', \App\Http\Controllers\Admin\SubscriptionController::class);
 });
 
 Route::get('/pages/product', function () {

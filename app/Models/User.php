@@ -107,6 +107,11 @@ class User extends Authenticatable
         return $this->hasMany(SavedTender::class);
     }
 
+    public function subscriptionRequests()
+    {
+        return $this->hasMany(SubscriptionRequest::class);
+    }
+
     // Role-based methods
     public function isAdmin()
     {
@@ -161,5 +166,56 @@ class User extends Authenticatable
             return $this->role->hasPermission($permission);
         }
         return false;
+    }
+
+    // Subscription-related methods
+    public function hasActiveSubscription()
+    {
+        return $this->getActiveSubscription() !== null;
+    }
+
+    public function hasProSubscription()
+    {
+        $activeSubscription = $this->getActiveSubscription();
+        return $activeSubscription && $activeSubscription->subscription->name === 'Pro';
+    }
+
+    public function hasEnterpriseSubscription()
+    {
+        $activeSubscription = $this->getActiveSubscription();
+        return $activeSubscription && $activeSubscription->subscription->name === 'Enterprise';
+    }
+
+    public function canViewTenderDetails()
+    {
+        // Basic users (free) cannot view tender details
+        // Only Pro and Enterprise subscribers can view details
+        return $this->hasProSubscription() || $this->hasEnterpriseSubscription();
+    }
+
+    public function getSubscriptionStatus()
+    {
+        if ($this->hasEnterpriseSubscription()) {
+            return 'enterprise';
+        } elseif ($this->hasProSubscription()) {
+            return 'pro';
+        } else {
+            return 'basic';
+        }
+    }
+
+    public function hasPendingSubscriptionRequest()
+    {
+        return $this->subscriptionRequests()
+            ->where('status', 'pending')
+            ->exists();
+    }
+
+    public function getPendingSubscriptionRequest()
+    {
+        return $this->subscriptionRequests()
+            ->where('status', 'pending')
+            ->with('subscription')
+            ->first();
     }
 }
