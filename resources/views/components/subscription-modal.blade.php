@@ -97,7 +97,7 @@
 }
 </style>
 
-<div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm flex items-start justify-center p-4 pt-8" onclick="closeModalOnBackdrop(event)">
+<div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full hidden z-[9999] backdrop-blur-sm flex items-start justify-center p-4 pt-8" onclick="closeModalOnBackdrop(event)">
     <div class="w-full max-w-4xl" onclick="event.stopPropagation()">
         <!-- Modal Content with Animation -->
         <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-500 ease-out scale-95 opacity-0" id="modalContent">
@@ -202,21 +202,27 @@ function openSubscriptionModal() {
 }
 
 function closeSubscriptionModal() {
+    console.log('Closing subscription modal...');
     const modal = document.getElementById('subscriptionModal');
     const modalContent = document.getElementById('modalContent');
     
-    // Trigger close animation
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.classList.add('scale-95', 'opacity-0');
-    
-    // Hide modal after animation
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
+    if (modal && modalContent) {
+        // Trigger close animation
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        
+        // Hide modal after animation
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            console.log('Modal hidden');
+        }, 300);
+    }
 }
 
 function closeModalOnBackdrop(event) {
+    // Only close if clicking the backdrop, not the modal content
     if (event.target === event.currentTarget) {
+        console.log('Backdrop clicked, closing modal');
         closeSubscriptionModal();
     }
 }

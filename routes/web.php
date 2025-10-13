@@ -48,7 +48,7 @@ Route::get('/tenders/{tender}/detail', [TenderController::class, 'detail'])->nam
 Route::middleware('auth')->group(function () {
     Route::get('/tenders/create', [TenderController::class, 'create'])->name('tenders.create');
     Route::post('/tenders', [TenderController::class, 'store'])->name('tenders.store');
-    Route::get('/tenders/{tender}', [TenderController::class, 'show'])->name('tenders.show');
+    Route::get('/tenders/{tender}', [TenderController::class, 'detail'])->name('tenders.show');
     Route::get('/my-tenders', [TenderController::class, 'myTenders'])->name('tenders.my-tenders');
     Route::get('/saved-tenders', [TenderController::class, 'savedTenders'])->name('tenders.saved');
     Route::get('/tender-invitations', [TenderController::class, 'invitations'])->name('tenders.invitations');
@@ -59,12 +59,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/tenders/{tender}/unsave', [TenderController::class, 'unsaveTender'])->name('tenders.unsave');
     Route::get('/tenders/{tender}/saved-status', [TenderController::class, 'isTenderSaved'])->name('tenders.saved-status');
     
+    // View buyer details route
+    Route::post('/tenders/{tender}/view-buyer-details', [TenderController::class, 'viewBuyerDetails'])->name('tenders.view-buyer-details');
+    
+    // Download attachment route
+    Route::get('/tenders/{tender}/download/{filename}', [TenderController::class, 'downloadAttachment'])->name('tenders.download-attachment');
+    
     // Subscription Request Routes
     Route::get('/subscriptions', [\App\Http\Controllers\SubscriptionRequestController::class, 'index'])->name('subscriptions.index');
     Route::post('/subscription-requests/{subscription}', [\App\Http\Controllers\SubscriptionRequestController::class, 'request'])->name('subscription-requests.request');
     Route::get('/subscription-requests', [\App\Http\Controllers\SubscriptionRequestController::class, 'myRequests'])->name('subscription-requests.my-requests');
     Route::delete('/subscription-requests/{request}', [\App\Http\Controllers\SubscriptionRequestController::class, 'cancelRequest'])->name('subscription-requests.cancel');
     Route::get('/subscription-requests/status', [\App\Http\Controllers\SubscriptionRequestController::class, 'checkStatus'])->name('subscription-requests.status');
+    Route::get('/subscription-summary', [\App\Http\Controllers\SubscriptionRequestController::class, 'getSubscriptionSummary'])->name('subscription-summary');
 });
 
 // Admin Category Management Routes

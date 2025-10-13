@@ -68,7 +68,7 @@
                             <span class="text-sm text-gray-500">
                                 {{ $tender->invitations()->count() }} invitations sent
                             </span>
-                            <a href="{{ route('tenders.show', $tender->id) }}" 
+                            <a href="{{ route('tenders.detail', $tender->id) }}" 
                                class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
                                 View Details
                             </a>

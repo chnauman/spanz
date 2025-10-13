@@ -45,6 +45,10 @@
                                 <strong>Credits:</strong> 
                                 {{ $subscription->credits_per_month == -1 ? 'Unlimited' : $subscription->credits_per_month }}
                             </div>
+                            <div class="text-sm text-gray-600 mt-1">
+                                <strong>Cost per View:</strong> 
+                                {{ $subscription->credit_cost_per_view ?? 1 }} credit{{ ($subscription->credit_cost_per_view ?? 1) > 1 ? 's' : '' }}
+                            </div>
                             @if($subscription->description)
                             <div class="text-sm text-gray-600 mt-2">{{ $subscription->description }}</div>
                             @endif

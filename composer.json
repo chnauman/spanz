@@ -54,6 +54,30 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "deploy": [
+            "@php artisan config:cache",
+            "@php artisan route:cache",
+            "@php artisan view:cache",
+            "@php artisan event:cache"
+        ],
+        "deploy-fresh": [
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate --force --ansi",
+            "@php artisan db:seed --force --ansi",
+            "@php artisan config:cache",
+            "@php artisan route:cache",
+            "@php artisan view:cache",
+            "@php artisan event:cache"
+        ],
+        "deploy-production": [
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate --force --ansi",
+            "@php artisan config:cache",
+            "@php artisan route:cache",
+            "@php artisan view:cache",
+            "@php artisan event:cache",
+            "@php artisan storage:link"
         ]
     },
     "extra": {

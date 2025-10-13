@@ -49,6 +49,33 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+                        
+                        <div>
+                            <label for="currency" class="block text-sm font-medium text-gray-700 mb-2">Currency <span class="text-red-500">*</span></label>
+                            <select id="currency" name="currency" required
+                                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('currency') border-red-300 @enderror">
+                                <option value="">Select currency</option>
+                                <option value="AUD" {{ old('currency') == 'AUD' ? 'selected' : '' }}>AUD (Australian Dollar)</option>
+                                <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
+                                <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>EUR (Euro)</option>
+                                <option value="GBP" {{ old('currency') == 'GBP' ? 'selected' : '' }}>GBP (British Pound)</option>
+                                <option value="SGD" {{ old('currency') == 'SGD' ? 'selected' : '' }}>SGD (Singapore Dollar)</option>
+                                <option value="NZD" {{ old('currency') == 'NZD' ? 'selected' : '' }}>NZD (New Zealand Dollar)</option>
+                            </select>
+                            @error('currency')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        
+                        <div>
+                            <label for="deadline" class="block text-sm font-medium text-gray-700 mb-2">Submission Deadline <span class="text-red-500">*</span></label>
+                            <input type="date" id="deadline" name="deadline" value="{{ old('deadline') }}" required
+                                min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('deadline') border-red-300 @enderror">
+                            @error('deadline')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                         <div>
                             <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location <span class="text-red-500">*</span></label>
                 <select id="location" name="location" required

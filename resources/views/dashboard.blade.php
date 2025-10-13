@@ -281,7 +281,7 @@
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <a href="{{ route('tenders.show', $tender) }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
+                                <a href="{{ route('tenders.detail', $tender) }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
                                     View Details
                                 </a>
                             </div>

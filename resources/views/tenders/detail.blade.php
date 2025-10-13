@@ -24,14 +24,13 @@
                     <div class="hidden md:flex space-x-6">
                         <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
                         <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
-                        <a href="{{ route('tenders.index') }}" class="text-white hover:text-blue-400">Tenders</a>
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('company.register') }}" class="text-white hover:text-blue-400">Claim Your Company</a>
-                        <a href="#" class="text-white hover:text-blue-400">Start Advertising</a>
+                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
+                        <a href="#" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -70,8 +69,9 @@
             <div id="mobile-menu" class="hidden md:hidden bg-[#092c47] text-white px-4 py-4 space-y-3">
                 <a href="#" class="block hover:text-blue-300">For Buyers ▾</a>
                 <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
-                <a href="{{ route('tenders.index') }}" class="block hover:text-blue-300">Tenders</a>
                 <a href="#" class="block hover:text-blue-300">About</a>
+                <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
+                <a href="#" class="block hover:text-blue-300">Products</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth
@@ -110,20 +110,6 @@
             <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0">
                 <h3 class="text-base sm:text-lg font-semibold">Tender Details</h3>
                 <div class="flex flex-col sm:items-end space-y-3 sm:space-y-4">
-                    @auth
-                        @if(auth()->user()->canViewTenderDetails())
-                            <button
-                                class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto">View
-                                buyer details</button>
-                        @else
-                            <button onclick="openSubscriptionModal()"
-                                class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto">View
-                                buyer details</button>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto inline-block text-center">Login to View Details</a>
-                    @endauth
                     <div class="flex items-center text-[#6C6C6C] space-x-2">
                         <svg width="16px" height="16px" class="sm:w-5 sm:h-5" viewBox="-4 0 32 32" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -202,85 +188,82 @@
                 </div>
                 
                 <!-- view buyer details -->
-                <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
-                    <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
-                        <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Download Project Documents</h2>
-                        
-                        <div class="space-y-3 sm:space-y-4">
-                            <div class="flex flex-col sm:flex-row sm:gap-x-6">
-                                <span class="font-medium text-gray-700 text-sm sm:text-base">Project Location:</span>
-                                <p class="text-gray-600 text-sm sm:text-base">{{ $tender->location ?? 'Not specified' }}</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row sm:gap-x-6">
-                                <span class="font-medium text-gray-700 text-sm sm:text-base">Project Category:</span>
-                                <p class="text-gray-600 text-sm sm:text-base">{{ $tender->category->name }}</p>
+                @auth
+                    @if(auth()->user()->hasActiveSubscription())
+                        <!-- View Buyer Details Button for Subscribed Users -->
+                        <div id="buyer-details-section" class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
+                            <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
+                                <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Access Buyer Details</h2>
+                                
+                                <div class="text-center py-6">
+                                    <div class="mb-4">
+                                        <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">View Buyer Details</h3>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Click below to view buyer contact details and download project documents.
+                                    </p>
+                                    <button onclick="viewBuyerDetails({{ $tender->id }})" id="view-buyer-btn-{{ $tender->id }}" class="w-full bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm">
+                                        <span id="view-buyer-text-{{ $tender->id }}">View Buyer Details</span>
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-6 pt-4 border-t border-gray-200">
+                                    <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
+                                        <span id="save-text-{{ $tender->id }}">Save Tender</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="mt-6 pt-4 border-t border-gray-200">
-                            <div class="flex flex-col mb-3 sm:flex-row sm:gap-x-6">
-                                <h3 class="font-semibold sm:text-lg text-gray-800">Requested By:</h3>
-                                <p>{{ $tender->user->name }}</p>
+                    @else
+                        <!-- Subscription required section for free users -->
+                        <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
+                            <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
+                                <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Upgrade to View Buyer Details</h2>
+                                
+                                <div class="text-center py-6">
+                                    <div class="mb-4">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Premium Content</h3>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Upgrade your subscription to view buyer contact details, download project documents, and access premium features.
+                                    </p>
+                                    <button onclick="openSubscriptionModal()" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium">
+                                        Upgrade Now
+                                    </button>
+                                </div>
                             </div>
-                            <a href="#" class="text-blue-600 hover:text-blue-800 underline text-sm sm:text-base mb-4 block">
-                                {{ $tender->user->name }} (View Profile)
-                            </a>
+                        </div>
+                    @endif
+                @else
+                    <!-- Not logged in section -->
+                    <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
+                        <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
+                            <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Login Required</h2>
                             
-                            <div class="space-y-3">
-                                @if($tender->contact_phone)
-                                <div class="flex gap-x-4">
-                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Business Phone:</span>
-                                    <span class="text-gray-600 text-sm">{{ $tender->contact_phone }}</span>
+                            <div class="text-center py-6">
+                                <div class="mb-4">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
                                 </div>
-                                @endif
-                                
-                                <div class="flex gap-x-4">
-                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Name:</span>
-                                    <span class="text-gray-600 text-sm">{{ $tender->user->name }}</span>
-                                </div>
-                                
-                                @if($tender->contact_email)
-                                <div class="flex gap-x-4">
-                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Email:</span>
-                                    <span class="text-gray-600 text-sm">{{ $tender->contact_email }}</span>
-                                </div>
-                                @endif
-                                
-                                <div class="flex gap-x-4">
-                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Posted:</span>
-                                    <span class="text-gray-600 text-sm">{{ $tender->created_at->diffForHumans() }}</span>
-                                </div>
-                                
-                                <div class="flex gap-x-4">
-                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Deadline:</span>
-                                    <span class="text-gray-600 text-sm">{{ $tender->getFormattedDeadline('M d, Y') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        @auth
-                        <div class="mt-6 pt-4 border-t border-gray-200">
-                            <div class="space-y-3">
-                                <button class="w-full bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm">
-                                    Contact Buyer
-                                </button>
-                                <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
-                                    <span id="save-text-{{ $tender->id }}">Save Tender</span>
-                                </button>
-                            </div>
-                        </div>
-                        @else
-                        <div class="mt-6 pt-4 border-t border-gray-200">
-                            <div class="text-center">
-                                <p class="text-sm text-gray-600 mb-3">Login to contact the buyer</p>
-                                <a href="{{ route('login') }}" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm inline-block">
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Login Required</h3>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    Please login to view buyer details and contact information.
+                                </p>
+                                <a href="{{ route('login') }}" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium inline-block">
                                     Login
                                 </a>
                             </div>
                         </div>
-                        @endauth
                     </div>
-                </div>
+                @endauth
             </div>
         </div>
     </div>
@@ -454,15 +437,258 @@
     </script>
 
     @auth
-        @if(!auth()->user()->canViewTenderDetails())
-            @php
-                $subscriptions = \App\Models\Subscription::where('is_active', true)
-                    ->where('name', '!=', 'Basic')
-                    ->get();
-            @endphp
-            @include('components.subscription-modal', ['subscriptions' => $subscriptions])
-        @endif
+        @php
+            $subscriptions = \App\Models\Subscription::where('is_active', true)
+                ->where('name', '!=', 'Basic')
+                ->get();
+        @endphp
+        @include('components.subscription-modal', ['subscriptions' => $subscriptions])
     @endauth
+
+    <!-- Credit Insufficient Modal - Now redirects to subscription modal -->
+    <!-- This modal is kept for backward compatibility but functionality redirects to subscription modal -->
+
+    <!-- Buyer Details Modal -->
+    <div id="buyerDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Buyer Details</h3>
+                    <button onclick="closeBuyerDetailsModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="buyerDetailsContent" class="space-y-4">
+                    <!-- Buyer details will be populated here -->
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="closeBuyerDetailsModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewBuyerDetails(tenderId) {
+            const button = document.getElementById(`view-buyer-btn-${tenderId}`);
+            const buttonText = document.getElementById(`view-buyer-text-${tenderId}`);
+            
+            // Disable button and show loading
+            button.disabled = true;
+            buttonText.textContent = 'Loading...';
+            
+            fetch(`/tenders/${tenderId}/view-buyer-details`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show buyer details
+                    displayBuyerDetails(data.buyer_details);
+                } else if (data.action === 'subscribe' || data.action === 'renew' || data.action === 'upgrade') {
+                    // Show subscription modal with appropriate message
+                    showSubscriptionModalWithMessage(data.error, data.action);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while loading buyer details.');
+            })
+            .finally(() => {
+                // Re-enable button
+                button.disabled = false;
+                buttonText.textContent = 'View Buyer Details';
+            });
+        }
+
+        function displayBuyerDetails(details) {
+            // Find the buyer details section by ID
+            const buttonSection = document.getElementById('buyer-details-section');
+            if (buttonSection) {
+                buttonSection.innerHTML = `
+                    <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
+                        <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Buyer Details & Project Documents</h2>
+                        
+                        <div class="space-y-3 sm:space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:gap-x-6">
+                                <span class="font-medium text-gray-700 text-sm sm:text-base">Project Location:</span>
+                                <p class="text-gray-600 text-sm sm:text-base">${details.location || 'Not specified'}</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:gap-x-6">
+                                <span class="font-medium text-gray-700 text-sm sm:text-base">Project Category:</span>
+                                <p class="text-gray-600 text-sm sm:text-base">${details.category}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <div class="flex flex-col mb-3 sm:flex-row sm:gap-x-6">
+                                <h3 class="font-semibold sm:text-lg text-gray-800">Requested By:</h3>
+                                <p>${details.name}</p>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                ${details.phone ? `
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Business Phone:</span>
+                                    <span class="text-gray-600 text-sm">${details.phone}</span>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Name:</span>
+                                    <span class="text-gray-600 text-sm">${details.name}</span>
+                                </div>
+                                
+                                ${details.email ? `
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Email:</span>
+                                    <span class="text-gray-600 text-sm">${details.email}</span>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Posted:</span>
+                                    <span class="text-gray-600 text-sm">${details.posted_at}</span>
+                                </div>
+                                
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Deadline:</span>
+                                    <span class="text-gray-600 text-sm">${details.deadline}</span>
+                                </div>
+                                
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Your Remaining Credits:</span>
+                                    <span class="text-gray-600 text-sm">${details.remaining_credits < 0 ? 'Unlimited' : details.remaining_credits}</span>
+                                </div>
+                                
+                                ${details.already_viewed ? `
+                                <div class="flex gap-x-4">
+                                    <span class="font-medium text-green-700 text-xs sm:text-sm block mb-1">Status:</span>
+                                    <span class="text-green-600 text-sm font-semibold">✓ Previously Viewed (No Credits Deducted)</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        ${details.attachments && details.attachments.length > 0 ? `
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <h3 class="font-semibold text-lg text-gray-800 mb-4">📄 Project Documents</h3>
+                            <div class="space-y-3">
+                                ${details.attachments.map(attachment => `
+                                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0">
+                                                <svg class="w-6 h-6 text-blue-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 break-words" 
+                                                   style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">
+                                                   ${attachment.filename}
+                                                </p>
+                                                <p class="text-xs text-gray-500 mt-1">${Math.round(attachment.size / 1024)} KB</p>
+                                                <button onclick="downloadAttachment('${attachment.path}', '${attachment.filename}')" 
+                                                        class="mt-3 bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                    <span>Download</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <button onclick="toggleSave(${details.tender_id})" id="save-btn-${details.tender_id}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
+                                <span id="save-text-${details.tender_id}">Save Tender</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showCreditModal(totalCredits, requiredCredits) {
+            // Show subscription modal instead of credit modal
+            openSubscriptionModal();
+        }
+
+        function closeCreditModal() {
+            // Close subscription modal instead
+            closeSubscriptionModal();
+        }
+
+        function showSubscriptionModalWithMessage(message, action) {
+            // Show a notification with the message first
+            showNotification(message, 'info');
+            
+            // Then open the subscription modal
+            setTimeout(() => {
+                openSubscriptionModal();
+            }, 1000);
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                type === 'info' ? 'bg-blue-600' : 'bg-gray-600'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function closeBuyerDetailsModal() {
+            document.getElementById('buyerDetailsModal').classList.add('hidden');
+        }
+
+        // openSubscriptionModal function is defined in the subscription modal component
+
+        // closeSubscriptionModal function is defined in the subscription modal component
+
+        function downloadAttachment(filePath, filename) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Downloading...</span>';
+            button.disabled = true;
+            
+            // Create a temporary link to download the file
+            const link = document.createElement('a');
+            link.href = `/tenders/{{ $tender->id }}/download/${filename}`;
+            link.download = filename;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Reset button state after a short delay
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            }, 2000);
+        }
+    </script>
 
 </body>
 

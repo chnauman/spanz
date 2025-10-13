@@ -35,14 +35,13 @@
                     <div class="hidden md:flex space-x-6">
                         <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
                         <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
-                        <a href="{{ route('tenders.index') }}" class="text-white hover:text-blue-400">Tenders</a>
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('company.register') }}" class="text-white hover:text-blue-400">Claim Your Company</a>
-                        <a href="#" class="text-white hover:text-blue-400">Start Advertising</a>
+                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
+                        <a href="#" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -81,8 +80,9 @@
             <div id="mobile-menu" class="hidden md:hidden bg-[#092c47] text-white px-4 py-4 space-y-3">
                 <a href="#" class="block hover:text-blue-300">For Buyers ▾</a>
                 <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
-                <a href="{{ route('tenders.index') }}" class="block hover:text-blue-300">Tenders</a>
                 <a href="#" class="block hover:text-blue-300">About</a>
+                <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
+                <a href="#" class="block hover:text-blue-300">Products</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth
@@ -156,9 +156,7 @@
         <div class="flex flex-wrap items-center text-sm flex-1">
             <span><a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-300">Home</a></span>
             <span class="mx-1"><a href="#" class="text-blue-600 hover:text-blue-300">/</a></span>
-            <span><a href="#" class="text-blue-600 hover:text-blue-300">Tender Discovery</a></span>
-            <span class="mx-1"><a href="#" class="text-blue-600 hover:text-blue-300">/</a></span>
-            <span><a href="#" class="text-gray-900">Featured Tenders</a></span>
+            <span><a href="#" class="text-blue-600 hover:text-blue-300">Tenders</a></span>
         </div>
         <div class="flex space-x-3 items-center flex-shrink-0">
             <img src="{{ asset('spanz-img/printer.svg') }}" alt="Print" class="w-5 h-5 cursor-pointer hover:opacity-70" onclick="window.print()">
@@ -226,52 +224,6 @@
                             <span class="text-sm">Show More Categories</span>
                         </div>
                         @endif
-                    </div>
-                    <hr class="my-4 border-t border-gray-300" />
-                </div>
-                
-                <div class="filter-section">
-                    <div class="filter-header cursor-pointer flex items-center justify-between">
-                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Search Within Results</h3>
-                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </div>
-                    <div class="filter-content">
-                        <form action="{{ route('tenders.search') }}" method="GET">
-                            <input type="search" name="search" value="{{ request('search') }}" placeholder="CNC, Custom, etc."
-                                class="w-full px-3 py-2 rounded-sm border border-gray-400 text-gray-700 focus:outline-none text-sm" />
-                            <button type="submit"
-                                class="mt-2 px-4 py-2 text-[#092C48] font-medium rounded-sm border border-gray-300">Search</button>
-                        </form>
-                    </div>
-                    <hr class="my-4 border-t border-gray-300" />
-                </div>
-                
-                <div class="filter-section">
-                    <div class="filter-header cursor-pointer flex items-center justify-between">
-                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
-                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </div>
-                    <div class="filter-content">
-                        <div class="flex flex-col filtersContainer">
-                            <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" name="company_type[]" value="supplier" 
-                                    id="mobile-m-S" class="company-type-filter"
-                                    {{ in_array('supplier', (array) request('company_type', [])) ? 'checked' : '' }}>
-                                <label for="mobile-m-S" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                        class="flex align-items-center gap-1 txt-smallest font-reg ">Supplier</a></label>
-                            </div>
-                            <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" name="company_type[]" value="buyer" 
-                                    id="mobile-m-B" class="company-type-filter"
-                                    {{ in_array('buyer', (array) request('company_type', [])) ? 'checked' : '' }}>
-                                <label for="mobile-m-B" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                        class="flex align-items-center gap-1 txt-smallest font-reg ">Buyer</a></label>
-                            </div>
-                        </div>
                     </div>
                     <hr class="my-4 border-t border-gray-300" />
                 </div>
@@ -348,54 +300,6 @@
                             <span class="text-sm">Show More Categories</span>
                         </div>
                         @endif
-                    </div>
-                </div>
-                <hr class="my-3 border-t border-gray-400 w-[70%]" />
-                
-                <div class="filter-section">
-                    <div class="filter-header cursor-pointer flex items-center justify-between">
-                        <h1 class="text-sm sm:text-md font-semibold text-[#092C48]">Search Within Results</h1>
-                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </div>
-                    <div class="filter-content">
-                        <section>
-                            <form action="{{ route('tenders.search') }}" method="GET">
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="CNC, Custom, etc."
-                                    class="w-full px-3 py-2 rounded-sm border border-gray-400 text-gray-700 focus:outline-none text-sm mt-2" />
-                                <button type="submit"
-                                    class="border border-gray-500 rounded-sm mt-2 py-1 px-3 font-medium text-[#092C48] bg-white hover:bg-gray-100">Search</button>
-                            </form>
-                        </section>
-                    </div>
-                </div>
-                <hr class="my-3 border-t border-gray-400 w-[70%]" />
-                
-                <div class="filter-section">
-                    <div class="filter-header cursor-pointer flex items-center justify-between">
-                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
-                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </div>
-                    <div class="filter-content">
-                        <section class="flex flex-col filtersContainer">
-                            <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" name="company_type[]" value="supplier" 
-                                    id="desktop-m-S" class="company-type-filter"
-                                    {{ in_array('supplier', (array) request('company_type', [])) ? 'checked' : '' }}>
-                                <label for="desktop-m-S" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                        class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline ">Supplier</a></label>
-                            </div>
-                            <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" name="company_type[]" value="buyer" 
-                                    id="desktop-m-B" class="company-type-filter"
-                                    {{ in_array('buyer', (array) request('company_type', [])) ? 'checked' : '' }}>
-                                <label for="desktop-m-B" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                        class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline">Buyer</a></label>
-                            </div>
-                        </section>
                     </div>
                 </div>
                 <hr class="my-3 border-t border-gray-400 w-[70%]" />

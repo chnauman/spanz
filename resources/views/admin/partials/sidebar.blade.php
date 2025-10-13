@@ -195,6 +195,7 @@
     </div>
     <hr class="border-[#657a9871]" />
     
+    @if(Auth::user()->isAdmin())
     <!-- Categories Dropdown Menu -->
     <div>
         <button onclick="toggleCategoriesDropdown()"
@@ -227,7 +228,9 @@
         </div>
     </div>
     <hr class="border-[#657a9871]" />
+    @endif
     
+    @if(Auth::user()->isAdmin())
     <!-- Subscriptions Dropdown Menu -->
     <div>
         <button onclick="toggleSubscriptionsDropdown()"
@@ -264,6 +267,7 @@
         </div>
     </div>
     <hr class="border-[#657a9871]" />
+    @endif
     
     <!-- Logout Section -->
     <div class="text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">

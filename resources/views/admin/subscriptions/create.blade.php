@@ -62,6 +62,19 @@
                     </div>
 
                     <div>
+                        <label for="credit_cost_per_view" class="block text-sm font-medium text-gray-700 mb-2">Credit Cost per Tender View</label>
+                        <input type="number" 
+                               id="credit_cost_per_view" 
+                               name="credit_cost_per_view" 
+                               value="{{ old('credit_cost_per_view', 1) }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="1"
+                               min="1"
+                               required>
+                        <p class="text-xs text-gray-500 mt-1">Number of credits deducted when viewing tender details</p>
+                    </div>
+
+                    <div>
                         <label for="is_active" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                         <select id="is_active" 
                                 name="is_active"

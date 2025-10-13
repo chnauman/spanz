@@ -85,6 +85,17 @@ class SubscriptionRequest extends Model
             'expires_at' => now()->addMonth(), // Default 1 month subscription
             'is_active' => true,
         ]);
+
+        // Allocate credits to user based on subscription
+        $subscription = $this->subscription;
+        if ($subscription && $subscription->credits_per_month > 0) {
+            \App\Models\Credit::create([
+                'user_id' => $this->user_id,
+                'amount' => $subscription->credits_per_month,
+                'type' => 'subscription',
+                'description' => 'Credits allocated for ' . $subscription->name . ' subscription'
+            ]);
+        }
     }
 
     // Decline the request

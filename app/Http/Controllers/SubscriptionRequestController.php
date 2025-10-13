@@ -41,7 +41,7 @@ class SubscriptionRequestController extends Controller
         }
 
         // Check if user already has this subscription
-        if ($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id === $subscription->id) {
+        if ($user->getActiveSubscription() && $user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id === $subscription->id) {
             if (request()->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -110,5 +110,13 @@ class SubscriptionRequestController extends Controller
         }
 
         return response()->json($statuses);
+    }
+
+    public function getSubscriptionSummary()
+    {
+        $user = auth()->user();
+        $status = $user->getSubscriptionAndCreditStatus();
+        
+        return response()->json($status);
     }
 }

@@ -61,25 +61,7 @@
                     </form>
                 </section>
                 <hr class="my-4 border-t border-gray-300" />
-                <section>
-                    <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
-                    <div class="flex flex-col filtersContainer">
-                        <div class="flex align-items-center gap-3 ">
-                            <input type="checkbox" aria-label="Manufacturer checkbox is not selected" id="m-M"
-                                readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                data-ref="srp.filter.manufacturer">
-                            <label for="m-M" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                    class="flex align-items-center gap-1 txt-smallest font-reg ">Manufacturer</a></label>
-                        </div>
-                        <div class="flex align-items-center gap-3 ">
-                            <input type="checkbox" aria-label="Distributor checkbox is not selected" id="m-D"
-                                readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                data-ref="srp.filter.distributor">
-                            <label for="m-D" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                    class="flex align-items-center gap-1 txt-smallest font-reg ">Distributor</a></label>
-                        </div>
-                    </div>
-                </section>
+               
                 <hr class="my-4 border-t border-gray-300" />
                 <section>
                     <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In</h3>
@@ -192,34 +174,7 @@
     </div>
     <hr class="my-3 border-t border-gray-400 w-[70%]" />
     <div class="mt-2">
-        <h1 class="text-sm sm:text-md font-semibold text-[#092C48]">Search Within Results</h1>
-        <section>
-            <form action="">
-                <input type="text" placeholder="CNC, Custom, etc."
-                    class="w-full px-3 py-2 rounded-sm border border-gray-400 text-gray-700 focus:outline-none text-sm mt-2" />
-                <button
-                    class="border border-gray-500 rounded-sm mt-2 py-1 px-3 font-medium text-[#092C48] bg-white hover:bg-gray-100">Search</button>
-            </form>
-        </section>
-        <hr class="my-3 border-t border-gray-400 w-[70%]" />
-        <section>
-            <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
-            <section class="flex flex-col filtersContainer">
-                <div class="flex align-items-center gap-3 ">
-                    <input type="checkbox" aria-label="Manufacturer checkbox is not selected" id="m-M" readonly=""
-                        class="sda-unmasked Filter_checkbox__nQ4Qw" data-ref="srp.filter.manufacturer">
-                    <label for="m-M" class="txt-body-sm  mar-l-2"><a kind="dark"
-                            class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline ">Manufacturer</a></label>
-                </div>
-                <div class="flex align-items-center gap-3 ">
-                    <input type="checkbox" aria-label="Manufacturer checkbox is not selected" id="m-D" readonly=""
-                        class="sda-unmasked Filter_checkbox__nQ4Qw" data-ref="srp.filter.manufacturer">
-                    <label for="m-D" class="txt-body-sm  mar-l-2"><a kind="dark"
-                            class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline">Distributor</a></label>
-                </div>
-            </section>
-        </section>
-        <hr class="my-3 border-t border-gray-400 w-[70%]" />
+       
         <section>
             <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In / Near</h3>
             <section class="flex flex-col filtersContainer">

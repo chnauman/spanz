@@ -112,6 +112,11 @@ class User extends Authenticatable
         return $this->hasMany(SubscriptionRequest::class);
     }
 
+    public function tenderViews()
+    {
+        return $this->hasMany(TenderView::class);
+    }
+
     // Role-based methods
     public function isAdmin()
     {
@@ -193,6 +198,76 @@ class User extends Authenticatable
         return $this->hasProSubscription() || $this->hasEnterpriseSubscription();
     }
 
+    // Credit-based access methods
+    public function canViewTenderDetailsWithCredits()
+    {
+        $activeSubscription = $this->getActiveSubscription();
+        
+        if (!$activeSubscription) {
+            return false; // No active subscription
+        }
+
+        // Enterprise users with unlimited credits (-1) can always view
+        if ($activeSubscription->subscription->credits_per_month == -1) {
+            return true;
+        }
+
+        // Check if user has enough credits
+        $totalCredits = $this->getTotalCredits();
+        $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
+        
+        return $totalCredits >= $creditCostPerView;
+    }
+
+    public function getCreditCostPerView()
+    {
+        $activeSubscription = $this->getActiveSubscription();
+        
+        if (!$activeSubscription) {
+            return 0;
+        }
+
+        return $activeSubscription->subscription->credit_cost_per_view ?? 1;
+    }
+
+    public function deductCreditsForTenderView($tenderId)
+    {
+        $activeSubscription = $this->getActiveSubscription();
+        
+        if (!$activeSubscription) {
+            return false;
+        }
+
+        // Users with unlimited credits don't need to deduct
+        if ($activeSubscription->subscription->credits_per_month < 0) {
+            return true;
+        }
+
+        $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
+        
+        // Check if user has already viewed this tender
+        if (\App\Models\TenderView::hasUserViewedTender($this->id, $tenderId)) {
+            return true; // Already viewed, no need to deduct credits again
+        }
+        
+        // Check if user has enough credits
+        if ($this->getTotalCredits() < $creditCostPerView) {
+            return false;
+        }
+
+        // Deduct credits
+        $this->credits()->create([
+            'amount' => -$creditCostPerView,
+            'type' => 'used',
+            'description' => 'Credits used for viewing tender details'
+        ]);
+
+        // Record the tender view
+        \App\Models\TenderView::recordView($this->id, $tenderId, $creditCostPerView, $creditCostPerView);
+
+        return true;
+    }
+
     public function getSubscriptionStatus()
     {
         if ($this->hasEnterpriseSubscription()) {
@@ -217,5 +292,87 @@ class User extends Authenticatable
             ->where('status', 'pending')
             ->with('subscription')
             ->first();
+    }
+
+    /**
+     * Check if user has already viewed a specific tender
+     */
+    public function hasViewedTender($tenderId)
+    {
+        return \App\Models\TenderView::hasUserViewedTender($this->id, $tenderId);
+    }
+
+    /**
+     * Get comprehensive subscription and credit status
+     */
+    public function getSubscriptionAndCreditStatus()
+    {
+        $activeSubscription = $this->getActiveSubscription();
+        $totalCredits = $this->getTotalCredits();
+        
+        if (!$activeSubscription) {
+            return [
+                'has_subscription' => false,
+                'subscription_expired' => false,
+                'total_credits' => $totalCredits,
+                'credit_cost_per_view' => 0,
+                'can_view' => false,
+                'message' => 'No active subscription. Please subscribe to view tender details.',
+                'action' => 'subscribe'
+            ];
+        }
+
+        // Check if subscription has expired
+        if ($activeSubscription->expires_at < now()) {
+            return [
+                'has_subscription' => true,
+                'subscription_expired' => true,
+                'total_credits' => $totalCredits,
+                'credit_cost_per_view' => $activeSubscription->subscription->credit_cost_per_view ?? 1,
+                'can_view' => false,
+                'message' => 'Your subscription has expired. Please renew to continue viewing tender details.',
+                'action' => 'renew'
+            ];
+        }
+
+        $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
+        
+        // Users with unlimited credits (credits_per_month < 0)
+        if ($activeSubscription->subscription->credits_per_month < 0) {
+            return [
+                'has_subscription' => true,
+                'subscription_expired' => false,
+                'total_credits' => -1, // Unlimited
+                'credit_cost_per_view' => 0,
+                'can_view' => true,
+                'message' => 'You have unlimited access.',
+                'action' => null
+            ];
+        }
+
+        // Check if user has enough credits
+        if ($totalCredits < $creditCostPerView) {
+            return [
+                'has_subscription' => true,
+                'subscription_expired' => false,
+                'total_credits' => $totalCredits,
+                'credit_cost_per_view' => $creditCostPerView,
+                'can_view' => false,
+                'message' => $totalCredits <= 0 
+                    ? 'You have used all your credits. Please upgrade your subscription to get more credits.'
+                    : 'You have insufficient credits to view this tender. Please upgrade your subscription.',
+                'action' => 'upgrade'
+            ];
+        }
+
+        return [
+            'has_subscription' => true,
+            'subscription_expired' => false,
+            'total_credits' => $totalCredits,
+            'credit_cost_per_view' => $creditCostPerView,
+            'can_view' => true,
+            'message' => 'You can view this tender.',
+            'action' => null
+        ];
     }
 }

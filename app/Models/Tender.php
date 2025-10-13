@@ -37,6 +37,24 @@ class Tender extends Model
         ];
     }
 
+    // Override the getAttribute method to handle JSON decoding and datetime casting
+    public function getAttribute($key)
+    {
+        $value = parent::getAttribute($key);
+        
+        if (in_array($key, ['categories', 'attachments']) && is_string($value)) {
+            $decoded = json_decode($value, true);
+            return $decoded !== null ? $decoded : [];
+        }
+        
+        // Ensure deadline is always a Carbon instance
+        if ($key === 'deadline' && is_string($value)) {
+            return \Carbon\Carbon::parse($value);
+        }
+        
+        return $value;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

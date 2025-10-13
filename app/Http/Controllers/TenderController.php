@@ -123,9 +123,9 @@ class TenderController extends Controller
                 'request_type' => 'required|string|in:rfq,rft,rfp,eoi',
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'budget' => 'required|string',
+                'budget' => 'required|string|in:1000,5000,10000,30000,50000,100000,500000,1000000,1000001',
                 'location' => 'required|string',
-                'currency' => 'required|string|size:3',
+                'currency' => 'required|string|in:AUD,USD,EUR,GBP,SGD,NZD',
                 'deadline' => 'required|date|after:today',
                 'requirements' => 'nullable|string',
                 'contact_email' => 'nullable|email',
@@ -143,7 +143,7 @@ class TenderController extends Controller
                 ->withInput();
         }
 
-        try {
+        // try {
             $user = Auth::user();
             
             // Handle file uploads
@@ -161,13 +161,16 @@ class TenderController extends Controller
                 }
             }
             
+            // Convert budget string to decimal value
+            $budgetValue = $this->convertBudgetToDecimal($request->budget);
+            
             // Create the tender
             $tender = Tender::create([
                 'user_id' => $user->id,
                 'category_id' => $request->categories[0]['main_category'], // Use first category as primary
                 'title' => $request->title,
                 'description' => $request->description,
-                'budget' => $request->budget,
+                'budget' => $budgetValue,
                 'currency' => $request->currency,
                 'deadline' => $request->deadline,
                 'requirements' => $request->requirements,
@@ -175,8 +178,8 @@ class TenderController extends Controller
                 'contact_email' => $request->contact_email,
                 'contact_phone' => $request->contact_phone,
                 'request_type' => $request->request_type,
-                'categories' => $request->categories,
-                'attachments' => $attachments,
+                'categories' => json_encode($request->categories), // Manually convert to JSON string
+                'attachments' => json_encode($attachments), // Manually convert to JSON string
                 'status' => 'active',
             ]);
 
@@ -186,25 +189,20 @@ class TenderController extends Controller
             // Send invitations to users with matching interests
             $this->sendTenderInvitations($tender);
 
-            return redirect()->route('tenders.index')
+            return redirect()->route('tenders.my-tenders')
                 ->with('success', 'Tender posted successfully! Invitations have been sent to interested users.');
                 
-        } catch (\Exception $e) {
-            // Log the error for debugging
-            \Log::error('Tender creation failed: ' . $e->getMessage());
+        // } catch (\Exception $e) {
+        //     // Log the error for debugging
+        //     \Log::error('Tender creation failed: ' . $e->getMessage());
             
-            // Return back with error message and old input
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'An error occurred while creating the tender. Please try again.');
-        }
+        //     // Return back with error message and old input
+        //     return redirect()->back()
+        //         ->withInput()
+        //         ->with('error', 'An error occurred while creating the tender. Please try again.');
+        // }
     }
 
-    public function show(Tender $tender)
-    {
-        $tender->load(['user', 'category']);
-        return view('tenders.show', compact('tender'));
-    }
 
     public function detail(Tender $tender)
     {
@@ -250,7 +248,36 @@ class TenderController extends Controller
         // Mark invitation as viewed
         $invitation->markAsViewed();
         
-        return redirect()->route('tenders.show', $invitation->tender_id);
+        return redirect()->route('tenders.detail', $invitation->tender_id);
+    }
+
+    /**
+     * Convert budget string value to decimal for database storage
+     */
+    private function convertBudgetToDecimal($budgetString)
+    {
+        switch ($budgetString) {
+            case '1000':
+                return 1000.00;
+            case '5000':
+                return 5000.00;
+            case '10000':
+                return 10000.00;
+            case '30000':
+                return 30000.00;
+            case '50000':
+                return 50000.00;
+            case '100000':
+                return 100000.00;
+            case '500000':
+                return 500000.00;
+            case '1000000':
+                return 1000000.00;
+            case '1000001':
+                return 1000001.00; // For "over 1 million"
+            default:
+                return 0.00;
+        }
     }
 
     /**
@@ -335,5 +362,115 @@ class TenderController extends Controller
             ->exists();
 
         return response()->json(['saved' => $saved]);
+    }
+
+    public function viewBuyerDetails(Tender $tender)
+    {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'You must be logged in to view buyer details'], 401);
+        }
+
+        $user = Auth::user();
+        
+        // Check if user has already viewed this tender
+        $hasViewed = $user->hasViewedTender($tender->id);
+        
+        // If user has already viewed this tender, allow access regardless of current credit status
+        if ($hasViewed) {
+            // User has already paid for this tender, allow access
+        } else {
+            // User hasn't viewed this tender before, check subscription and credit status
+            $status = $user->getSubscriptionAndCreditStatus();
+            
+            // If user can't view, return appropriate error with action
+            if (!$status['can_view']) {
+                return response()->json([
+                    'error' => $status['message'],
+                    'action' => $status['action'],
+                    'total_credits' => $status['total_credits'],
+                    'credit_cost_per_view' => $status['credit_cost_per_view'],
+                    'subscription_expired' => $status['subscription_expired'] ?? false
+                ], 403);
+            }
+            
+            // Deduct credits for viewing (only if not already viewed)
+            if (!$user->deductCreditsForTenderView($tender->id)) {
+                return response()->json(['error' => 'Failed to deduct credits'], 500);
+            }
+        }
+
+        // Get attachments if they exist
+        $attachments = $tender->attachments ?? [];
+
+        // Get remaining credits - check if user has unlimited credits
+        $activeSubscription = $user->getActiveSubscription();
+        $remainingCredits = $user->getTotalCredits();
+        
+        // If user has unlimited credits (credits_per_month < 0), show as unlimited
+        if ($activeSubscription && $activeSubscription->subscription->credits_per_month < 0) {
+            $remainingCredits = -1; // Use -1 to indicate unlimited
+        }
+
+        // Return buyer details
+        $buyerDetails = [
+            'tender_id' => $tender->id,
+            'name' => $tender->user->name,
+            'email' => $tender->contact_email ?? $tender->user->email,
+            'phone' => $tender->contact_phone,
+            'location' => $tender->location,
+            'category' => $tender->category->name,
+            'posted_at' => $tender->created_at->diffForHumans(),
+            'deadline' => $tender->getFormattedDeadline('M d, Y'),
+            'remaining_credits' => $remainingCredits,
+            'attachments' => $attachments,
+            'already_viewed' => $hasViewed
+        ];
+
+        return response()->json([
+            'success' => true,
+            'buyer_details' => $buyerDetails
+        ]);
+    }
+
+    public function downloadAttachment(Tender $tender, $filename)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to download attachments');
+        }
+
+        $user = Auth::user();
+        
+        // Check if user has already viewed this tender
+        $hasViewed = $user->hasViewedTender($tender->id);
+        
+        // If user has already viewed this tender, allow access regardless of current credit status
+        if (!$hasViewed) {
+            // User hasn't viewed this tender before, check subscription and credit status
+            $status = $user->getSubscriptionAndCreditStatus();
+            
+            // If user can't view, redirect with error message
+            if (!$status['can_view']) {
+                return redirect()->back()->with('error', $status['message']);
+            }
+        }
+
+        // Get attachments
+        $attachments = $tender->attachments ?? [];
+
+        // Find the requested attachment
+        $attachment = collect($attachments)->firstWhere('filename', $filename);
+        
+        if (!$attachment) {
+            return redirect()->back()->with('error', 'Attachment not found');
+        }
+
+        // Check if file exists
+        $filePath = storage_path('app/public/' . $attachment['path']);
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File not found on server');
+        }
+
+        // Return file download
+        return response()->download($filePath, $attachment['filename']);
     }
 }

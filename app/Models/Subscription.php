@@ -11,6 +11,7 @@ class Subscription extends Model
         'description',
         'price',
         'credits_per_month',
+        'credit_cost_per_view',
         'is_active',
     ];
 

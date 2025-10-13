@@ -185,7 +185,7 @@
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             {{ $tender->status ?? 'Active' }}
                                         </span>
-                                        <a href="{{ route('tenders.show', $tender->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        <a href="{{ route('tenders.detail', $tender->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                             View
                                         </a>
                                     </div>

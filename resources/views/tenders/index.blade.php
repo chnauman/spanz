@@ -42,7 +42,7 @@
                                 </div>
                                 @endif
                                 <div class="col-6">
-                                    <strong>Deadline:</strong> {{ $tender->deadline->format('M d, Y') }}
+                                    <strong>Deadline:</strong> {{ is_string($tender->deadline) ? \Carbon\Carbon::parse($tender->deadline)->format('M d, Y') : $tender->deadline->format('M d, Y') }}
                                 </div>
                                 @if($tender->location)
                                 <div class="col-12 mt-1">
@@ -55,7 +55,7 @@
                                 <span class="badge bg-{{ $tender->isActive() ? 'success' : 'danger' }}">
                                     {{ $tender->isActive() ? 'Active' : 'Expired' }}
                                 </span>
-                                <a href="{{ route('tenders.show', $tender->id) }}" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <a href="{{ route('tenders.detail', $tender->id) }}" class="btn btn-outline-primary btn-sm">View Details</a>
                             </div>
                         </div>
                     </div>

@@ -29,6 +29,7 @@ class SubscriptionController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'credits_per_month' => 'required|integer',
+            'credit_cost_per_view' => 'required|integer|min:1',
             'is_active' => 'boolean',
         ]);
 
@@ -50,6 +51,7 @@ class SubscriptionController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'credits_per_month' => 'required|integer',
+            'credit_cost_per_view' => 'required|integer|min:1',
             'is_active' => 'boolean',
         ]);
 

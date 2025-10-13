@@ -78,7 +78,7 @@
         </div>
         
         <div style="text-align: center;">
-            <a href="{{ route('tenders.show', $tender->id) }}" class="btn">View Tender Details</a>
+            <a href="{{ route('tenders.detail', $tender->id) }}" class="btn">View Tender Details</a>
         </div>
         
         <div class="footer">
