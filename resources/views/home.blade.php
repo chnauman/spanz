@@ -21,14 +21,13 @@
                     <div class="hidden md:flex space-x-6">
                         <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
                         <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
-                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('company.register') }}" class="text-white hover:text-blue-400">Claim Your Company</a>
-                        <a href="#" class="text-white hover:text-blue-400">Start Advertising</a>
+                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
+                       <a href="#" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -324,16 +323,7 @@
             <div class="font-semibold">
                 <span>For Buyers</span>
             </div>
-            <div>
-                <ul class="space-y-3">                    
-                    <li><a href="#" class="hover:underline">Supplier Discovery</a></li>
-                    <li><a href="#" class="hover:underline">Product Catalogs</a></li>
-                    <li><a href="#" class="hover:underline">CAD</a></li>
-                    <li><a href="#" class="hover:underline">Diversity</a></li>
-                    <li><a href="#" class="hover:underline">Instant Quotes</a></li>
-                    <li><a href="#" class="hover:underline">Buyer & Engineer Reviews</a></li>
-                </ul>
-            </div>
+           
         </div>
         <div class="space-y-3">
             <div class="font-semibold">

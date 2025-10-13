@@ -2,7 +2,7 @@
 <div class="flex flex-col">
     <!-- Logo Section -->
     <div class="hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 h-20 transition-colors duration-300">
-        <h2 class="text-4xl font-bold text-[#0D6AED] h-20 flex items-center pl-5">SPANZ</h2>
+        <a href="{{ route('home') }}" class="text-4xl font-bold text-[#0D6AED] h-20 flex items-center pl-5 hover:text-blue-300 transition-colors duration-300">SPANZ</a>
     </div>
     <hr class="border-[#657a9871]" />
     
@@ -55,9 +55,13 @@
         <!-- Dropdown Menu -->
         <div id="buyerDropdown"
             class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('tenders.index') }}"
+            <a href="{{ route('tenders.search') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Browse Tenders
+            </a>
+            <a href="{{ route('tenders.saved') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Saved Tenders
             </a>
             <a href="{{ route('tenders.create') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
@@ -122,9 +126,13 @@
         <!-- Dropdown Menu -->
         <div id="supplierDropdown"
             class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('tenders.index') }}"
+            <a href="{{ route('tenders.search') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Browse Tenders
+            </a>
+            <a href="{{ route('tenders.saved') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Saved Tenders
             </a>
             <a href="{{ route('tenders.invitations') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
@@ -171,11 +179,15 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 My Tenders
             </a>
+            <a href="{{ route('tenders.saved') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Saved Tenders
+            </a>
             <a href="{{ route('tenders.create') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Add New Tender
             </a>
-            <a href="{{ route('tenders.index') }}"
+            <a href="{{ route('tenders.search') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Browse Tenders
             </a>
@@ -212,13 +224,42 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Add Category
             </a>
-            <a href="{{ route('admin.categories.index') }}"
+        </div>
+    </div>
+    <hr class="border-[#657a9871]" />
+    
+    <!-- Subscriptions Dropdown Menu -->
+    <div>
+        <button onclick="toggleSubscriptionsDropdown()"
+            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <div class="flex items-center gap-2">
+                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1V23M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Subscriptions</h1>
+            </div>
+            <!-- Dropdown Arrow -->
+            <svg id="subscriptionsDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
+                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="subscriptionsDropdown"
+            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
+            <a href="{{ route('admin.subscriptions.index') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Edit Categories
+                Manage Plans
             </a>
-            <a href="{{ route('admin.categories.index') }}"
+            <a href="{{ route('admin.subscription-requests') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Delete Categories
+                View Requests
+            </a>
+            <a href="{{ route('admin.subscriptions.create') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Create Plan
             </a>
         </div>
     </div>
@@ -231,7 +272,10 @@
                 d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
                 stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <a href="{{ route('logout') }}" class="text-white hover:text-blue-300">Logout</a>
+        <form method="POST" action="{{ route('logout') }}" class="inline">
+            @csrf
+            <button type="submit" class="text-white hover:text-blue-300 bg-transparent border-none cursor-pointer">Logout</button>
+        </form>
     </div>
     <hr class="border-[#657a9871]" />
 </div>
@@ -280,6 +324,19 @@ function toggleTenderDropdown() {
 function toggleCategoriesDropdown() {
     const dropdown = document.getElementById('categoriesDropdown');
     const arrow = document.getElementById('categoriesDropdownArrow');
+    
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        dropdown.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function toggleSubscriptionsDropdown() {
+    const dropdown = document.getElementById('subscriptionsDropdown');
+    const arrow = document.getElementById('subscriptionsDropdownArrow');
     
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');

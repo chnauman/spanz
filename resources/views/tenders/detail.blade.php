@@ -110,9 +110,20 @@
             <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0">
                 <h3 class="text-base sm:text-lg font-semibold">Tender Details</h3>
                 <div class="flex flex-col sm:items-end space-y-3 sm:space-y-4">
-                    <button
-                        class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto">View
-                        buyer details</button>
+                    @auth
+                        @if(auth()->user()->canViewTenderDetails())
+                            <button
+                                class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto">View
+                                buyer details</button>
+                        @else
+                            <button onclick="openSubscriptionModal()"
+                                class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto">View
+                                buyer details</button>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="bg-[#0D6AED] rounded-sm text-white px-4 sm:px-6 py-2 text-sm sm:text-base w-full sm:w-auto inline-block text-center">Login to View Details</a>
+                    @endauth
                     <div class="flex items-center text-[#6C6C6C] space-x-2">
                         <svg width="16px" height="16px" class="sm:w-5 sm:h-5" viewBox="-4 0 32 32" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -441,6 +452,17 @@
             @endauth
         });
     </script>
+
+    @auth
+        @if(!auth()->user()->canViewTenderDetails())
+            @php
+                $subscriptions = \App\Models\Subscription::where('is_active', true)
+                    ->where('name', '!=', 'Basic')
+                    ->get();
+            @endphp
+            @include('components.subscription-modal', ['subscriptions' => $subscriptions])
+        @endif
+    @endauth
 
 </body>
 

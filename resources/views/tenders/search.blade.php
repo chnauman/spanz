@@ -7,6 +7,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Featured Tenders Search</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+    <style>
+        .filter-content {
+            transition: all 0.3s ease;
+        }
+        .filter-header svg {
+            transition: transform 0.3s ease;
+        }
+        .filter-section {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -95,43 +106,49 @@
             </div>
         </nav>
         <!-- Hero main content (centered) -->
-        <div class="flex flex-col lg:flex-row justify-between lg:pr-10">
-            <!-- Search row: mobile stacked, sm inline -->
-            <div
-                class="container mx-auto mt-5 px-4 sm:px-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 lg:mx-0 flex-1">
-                <!-- dropdown button -->
-                <div class="w-full sm:w-auto">
-                    <button
-                        class="flex items-center justify-between w-full sm:w-40 px-3 py-3 sm:py-2 bg-gray-100 border border-gray-300 text-gray-700 text-sm">
-                        Tenders
-                        <svg class="w-4 h-4 ml-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 011.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- input -->
-                <form method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 w-full">
-                    <input type="search" name="search" value="{{ request('search') }}" placeholder="By Category, Company or Brand..."
-                        class="w-full sm:w-96 px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
-
-                    <!-- search button -->
-                    <div class="w-full sm:w-auto sm:ml-3">
-                        <button type="submit" class="w-full sm:w-auto px-4 py-3 sm:py-2 bg-[#0D6AED] text-white text-sm">Search</button>
+        <div class="flex flex-col items-center justify-center">
+            <!-- Search row: centered -->
+            <div class="w-full max-w-4xl mx-auto mt-5 px-4 sm:px-8">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0">
+                    <!-- dropdown button -->
+                    <div class="w-full sm:w-auto">
+                        <button
+                            class="flex items-center justify-between w-full sm:w-40 px-3 py-3 sm:py-2 bg-gray-100 border border-gray-300 text-gray-700 text-sm">
+                            Tenders
+                            <svg class="w-4 h-4 ml-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 011.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
-                </form>
+
+                    <!-- input -->
+                    <form method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl">
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="By Category, Company or Brand..."
+                            class="w-full px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
+                        
+                        <!-- Hidden inputs to preserve current filters -->
+                        @if(request('category'))
+                            <input type="hidden" name="category" value="{{ request('category') }}">
+                        @endif
+                        @if(request('location'))
+                            <input type="hidden" name="location" value="{{ request('location') }}">
+                        @endif
+                        @if(request('company_type'))
+                            @foreach((array) request('company_type') as $type)
+                                <input type="hidden" name="company_type[]" value="{{ $type }}">
+                            @endforeach
+                        @endif
+
+                        <!-- search button -->
+                        <div class="w-full sm:w-auto">
+                            <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-[#0D6AED] text-white text-sm font-medium">Search</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="hidden lg:block">
-                <ul class="flex space-x-2 mt-7 pl-5 ">
-                    <li><a href="#" class="block text-white hover:text-blue-300 text-sm">For Buyers</a></li>
-                    <li><a href="#" class="block text-white hover:text-blue-300 text-sm">Supplier Discovery</a></li>
-                    <li><a href="#" class="block text-white hover:text-blue-300 text-sm">Instant Quote</a></li>
-                    <li><a href="#" class="block text-white hover:text-blue-300 text-sm">Product Catalogs</a></li>
-                    <li><a href="#" class="block text-white hover:text-blue-300 text-sm">CAD Models</a></li>
-                </ul>
-            </div>
+          
         </div>
     </div>
     <div
@@ -144,9 +161,8 @@
             <span><a href="#" class="text-gray-900">Featured Tenders</a></span>
         </div>
         <div class="flex space-x-3 items-center flex-shrink-0">
-            <img src="{{ asset('spanz-img/printer.svg') }}" alt="Print" class="w-5 h-5 cursor-pointer hover:opacity-70">
-            <img src="{{ asset('spanz-img/share.svg') }}" alt="Share" class="w-5 h-5 cursor-pointer hover:opacity-70">
-            <img src="{{ asset('spanz-img/save.svg') }}" alt="Save" class="w-5 h-5 cursor-pointer hover:opacity-70">
+            <img src="{{ asset('spanz-img/printer.svg') }}" alt="Print" class="w-5 h-5 cursor-pointer hover:opacity-70" onclick="window.print()">
+            <img src="{{ asset('spanz-img/share.svg') }}" alt="Share" class="w-5 h-5 cursor-pointer hover:opacity-70" onclick="copyCurrentUrl()">
         </div>
     </div>
 
@@ -176,72 +192,116 @@
 
                 <!-- Filter Controls -->
                 <div class="flex flex-wrap gap-2 mb-4">
-                    <button
+                    <button id="mobile-collapse-all"
                         class="border border-black px-3 py-1.5 bg-white hover:bg-gray-100 rounded-sm text-sm">Collapse
                         All</button>
-                    <button class="border border-black px-3 py-1.5 bg-white hover:bg-gray-100 rounded-sm text-sm">Clear
+                    <button id="mobile-clear-all" class="border border-black px-3 py-1.5 bg-white hover:bg-gray-100 rounded-sm text-sm">Clear
                         All</button>
                 </div>
 
                 <hr class="my-4 border-t border-gray-300" />
 
                 <!-- Categories -->
-                <div>
-                    <h3 class="text-md font-semibold text-[#092C48] mb-3">Related Categories</h3>
-                    <ul class="space-y-3">
-                        @foreach($categories as $category)
-                        <li><a href="#" class="text-sm hover:underline hover:text-blue-600 block py-1">{{ $category->name }}</a></li>
-                        @endforeach
-                    </ul>
-                    <div class="flex items-center gap-2 pt-4 text-[#092C48] cursor-pointer hover:text-blue-600">
-                        <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
-                        <span class="text-sm">View More Categories</span>
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
+                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Related Categories</h3>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
+                        <ul class="space-y-3" id="mobile-categories-list">
+                            @foreach($categories as $category)
+                            <li>
+                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}" 
+                                   class="text-sm hover:underline hover:text-blue-600 block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
+                                    {{ $category->name }}
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @if($hasMoreCategories)
+                        <div class="flex items-center gap-2 pt-4 text-[#092C48] cursor-pointer hover:text-blue-600" id="mobile-show-more-categories">
+                            <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
+                            <span class="text-sm">Show More Categories</span>
+                        </div>
+                        @endif
                     </div>
                     <hr class="my-4 border-t border-gray-300" />
-                    <section>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
+                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Search Within Results</h3>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
                         <form action="{{ route('tenders.search') }}" method="GET">
-                            <h3 class="text-md font-semibold text-[#092C48] mb-3">Search Within Results</h3>
                             <input type="search" name="search" value="{{ request('search') }}" placeholder="CNC, Custom, etc."
                                 class="w-full px-3 py-2 rounded-sm border border-gray-400 text-gray-700 focus:outline-none text-sm" />
                             <button type="submit"
                                 class="mt-2 px-4 py-2 text-[#092C48] font-medium rounded-sm border border-gray-300">Search</button>
                         </form>
-                    </section>
+                    </div>
                     <hr class="my-4 border-t border-gray-300" />
-                    <section>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
                         <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
                         <div class="flex flex-col filtersContainer">
                             <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" aria-label="Manufacturer checkbox is not selected" id="m-M"
-                                    readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                    data-ref="srp.filter.manufacturer">
-                                <label for="m-M" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                        class="flex align-items-center gap-1 txt-smallest font-reg ">Manufacturer</a></label>
+                                <input type="checkbox" name="company_type[]" value="supplier" 
+                                    id="mobile-m-S" class="company-type-filter"
+                                    {{ in_array('supplier', (array) request('company_type', [])) ? 'checked' : '' }}>
+                                <label for="mobile-m-S" class="txt-body-sm  mar-l-2"><a kind="dark"
+                                        class="flex align-items-center gap-1 txt-smallest font-reg ">Supplier</a></label>
                             </div>
                             <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" aria-label="Distributor checkbox is not selected" id="m-D"
-                                    readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                    data-ref="srp.filter.distributor">
-                                <label for="m-D" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                        class="flex align-items-center gap-1 txt-smallest font-reg ">Distributor</a></label>
+                                <input type="checkbox" name="company_type[]" value="buyer" 
+                                    id="mobile-m-B" class="company-type-filter"
+                                    {{ in_array('buyer', (array) request('company_type', [])) ? 'checked' : '' }}>
+                                <label for="mobile-m-B" class="txt-body-sm  mar-l-2"><a kind="dark"
+                                        class="flex align-items-center gap-1 txt-smallest font-reg ">Buyer</a></label>
                             </div>
                         </div>
-                    </section>
+                    </div>
                     <hr class="my-4 border-t border-gray-300" />
-                    <section>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
                         <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In</h3>
-                        <div class="flex flex-col filtersContainer">
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
+                        <div class="flex flex-col filtersContainer" id="mobile-locations-list">
                             @foreach($locations as $location)
                             <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" aria-label="{{ $location }} checkbox is not selected" id="{{ str_replace(' ', '-', strtolower($location)) }}"
-                                    readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                    data-ref="srp.filter.location">
-                                <label for="{{ str_replace(' ', '-', strtolower($location)) }}" class="txt-body-sm  mar-l-2"><a kind="dark"
+                                <input type="checkbox" name="location[]" value="{{ $location }}" 
+                                    id="mobile-{{ str_replace(' ', '-', strtolower($location)) }}" class="location-filter"
+                                    {{ in_array($location, (array) request('location', [])) ? 'checked' : '' }}>
+                                <label for="mobile-{{ str_replace(' ', '-', strtolower($location)) }}" class="txt-body-sm  mar-l-2"><a kind="dark"
                                         class="flex align-items-center gap-1 txt-smallest font-reg ">{{ $location }}</a></label>
                             </div>
                             @endforeach
                         </div>
-                    </section>
+                        @if($hasMoreLocations)
+                        <div class="flex items-center gap-2 pt-4 text-[#092C48] cursor-pointer hover:text-blue-600" id="mobile-show-more-locations">
+                            <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
+                            <span class="text-sm">Show More Locations</span>
+                        </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -255,77 +315,118 @@
                 <span class="text-sm font-medium">Filter</span>
             </div>
             <div class="flex flex-wrap gap-2 mb-4">
-                <button
+                <button id="desktop-collapse-all"
                     class="border border-black px-3 py-1.5 bg-white hover:bg-gray-100 rounded-sm text-xs sm:text-sm">Collapse
                     All</button>
-                <button
+                <button id="desktop-clear-all"
                     class="border border-black px-3 py-1.5 bg-white hover:bg-gray-100 rounded-sm text-xs sm:text-sm">Clear
                     All</button>
             </div>
             <hr class="my-3 border-t border-gray-400 w-[70%]" />
             <div class="mt-2">
-                <h1 class="text-sm sm:text-md font-semibold text-[#092C48]">Related Categories</h1>
-                <ul class="space-y-1 mt-2">
-                    @foreach($categories as $category)
-                    <li><a href="#" class="text-sm sm:text-md hover:underline block py-1">{{ $category->name }}</a></li>
-                    @endforeach
-                </ul>
-                <div class="flex items-center gap-2 pt-3 text-[#092C48] cursor-pointer hover:text-blue-600">
-                    <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
-                    <span class="text-sm">View More Categories</span>
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
+                        <h1 class="text-sm sm:text-md font-semibold text-[#092C48]">Related Categories</h1>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
+                        <ul class="space-y-1 mt-2" id="desktop-categories-list">
+                            @foreach($categories as $category)
+                            <li>
+                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}" 
+                                   class="text-sm sm:text-md hover:underline block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
+                                    {{ $category->name }}
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @if($hasMoreCategories)
+                        <div class="flex items-center gap-2 pt-3 text-[#092C48] cursor-pointer hover:text-blue-600" id="desktop-show-more-categories">
+                            <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
+                            <span class="text-sm">Show More Categories</span>
+                        </div>
+                        @endif
+                    </div>
                 </div>
-            </div>
-            <hr class="my-3 border-t border-gray-400 w-[70%]" />
-            <div class="mt-2">
-                <h1 class="text-sm sm:text-md font-semibold text-[#092C48]">Search Within Results</h1>
-                <section>
-                    <form action="{{ route('tenders.search') }}" method="GET">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="CNC, Custom, etc."
-                            class="w-full px-3 py-2 rounded-sm border border-gray-400 text-gray-700 focus:outline-none text-sm mt-2" />
-                        <button type="submit"
-                            class="border border-gray-500 rounded-sm mt-2 py-1 px-3 font-medium text-[#092C48] bg-white hover:bg-gray-100">Search</button>
-                    </form>
-                </section>
                 <hr class="my-3 border-t border-gray-400 w-[70%]" />
-                <section>
-                    <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
-                    <section class="flex flex-col filtersContainer">
-                        <div class="flex align-items-center gap-3 ">
-                            <input type="checkbox" aria-label="Manufacturer checkbox is not selected" id="m-M"
-                                readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                data-ref="srp.filter.manufacturer">
-                            <label for="m-M" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                    class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline ">Manufacturer</a></label>
-                        </div>
-                        <div class="flex align-items-center gap-3 ">
-                            <input type="checkbox" aria-label="Manufacturer checkbox is not selected" id="m-D"
-                                readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                data-ref="srp.filter.manufacturer">
-                            <label for="m-D" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                    class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline">Distributor</a></label>
-                        </div>
-                    </section>
-                </section>
+                
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
+                        <h1 class="text-sm sm:text-md font-semibold text-[#092C48]">Search Within Results</h1>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
+                        <section>
+                            <form action="{{ route('tenders.search') }}" method="GET">
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="CNC, Custom, etc."
+                                    class="w-full px-3 py-2 rounded-sm border border-gray-400 text-gray-700 focus:outline-none text-sm mt-2" />
+                                <button type="submit"
+                                    class="border border-gray-500 rounded-sm mt-2 py-1 px-3 font-medium text-[#092C48] bg-white hover:bg-gray-100">Search</button>
+                            </form>
+                        </section>
+                    </div>
+                </div>
                 <hr class="my-3 border-t border-gray-400 w-[70%]" />
-                <section>
-                    <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In / Near</h3>
-                    <section class="flex flex-col filtersContainer">
-                        @foreach($locations as $location)
-                        <div class="flex align-items-center gap-3 ">
-                            <input type="checkbox" aria-label="{{ $location }} checkbox is not selected"
-                                id="{{ str_replace(' ', '-', strtolower($location)) }}" readonly="" class="sda-unmasked Filter_checkbox__nQ4Qw"
-                                data-ref="srp.filter.location">
-                            <label for="{{ str_replace(' ', '-', strtolower($location)) }}" class="txt-body-sm  mar-l-2"><a kind="dark"
-                                    class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline ">{{ $location }}</a></label>
-                        </div>
-                        @endforeach
-                        <div
-                            class="flex mt-3 items-center rounded-sm gap-04 py-1 justify-center bg-white hover:bg-gray-100 border border-gray-300">
+                
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
+                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Company Type</h3>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
+                        <section class="flex flex-col filtersContainer">
+                            <div class="flex align-items-center gap-3 ">
+                                <input type="checkbox" name="company_type[]" value="supplier" 
+                                    id="desktop-m-S" class="company-type-filter"
+                                    {{ in_array('supplier', (array) request('company_type', [])) ? 'checked' : '' }}>
+                                <label for="desktop-m-S" class="txt-body-sm  mar-l-2"><a kind="dark"
+                                        class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline ">Supplier</a></label>
+                            </div>
+                            <div class="flex align-items-center gap-3 ">
+                                <input type="checkbox" name="company_type[]" value="buyer" 
+                                    id="desktop-m-B" class="company-type-filter"
+                                    {{ in_array('buyer', (array) request('company_type', [])) ? 'checked' : '' }}>
+                                <label for="desktop-m-B" class="txt-body-sm  mar-l-2"><a kind="dark"
+                                        class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline">Buyer</a></label>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <hr class="my-3 border-t border-gray-400 w-[70%]" />
+                
+                <div class="filter-section">
+                    <div class="filter-header cursor-pointer flex items-center justify-between">
+                        <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In / Near</h3>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-content">
+                        <section class="flex flex-col filtersContainer" id="desktop-locations-list">
+                            @foreach($locations as $location)
+                            <div class="flex align-items-center gap-3 ">
+                                <input type="checkbox" name="location[]" value="{{ $location }}" 
+                                    id="desktop-{{ str_replace(' ', '-', strtolower($location)) }}" class="location-filter"
+                                    {{ in_array($location, (array) request('location', [])) ? 'checked' : '' }}>
+                                <label for="desktop-{{ str_replace(' ', '-', strtolower($location)) }}" class="txt-body-sm  mar-l-2"><a kind="dark"
+                                        class="flex align-items-center gap-1 text-sm txt-smallest font-reg hover:underline ">{{ $location }}</a></label>
+                            </div>
+                            @endforeach
+                        </section>
+                        @if($hasMoreLocations)
+                        <div class="flex mt-3 items-center rounded-sm gap-04 py-1 justify-center bg-white hover:bg-gray-100 border border-gray-300 cursor-pointer" id="desktop-show-more-locations">
                             <img src="{{ asset('spanz-img/plus.svg') }}" alt="" class="w-4 ">
-                            <button class="pl-2">Show More</button>
+                            <span class="pl-2">Show More Locations</span>
                         </div>
-                    </section>
-                </section>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Content area for desktop -->
@@ -373,30 +474,6 @@
                             <p class="text-[#092C48] text-sm sm:text-lg" id="save-text-{{ $tender->id }}">Save</p>
                         </div>
                         @endauth
-                        <div class="flex items-center gap-2">
-                             <svg width="20px" height="20px" viewBox="0 0 32 32" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
-
-                                <title>plus-circle</title>
-                                <desc>Created with Sketch Beta.</desc>
-                                <defs>
-
-                                </defs>
-                                <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"
-                                    sketch:type="MSPage">
-                                    <g id="Icon-Set-Filled" sketch:type="MSLayerGroup"
-                                        transform="translate(-466.000000, -1089.000000)" fill="#000000">
-                                        <path
-                                            d="M488,1106 L483,1106 L483,1111 C483,1111.55 482.553,1112 482,1112 C481.447,1112 481,1111.55 481,1111 L481,1106 L476,1106 C475.447,1106 475,1105.55 475,1105 C475,1104.45 475.447,1104 476,1104 L481,1104 L481,1099 C481,1098.45 481.447,1098 482,1098 C482.553,1098 483,1098.45 483,1099 L483,1104 L488,1104 C488.553,1104 489,1104.45 489,1105 C489,1105.55 488.553,1106 488,1106 L488,1106 Z M482,1089 C473.163,1089 466,1096.16 466,1105 C466,1113.84 473.163,1121 482,1121 C490.837,1121 498,1113.84 498,1105 C498,1096.16 490.837,1089 482,1089 L482,1089 Z"
-                                            id="plus-circle" sketch:type="MSShapeGroup">
-
-                                        </path>
-                                    </g>
-                                </g>
-                            </svg>
-                            <p class="text-[#092C48] text-sm sm:text-lg">Select</p>
-                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 my-3">
@@ -417,27 +494,13 @@
                             </p>
                         </div>
                     </div>
-                    <div class="flex flex-row lg:flex-col gap-2 lg:w-[30%]">
-                        <a href="{{ route('tenders.detail', $tender->id) }}"
-                            class="bg-[#0D6AED] hover:bg-blue-700 px-3 py-2 text-white rounded-sm text-sm sm:text-base flex-1 lg:flex-none text-center">
-                            View Details
-                        </a>
-                        @if($tender->requirements)
-                        <button
-                            class="bg-white hover:bg-gray-100 border border-gray-300 px-3 py-2 rounded-sm text-sm sm:text-base flex-1 lg:flex-none">
-                            View Requirements
-                        </button>
-                        @endif
-                    </div>
                 </div>
-                <button class="flex text-blue-600 items-center px-2 py-2 rounded-sm hover:bg-gray-100 gap-2 mt-3">
-                    <span class="font-semibold text-sm sm:text-base">More</span>
-                    <svg width="16" height="16" class="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill=""
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 12H20M12 4V20" stroke="#2563eb" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
+                <div class="flex justify-end items-end mt-4">
+                    <a href="{{ route('tenders.detail', $tender->id) }}"
+                        class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
+                        View Details
+                    </a>
+                </div>
             </div>
             @empty
             <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6">
@@ -554,6 +617,25 @@
     </section>
 
     <script>
+        // Copy current URL to clipboard
+        function copyCurrentUrl() {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                // Show a brief success message
+                const shareIcon = event.target;
+                const originalSrc = shareIcon.src;
+                shareIcon.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkgMTJMMTUgNk0xNSAxOEw5IDEyTTE1IDEySDlNMTUgNkg5IiBzdHJva2U9IiMxMEE5N0YiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=";
+                shareIcon.style.opacity = "0.5";
+                
+                setTimeout(function() {
+                    shareIcon.src = originalSrc;
+                    shareIcon.style.opacity = "1";
+                }, 1000);
+            }).catch(function(err) {
+                console.error('Could not copy URL: ', err);
+                alert('Failed to copy URL to clipboard');
+            });
+        }
+
         // Mobile navigation menu toggle
         const menuBtn = document.getElementById("menu-btn");
         const mobileMenu = document.getElementById("mobile-menu");
@@ -670,6 +752,156 @@
                     }
                 });
             });
+
+            // Filter functionality
+            function applyFilters() {
+                const currentUrl = new URL(window.location);
+                const params = new URLSearchParams(currentUrl.search);
+                
+                // Clear existing filter parameters
+                params.delete('category');
+                params.delete('location');
+                params.delete('company_type');
+                
+                // Add selected filters
+                const selectedCategories = document.querySelectorAll('input[name="category"]:checked');
+                selectedCategories.forEach(cb => params.append('category', cb.value));
+                
+                const selectedLocations = document.querySelectorAll('input[name="location[]"]:checked');
+                selectedLocations.forEach(cb => params.append('location', cb.value));
+                
+                const selectedCompanyTypes = document.querySelectorAll('input[name="company_type[]"]:checked');
+                selectedCompanyTypes.forEach(cb => params.append('company_type', cb.value));
+                
+                // Redirect with new parameters
+                window.location.href = currentUrl.pathname + '?' + params.toString();
+            }
+
+            // Add event listeners to filter checkboxes
+            document.querySelectorAll('.company-type-filter, .location-filter').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+
+            // Collapse/Expand functionality
+            function toggleFilterSection(header) {
+                const content = header.nextElementSibling;
+                const arrow = header.querySelector('svg');
+                
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    arrow.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.display = 'none';
+                    arrow.style.transform = 'rotate(-90deg)';
+                }
+            }
+
+            // Add click listeners to filter headers
+            document.querySelectorAll('.filter-header').forEach(header => {
+                header.addEventListener('click', () => toggleFilterSection(header));
+            });
+
+            // Collapse All functionality
+            document.getElementById('mobile-collapse-all')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('#mobile-filter-modal .filter-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.querySelectorAll('#mobile-filter-modal .filter-header svg').forEach(arrow => {
+                    arrow.style.transform = 'rotate(-90deg)';
+                });
+            });
+
+            document.getElementById('desktop-collapse-all')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.lg\\:block .filter-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.querySelectorAll('.lg\\:block .filter-header svg').forEach(arrow => {
+                    arrow.style.transform = 'rotate(-90deg)';
+                });
+            });
+
+            // Clear All button functionality
+            document.getElementById('mobile-clear-all')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Uncheck all filter checkboxes
+                document.querySelectorAll('#mobile-filter-modal .company-type-filter, #mobile-filter-modal .location-filter').forEach(cb => {
+                    cb.checked = false;
+                });
+                // Remove filter parameters from URL
+                const currentUrl = new URL(window.location);
+                currentUrl.searchParams.delete('category');
+                currentUrl.searchParams.delete('location');
+                currentUrl.searchParams.delete('company_type');
+                window.location.href = currentUrl.toString();
+            });
+
+            document.getElementById('desktop-clear-all')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Uncheck all filter checkboxes
+                document.querySelectorAll('.lg\\:block .company-type-filter, .lg\\:block .location-filter').forEach(cb => {
+                    cb.checked = false;
+                });
+                // Remove filter parameters from URL
+                const currentUrl = new URL(window.location);
+                currentUrl.searchParams.delete('category');
+                currentUrl.searchParams.delete('location');
+                currentUrl.searchParams.delete('company_type');
+                window.location.href = currentUrl.toString();
+            });
+
+            // Show More Categories functionality
+            function loadMoreCategories(containerId, showMoreId, isMobile = false) {
+                const container = document.getElementById(containerId);
+                const showMoreBtn = document.getElementById(showMoreId);
+                
+                if (showMoreBtn) {
+                    showMoreBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Get current page from URL or default to 1
+                        const currentUrl = new URL(window.location);
+                        const currentPage = parseInt(currentUrl.searchParams.get('category_page') || '1');
+                        const nextPage = currentPage + 1;
+                        
+                        // Update URL with next page
+                        currentUrl.searchParams.set('category_page', nextPage);
+                        
+                        // Redirect to load more categories
+                        window.location.href = currentUrl.toString();
+                    });
+                }
+            }
+
+            // Show More Locations functionality
+            function loadMoreLocations(containerId, showMoreId, isMobile = false) {
+                const container = document.getElementById(containerId);
+                const showMoreBtn = document.getElementById(showMoreId);
+                
+                if (showMoreBtn) {
+                    showMoreBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Get current page from URL or default to 1
+                        const currentUrl = new URL(window.location);
+                        const currentPage = parseInt(currentUrl.searchParams.get('location_page') || '1');
+                        const nextPage = currentPage + 1;
+                        
+                        // Update URL with next page
+                        currentUrl.searchParams.set('location_page', nextPage);
+                        
+                        // Redirect to load more locations
+                        window.location.href = currentUrl.toString();
+                    });
+                }
+            }
+
+            // Initialize Show More functionality
+            loadMoreCategories('mobile-categories-list', 'mobile-show-more-categories', true);
+            loadMoreCategories('desktop-categories-list', 'desktop-show-more-categories', false);
+            loadMoreLocations('mobile-locations-list', 'mobile-show-more-locations', true);
+            loadMoreLocations('desktop-locations-list', 'desktop-show-more-locations', false);
         });
     </script>
 
