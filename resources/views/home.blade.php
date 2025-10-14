@@ -11,7 +11,7 @@
         <!-- Navbar -->
         <nav class="bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}') absolute top-0 left-0 w-full z-50">
             <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">                
+                <div class="flex items-center justify-between h-16">
                     <!-- Logo -->
                     <div class="flex-shrink-0">
                         <a href="#" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
@@ -19,8 +19,50 @@
 
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
-                        <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
-                        <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
+                        <!-- For Buyers Dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">
+                                For Buyers ▾
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-1">
+                                    @auth
+                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
+                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                    @else
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For Suppliers Dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">
+                                For Suppliers ▾
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-1">
+                                    @auth
+                                        @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
+                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
+                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
+                                            <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Viewed Tenders</a>
+                                            <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invite Sub Supplier</a>
+                                        @else
+                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
+                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
+                                            <a href="{{ route('invitations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invitations</a>
+                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                        @endif
+                                    @else
+                                        <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
@@ -52,9 +94,9 @@
                     <div class="md:hidden">
                         <button id="menu-btn" class="text-white focus:outline-none">
                             <!-- Icon -->
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" 
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                         </button>
@@ -64,8 +106,40 @@
 
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden bg-[#092c47] text-white px-4 py-4 space-y-3">
-                <a href="#" class="block hover:text-blue-300">For Buyers ▾</a>
-                <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
+                <!-- Mobile For Buyers -->
+                <div class="space-y-2">
+                    <div class="font-semibold text-blue-300">For Buyers</div>
+                    @auth
+                        <a href="{{ route('tenders.create') }}" class="block pl-4 hover:text-blue-300">Post a Tender</a>
+                        <a href="{{ route('tenders.my-tenders') }}" class="block pl-4 hover:text-blue-300">My Tenders</a>
+                    @else
+                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block pl-4 hover:text-blue-300">Post a Tender</a>
+                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block pl-4 hover:text-blue-300">My Tenders</a>
+                    @endauth
+                </div>
+
+                <!-- Mobile For Suppliers -->
+                <div class="space-y-2">
+                    <div class="font-semibold text-blue-300">For Suppliers</div>
+                    @auth
+                        @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
+                            <a href="{{ route('tenders.saved') }}" class="block pl-4 hover:text-blue-300">Saved Tenders</a>
+                            <a href="{{ route('user.interests') }}" class="block pl-4 hover:text-blue-300">My Interests</a>
+                            <a href="{{ route('tenders.viewed') }}" class="block pl-4 hover:text-blue-300">Viewed Tenders</a>
+                            <a href="{{ route('suppliers.invite') }}" class="block pl-4 hover:text-blue-300">Invite Sub Supplier</a>
+                            <a href="{{ route('tenders.invitations') }}" class="block pl-4 hover:text-blue-300">Invitations</a>
+                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
+                        @else
+                            <a href="{{ route('tenders.saved') }}" class="block pl-4 hover:text-blue-300">Saved Tenders</a>
+                            <a href="{{ route('user.interests') }}" class="block pl-4 hover:text-blue-300">My Interests</a>
+                            <a href="{{ route('tenders.invitations') }}" class="block pl-4 hover:text-blue-300">Invitations</a>
+                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
+                        @endif
+                    @else
+                        <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
+                    @endauth
+                </div>
+
                 <a href="#" class="block hover:text-blue-300">About</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
@@ -124,24 +198,24 @@
             </div>
     </div>
     <div class="text-blue-950 font-semibold text-xl flex justify-center py-5 text-center px-3">
-        <span>For 125+ years, SPANZ has connected buyers with industrial suppliers</span>        
+        <span>For 125+ years, SPANZ has connected buyers with industrial suppliers</span>
     </div>
 
     <!-- Buyers Section -->
-    <div class="flex flex-col-reverse lg:flex-row justify-evenly items-center px-5 lg:px-20 py-12">    
+    <div class="flex flex-col-reverse lg:flex-row justify-evenly items-center px-5 lg:px-20 py-12">
         <!-- Left Text Section -->
         <div class=" text-center lg:text-left mt-8 lg:mt-0">
-            <span class="text-white bg-blue-950 px-5 py-1 rounded-full inline-block">For Buyers</span>        
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0 lg:w-[26rem]">Every 10 seconds, a buyer finds what they need on SPANZ</h1>        
+            <span class="text-white bg-blue-950 px-5 py-1 rounded-full inline-block">For Buyers</span>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0 lg:w-[26rem]">Every 10 seconds, a buyer finds what they need on SPANZ</h1>
             <ul class="list-disc pl-5 text-blue-950 space-y-2 text-left inline-block lg:block">
                 <li>Access our network of 500,000+ trusted suppliers</li>
                 <li>Filter by Distance, Certification, and more</li>
                 <li>Evaluate Supplier Capabilities and Services</li>
                 <li>Get Direct Quotes</li>
                 <li>Source Parts and Services Today</li>
-            </ul>        
+            </ul>
             <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5">Search for a Supplier</button>
-        </div>    
+        </div>
         <!-- Right Image Section -->
         <div class="w-full lg:w-1/2 flex justify-center mt-8 lg:mt-0">
             <img src="{{ asset('spanz-img/for-buyers.webp') }}" alt="For Buyers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
@@ -206,7 +280,7 @@
     </div>
     <div class="bg-gray-100 mt-10 pb-10">
         <div class="flex justify-center">
-            <h1 class="text-2xl sm:text-3xl my-10 lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0">Browse RFX Categories</h1>            
+            <h1 class="text-2xl sm:text-3xl my-10 lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0">Browse RFX Categories</h1>
         </div>
         <!-- grid layout for all categories -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 w-full px-5 md:px-28 lg:px-28 ml-auto mr-auto">
@@ -232,7 +306,7 @@
     </div>
     <section class="bg-gradient-to-r from-[#092C47] to-[#21435E] py-16 px-6">
         <div class="max-w-7xl mx-auto flex flex-col gap-10">
-            
+
                 <!-- Header -->
                 <header class="flex flex-col gap-4 text-center">
                 <h1 class="text-white text-3xl md:text-4xl">
@@ -245,7 +319,7 @@
 
                 <!-- Highlights Grid -->
                 <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                
+
                 <!-- Item 1 -->
                 <li class="relative group">
                     <a class="flex flex-col items-center gap-5">
@@ -323,7 +397,7 @@
             <div class="font-semibold">
                 <span>For Buyers</span>
             </div>
-           
+
         </div>
         <div class="space-y-3">
             <div class="font-semibold">
@@ -367,7 +441,7 @@
                     <li><a href="#" class="hover:underline">Featured Categories</a></li>
                     <li><a href="#" class="hover:underline">Featured Products</a></li>
                     <li><a href="#" class="hover:underline">Featured Catalogs</a></li>
-                    
+
                 </ul>
             </div>
         </div>
@@ -386,13 +460,13 @@
                     <li><a href="#" class="hover:underline">Help Center</a></li>
                 </ul>
             </div>
-        </div>   
+        </div>
     </div>
     <div class="text-center text-sm pt-10">
         <span class="px-5">Copyright © 2025 SPANZ Publishing Company. All Rights Reserved. See Terms And Conditions, Privacy Statement and California Do Not Track Notice. Website Last Motified September 3, 2025.
             SPANZ Register and SPANZ Regional are part of spanz.Com. SPANZ is a registered trademark of SPANZ Publishing Company.
         </span>
-    </div>     
+    </div>
 </section>
 <script>
   const menuBtn = document.getElementById("menu-btn");
@@ -403,6 +477,7 @@
   });
 </script>
 
-    
+@include('components.subscription-modal', ['subscriptions' => $subscriptions ?? collect()])
+
 </body>
 </html>

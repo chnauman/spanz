@@ -23,7 +23,7 @@ class TenderController extends Controller
             ->where('deadline', '>', now())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            
+
         return view('tenders.index', compact('tenders'));
     }
 
@@ -75,12 +75,12 @@ class TenderController extends Controller
         }
 
         $tenders = $query->orderBy('created_at', 'desc')->paginate(12);
-        
+
         // Get all categories for display (we'll handle pagination in JavaScript)
         $allCategories = Category::where('is_active', true)
             ->orderBy('name')
             ->get();
-        
+
         // Get dynamic locations from actual tender data
         $allLocations = Tender::where('status', 'active')
             ->where('deadline', '>', now())
@@ -92,22 +92,27 @@ class TenderController extends Controller
             ->sort()
             ->values()
             ->toArray();
-        
+
         // Handle pagination for categories (10 per page)
         $categoryPage = $request->get('category_page', 1);
         $categoriesPerPage = 10;
         $startIndex = ($categoryPage - 1) * $categoriesPerPage;
         $categories = $allCategories->slice($startIndex, $categoriesPerPage);
         $hasMoreCategories = $allCategories->count() > ($categoryPage * $categoriesPerPage);
-        
+
         // Handle pagination for locations (5 per page)
         $locationPage = $request->get('location_page', 1);
         $locationsPerPage = 5;
         $startLocationIndex = ($locationPage - 1) * $locationsPerPage;
         $locations = collect($allLocations)->slice($startLocationIndex, $locationsPerPage)->values()->toArray();
         $hasMoreLocations = count($allLocations) > ($locationPage * $locationsPerPage);
-            
-        return view('tenders.search', compact('tenders', 'categories', 'locations', 'hasMoreCategories', 'hasMoreLocations', 'allCategories', 'allLocations'));
+
+        // Get active subscriptions for the modal
+        $subscriptions = Subscription::where('is_active', true)
+            ->orderBy('price', 'asc')
+            ->get();
+
+        return view('tenders.search', compact('tenders', 'categories', 'locations', 'hasMoreCategories', 'hasMoreLocations', 'allCategories', 'allLocations', 'subscriptions'));
     }
 
     public function create()
@@ -145,7 +150,7 @@ class TenderController extends Controller
 
         // try {
             $user = Auth::user();
-            
+
             // Handle file uploads
             $attachments = [];
             if ($request->hasFile('files')) {
@@ -160,10 +165,10 @@ class TenderController extends Controller
                     ];
                 }
             }
-            
+
             // Convert budget string to decimal value
             $budgetValue = $this->convertBudgetToDecimal($request->budget);
-            
+
             // Create the tender
             $tender = Tender::create([
                 'user_id' => $user->id,
@@ -191,11 +196,11 @@ class TenderController extends Controller
 
             return redirect()->route('tenders.my-tenders')
                 ->with('success', 'Tender posted successfully! Invitations have been sent to interested users.');
-                
+
         // } catch (\Exception $e) {
         //     // Log the error for debugging
         //     \Log::error('Tender creation failed: ' . $e->getMessage());
-            
+
         //     // Return back with error message and old input
         //     return redirect()->back()
         //         ->withInput()
@@ -219,7 +224,7 @@ class TenderController extends Controller
             ->with('category')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            
+
         return view('tenders.my-tenders', compact('tenders'));
     }
 
@@ -229,7 +234,7 @@ class TenderController extends Controller
             ->with(['tender.user', 'tender.category'])
             ->orderBy('created_at', 'desc')
             ->paginate(12);
-            
+
         return view('tenders.saved', compact('savedTenders'));
     }
 
@@ -239,15 +244,28 @@ class TenderController extends Controller
             ->with(['tender.user', 'tender.category'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            
+
         return view('tenders.invitations', compact('invitations'));
+    }
+
+    public function viewedTenders()
+    {
+        $user = Auth::user();
+
+        // Get tenders that the user has viewed
+        $viewedTenders = $user->tenderViews()
+            ->with(['tender.user', 'tender.category'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('tenders.viewed', compact('viewedTenders'));
     }
 
     public function viewInvitation(TenderInvitation $invitation)
     {
         // Mark invitation as viewed
         $invitation->markAsViewed();
-        
+
         return redirect()->route('tenders.detail', $invitation->tender_id);
     }
 
@@ -317,7 +335,7 @@ class TenderController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Check if already saved
         $existingSave = SavedTender::where('user_id', $user->id)
             ->where('tender_id', $tender->id)
@@ -342,7 +360,7 @@ class TenderController extends Controller
         }
 
         $user = Auth::user();
-        
+
         SavedTender::where('user_id', $user->id)
             ->where('tender_id', $tender->id)
             ->delete();
@@ -371,17 +389,17 @@ class TenderController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Check if user has already viewed this tender
         $hasViewed = $user->hasViewedTender($tender->id);
-        
+
         // If user has already viewed this tender, allow access regardless of current credit status
         if ($hasViewed) {
             // User has already paid for this tender, allow access
         } else {
             // User hasn't viewed this tender before, check subscription and credit status
             $status = $user->getSubscriptionAndCreditStatus();
-            
+
             // If user can't view, return appropriate error with action
             if (!$status['can_view']) {
                 return response()->json([
@@ -392,7 +410,7 @@ class TenderController extends Controller
                     'subscription_expired' => $status['subscription_expired'] ?? false
                 ], 403);
             }
-            
+
             // Deduct credits for viewing (only if not already viewed)
             if (!$user->deductCreditsForTenderView($tender->id)) {
                 return response()->json(['error' => 'Failed to deduct credits'], 500);
@@ -405,7 +423,7 @@ class TenderController extends Controller
         // Get remaining credits - check if user has unlimited credits
         $activeSubscription = $user->getActiveSubscription();
         $remainingCredits = $user->getTotalCredits();
-        
+
         // If user has unlimited credits (credits_per_month < 0), show as unlimited
         if ($activeSubscription && $activeSubscription->subscription->credits_per_month < 0) {
             $remainingCredits = -1; // Use -1 to indicate unlimited
@@ -439,15 +457,15 @@ class TenderController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Check if user has already viewed this tender
         $hasViewed = $user->hasViewedTender($tender->id);
-        
+
         // If user has already viewed this tender, allow access regardless of current credit status
         if (!$hasViewed) {
             // User hasn't viewed this tender before, check subscription and credit status
             $status = $user->getSubscriptionAndCreditStatus();
-            
+
             // If user can't view, redirect with error message
             if (!$status['can_view']) {
                 return redirect()->back()->with('error', $status['message']);
@@ -459,7 +477,7 @@ class TenderController extends Controller
 
         // Find the requested attachment
         $attachment = collect($attachments)->firstWhere('filename', $filename);
-        
+
         if (!$attachment) {
             return redirect()->back()->with('error', 'Attachment not found');
         }

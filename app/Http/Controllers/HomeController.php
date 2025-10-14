@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Subscription;
 
 class HomeController extends Controller
 {
@@ -21,6 +22,11 @@ class HomeController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('home', compact('categories'));
+        // Get active subscriptions for the modal
+        $subscriptions = Subscription::where('is_active', true)
+            ->orderBy('price', 'asc')
+            ->get();
+
+        return view('home', compact('categories', 'subscriptions'));
     }
 }

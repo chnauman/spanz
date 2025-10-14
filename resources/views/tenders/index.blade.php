@@ -62,7 +62,7 @@
                 </div>
                 @empty
                 <div class="col-12">
-                    <div class="text-center py-5">
+                    <div class="text-center py-12">
                         <h4 class="text-muted">No active tenders found</h4>
                         <p class="text-muted">Check back later for new opportunities.</p>
                     </div>

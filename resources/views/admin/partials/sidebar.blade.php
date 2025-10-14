@@ -1,11 +1,11 @@
 <!-- Sidebar Container -->
-<div class="flex flex-col">
+<div class="flex flex-col h-full">
     <!-- Logo Section -->
     <div class="hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 h-20 transition-colors duration-300">
         <a href="{{ route('home') }}" class="text-4xl font-bold text-[#0D6AED] h-20 flex items-center pl-5 hover:text-blue-300 transition-colors duration-300">SPANZ</a>
     </div>
     <hr class="border-[#657a9871]" />
-    
+
     <!-- Profile Section -->
     <div class="h-32 relative flex items-center gap-5 px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
         <img src="{{ asset('spanz-img/profile.jpg') }}" alt="" class="rounded-full w-16" id="profileImage">
@@ -20,17 +20,18 @@
         </svg>
     </div>
     <hr class="border-[#657a9871]" />
-    
+
     <!-- Dashboard Link -->
-    <div class="text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+    <a href="{{ route('dashboard') }}" class="text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M16.5 7.063C16.5 10.258 14.57 13 12 13c-2.572 0-4.5-2.742-4.5-5.938C7.5 3.868 9.16 2 12 2s4.5 1.867 4.5 5.063zM4.102 20.142C4.487 20.6 6.145 22 12 22c5.855 0 7.512-1.4 7.898-1.857a.416.416 0 0 0 .09-.317C19.9 18.944 19.106 15 12 15s-7.9 3.944-7.989 4.826a.416.416 0 0 0 .091.317z"
                 fill="#ffffff" />
         </svg>
         <h1>Dashboard</h1>
-    </div>
+    </a>
     <hr class="border-[#657a9871]" />
+    @if( Auth::user()->isBuyer())
     <!-- Buyer Dropdown Menu -->
     <div>
         <button onclick="toggleDropdown()"
@@ -55,33 +56,23 @@
         <!-- Dropdown Menu -->
         <div id="buyerDropdown"
             class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('tenders.search') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Browse Tenders
-            </a>
-            <a href="{{ route('tenders.saved') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Saved Tenders
-            </a>
             <a href="{{ route('tenders.create') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Post a Tender
+                Post Tender
             </a>
             <a href="{{ route('tenders.my-tenders') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 My Tenders
             </a>
-            <a href="{{ route('tenders.invitations') }}"
+            <a href="{{ route('tenders.search') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Tender Invitations
-            </a>
-            <a href="{{ route('user.interests') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                My Interests
+                Browse Tenders
             </a>
         </div>
     </div>
     <hr class="border-[#657a9871]" />
+    @endif
+    @if( Auth::user()->isSupplier() || Auth::user()->isSubSupplier())
     <!-- Supplier Dropdown Menu -->
     <div>
         <button onclick="toggleSupplierDropdown()"
@@ -126,46 +117,45 @@
         <!-- Dropdown Menu -->
         <div id="supplierDropdown"
             class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('tenders.search') }}"
+            <a href="{{ route('user.interests') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Browse Tenders
+                My Interests
+            </a>
+            <a href="{{ route('tenders.viewed') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Viewed Tenders
             </a>
             <a href="{{ route('tenders.saved') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Saved Tenders
             </a>
-            <a href="{{ route('tenders.invitations') }}"
+            <a href="{{ route('invitations.index') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Tender Invitations
+                Invitations
             </a>
-            <a href="{{ route('user.interests') }}"
+            <a href="{{ route('suppliers.sub-suppliers') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                My Interests
-            </a>
-            <a href="#"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                My Products
-            </a>
-            <a href="#"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Add Product
+                Sub Suppliers
             </a>
         </div>
     </div>
     <hr class="border-[#657a9871]" />
-    
-    <!-- Tender Dropdown Menu -->
+    @endif
+
+    @if(Auth::user()->isAdmin())
+    <!-- Users Dropdown Menu -->
     <div>
-        <button onclick="toggleTenderDropdown()"
+        <button onclick="toggleUsersDropdown()"
             class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
             <div class="flex items-center gap-2">
                 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <h1>Tender</h1>
+                <h1>Users</h1>
             </div>
             <!-- Dropdown Arrow -->
-            <svg id="tenderDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
+            <svg id="usersDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
                 <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" />
@@ -173,29 +163,24 @@
         </button>
 
         <!-- Dropdown Menu -->
-        <div id="tenderDropdown"
+        <div id="usersDropdown"
             class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('tenders.my-tenders') }}"
+            <a href="{{ route('admin.users.index') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                My Tenders
+                All Users
             </a>
-            <a href="{{ route('tenders.saved') }}"
+            <a href="{{ route('admin.users.index', ['role' => 'buyer']) }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Saved Tenders
+                Buyers Only
             </a>
-            <a href="{{ route('tenders.create') }}"
+            <a href="{{ route('admin.users.index', ['role' => 'supplier']) }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Add New Tender
-            </a>
-            <a href="{{ route('tenders.search') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Browse Tenders
+                Suppliers Only
             </a>
         </div>
     </div>
     <hr class="border-[#657a9871]" />
-    
-    @if(Auth::user()->isAdmin())
+
     <!-- Categories Dropdown Menu -->
     <div>
         <button onclick="toggleCategoriesDropdown()"
@@ -229,7 +214,7 @@
     </div>
     <hr class="border-[#657a9871]" />
     @endif
-    
+
     @if(Auth::user()->isAdmin())
     <!-- Subscriptions Dropdown Menu -->
     <div>
@@ -268,7 +253,10 @@
     </div>
     <hr class="border-[#657a9871]" />
     @endif
-    
+
+    <!-- Spacer to push logout to bottom -->
+    <div class="flex-grow"></div>
+
     <!-- Logout Section -->
     <div class="text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -289,7 +277,7 @@
 function toggleDropdown() {
     const dropdown = document.getElementById('buyerDropdown');
     const arrow = document.getElementById('dropdownArrow');
-    
+
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');
         arrow.style.transform = 'rotate(180deg)';
@@ -302,7 +290,7 @@ function toggleDropdown() {
 function toggleSupplierDropdown() {
     const dropdown = document.getElementById('supplierDropdown');
     const arrow = document.getElementById('supplierDropdownArrow');
-    
+
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');
         arrow.style.transform = 'rotate(180deg)';
@@ -315,7 +303,7 @@ function toggleSupplierDropdown() {
 function toggleTenderDropdown() {
     const dropdown = document.getElementById('tenderDropdown');
     const arrow = document.getElementById('tenderDropdownArrow');
-    
+
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');
         arrow.style.transform = 'rotate(180deg)';
@@ -328,7 +316,7 @@ function toggleTenderDropdown() {
 function toggleCategoriesDropdown() {
     const dropdown = document.getElementById('categoriesDropdown');
     const arrow = document.getElementById('categoriesDropdownArrow');
-    
+
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');
         arrow.style.transform = 'rotate(180deg)';
@@ -341,7 +329,20 @@ function toggleCategoriesDropdown() {
 function toggleSubscriptionsDropdown() {
     const dropdown = document.getElementById('subscriptionsDropdown');
     const arrow = document.getElementById('subscriptionsDropdownArrow');
-    
+
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        dropdown.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function toggleUsersDropdown() {
+    const dropdown = document.getElementById('usersDropdown');
+    const arrow = document.getElementById('usersDropdownArrow');
+
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');
         arrow.style.transform = 'rotate(180deg)';

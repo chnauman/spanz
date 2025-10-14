@@ -9,9 +9,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\UserInterestController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\CompanyRegistrationController;
+use App\Http\Controllers\PricingController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 
 // Authentication routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -39,6 +41,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/user/interests', [UserInterestController::class, 'show'])->name('user.interests');
     Route::post('/user/interests', [UserInterestController::class, 'store'])->name('user.interests.store');
+    Route::post('/user/interests/skip', [UserInterestController::class, 'skip'])->name('user.interests.skip');
 });
 
 // Tender Routes
@@ -53,18 +56,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/saved-tenders', [TenderController::class, 'savedTenders'])->name('tenders.saved');
     Route::get('/tender-invitations', [TenderController::class, 'invitations'])->name('tenders.invitations');
     Route::get('/tender-invitations/{invitation}/view', [TenderController::class, 'viewInvitation'])->name('tenders.invitation.view');
-    
+
     // Save/Unsave tender routes
     Route::post('/tenders/{tender}/save', [TenderController::class, 'saveTender'])->name('tenders.save');
     Route::delete('/tenders/{tender}/unsave', [TenderController::class, 'unsaveTender'])->name('tenders.unsave');
     Route::get('/tenders/{tender}/saved-status', [TenderController::class, 'isTenderSaved'])->name('tenders.saved-status');
-    
+
     // View buyer details route
     Route::post('/tenders/{tender}/view-buyer-details', [TenderController::class, 'viewBuyerDetails'])->name('tenders.view-buyer-details');
-    
+
     // Download attachment route
     Route::get('/tenders/{tender}/download/{filename}', [TenderController::class, 'downloadAttachment'])->name('tenders.download-attachment');
-    
+
     // Subscription Request Routes
     Route::get('/subscriptions', [\App\Http\Controllers\SubscriptionRequestController::class, 'index'])->name('subscriptions.index');
     Route::post('/subscription-requests/{subscription}', [\App\Http\Controllers\SubscriptionRequestController::class, 'request'])->name('subscription-requests.request');
@@ -72,12 +75,36 @@ Route::middleware('auth')->group(function () {
     Route::delete('/subscription-requests/{request}', [\App\Http\Controllers\SubscriptionRequestController::class, 'cancelRequest'])->name('subscription-requests.cancel');
     Route::get('/subscription-requests/status', [\App\Http\Controllers\SubscriptionRequestController::class, 'checkStatus'])->name('subscription-requests.status');
     Route::get('/subscription-summary', [\App\Http\Controllers\SubscriptionRequestController::class, 'getSubscriptionSummary'])->name('subscription-summary');
+
+    // Supplier-specific routes
+    Route::get('/viewed-tenders', [TenderController::class, 'viewedTenders'])->name('tenders.viewed');
+    Route::get('/suppliers/invite', [\App\Http\Controllers\SupplierController::class, 'showInviteForm'])->name('suppliers.invite');
+    Route::post('/suppliers/invite', [\App\Http\Controllers\SupplierController::class, 'sendInvitation'])->name('suppliers.invite.send');
+    Route::get('/suppliers/sub-suppliers', [\App\Http\Controllers\SupplierController::class, 'subSuppliers'])->name('suppliers.sub-suppliers');
+    Route::post('/suppliers/{subSupplier}/approve', [\App\Http\Controllers\SupplierController::class, 'approveSubSupplier'])->name('suppliers.approve-sub-supplier');
+    Route::delete('/suppliers/{subSupplier}/remove', [\App\Http\Controllers\SupplierController::class, 'removeSubSupplier'])->name('suppliers.remove-sub-supplier');
+
+    // Sub Supplier Invitation Routes
+    Route::get('/invite-sub-suppliers', [\App\Http\Controllers\SubSupplierInvitationController::class, 'search'])->name('invite.sub-suppliers');
+    Route::get('/invite-sub-suppliers/search', [\App\Http\Controllers\SubSupplierInvitationController::class, 'searchSuppliers'])->name('invite.sub-suppliers.search');
+    Route::post('/invite-sub-suppliers/send', [\App\Http\Controllers\SubSupplierInvitationController::class, 'sendInvitation'])->name('invite.sub-suppliers.send');
+    Route::get('/invitations', [\App\Http\Controllers\SubSupplierInvitationController::class, 'index'])->name('invitations.index');
+    Route::post('/invitations/{invitation}/accept', [\App\Http\Controllers\SubSupplierInvitationController::class, 'accept'])->name('invitations.accept');
+    Route::post('/invitations/{invitation}/decline', [\App\Http\Controllers\SubSupplierInvitationController::class, 'decline'])->name('invitations.decline');
+    Route::delete('/invitations/{invitation}/cancel', [\App\Http\Controllers\SubSupplierInvitationController::class, 'cancel'])->name('invitations.cancel');
 });
 
 // Admin Category Management Routes
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class);
-    
+
+    // User Management Routes
+    Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+    Route::post('users/{user}/approve', [\App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
+    Route::post('users/{user}/reject', [\App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
+    Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
     // Subscription Management Routes
     Route::get('subscription-requests', [\App\Http\Controllers\Admin\SubscriptionController::class, 'requests'])->name('subscription-requests');
     Route::post('subscriptions/approve-request/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'approveRequest'])->name('subscriptions.approve-request');
@@ -95,3 +122,4 @@ Route::get('/pages/home', function () {
 Route::get('/pages/dashboard', function () {
     return view('pages.dashboard');
 });
+

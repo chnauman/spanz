@@ -22,8 +22,43 @@
 
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
-                        <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
-                        <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
+                        <!-- For Buyers Dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">
+                                For Buyers ▾
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-1">
+                                    @auth
+                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
+                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                    @else
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For Suppliers Dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">
+                                For Suppliers ▾
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-1">
+                                    @auth
+                                        <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
+                                        <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
+                                        <a href="{{ route('tenders.invitations') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invitations</a>
+                                        <a href="{{ route('subscriptions.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Subscription Plans</a>
+                                    @else
+                                        <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
@@ -152,7 +187,7 @@
                             <p class="text-sm sm:text-base">{{ $tender->category->name }}</p>
                         </div>
                     </div>
-                    
+
                     @if($tender->budget)
                     <div class="mt-6 sm:mt-8">
                         <h3 class="font-semibold mb-3 text-base sm:text-lg">Budget Information:</h3>
@@ -164,19 +199,19 @@
                         </div>
                     </div>
                     @endif
-                    
+
                     <div class="mt-6 sm:mt-8">
                         <h3 class="font-semibold mb-3 text-base sm:text-lg">Project Title:</h3>
                         <p class="text-sm sm:text-base">{{ $tender->title }}</p>
                     </div>
-                    
+
                     <div class="mt-8">
                         <h3 class="font-semibold mb-3">Description:</h3>
                         <div class="text-sm sm:text-base leading-relaxed">
                             {!! nl2br(e($tender->description)) !!}
                         </div>
                     </div>
-                    
+
                     @if($tender->requirements)
                     <div class="mt-6 sm:mt-8">
                         <h3 class="font-semibold mb-3 text-base sm:text-lg">Requirements:</h3>
@@ -186,7 +221,7 @@
                     </div>
                     @endif
                 </div>
-                
+
                 <!-- view buyer details -->
                 @auth
                     @if(auth()->user()->hasActiveSubscription())
@@ -194,7 +229,7 @@
                         <div id="buyer-details-section" class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
                             <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
                                 <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Access Buyer Details</h2>
-                                
+
                                 <div class="text-center py-6">
                                     <div class="mb-4">
                                         <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -210,7 +245,7 @@
                                         <span id="view-buyer-text-{{ $tender->id }}">View Buyer Details</span>
                                     </button>
                                 </div>
-                                
+
                                 <div class="mt-6 pt-4 border-t border-gray-200">
                                     <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
                                         <span id="save-text-{{ $tender->id }}">Save Tender</span>
@@ -223,7 +258,7 @@
                         <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
                             <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
                                 <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Upgrade to View Buyer Details</h2>
-                                
+
                                 <div class="text-center py-6">
                                     <div class="mb-4">
                                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -246,7 +281,7 @@
                     <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
                         <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
                             <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Login Required</h2>
-                            
+
                             <div class="text-center py-6">
                                 <div class="mb-4">
                                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -373,7 +408,7 @@
         function toggleSave(tenderId) {
             const saveBtn = document.getElementById(`save-btn-${tenderId}`);
             const saveText = document.getElementById(`save-text-${tenderId}`);
-            
+
             // Check if already saved
             fetch(`/tenders/${tenderId}/saved-status`)
                 .then(response => response.json())
@@ -476,11 +511,11 @@
         function viewBuyerDetails(tenderId) {
             const button = document.getElementById(`view-buyer-btn-${tenderId}`);
             const buttonText = document.getElementById(`view-buyer-text-${tenderId}`);
-            
+
             // Disable button and show loading
             button.disabled = true;
             buttonText.textContent = 'Loading...';
-            
+
             fetch(`/tenders/${tenderId}/view-buyer-details`, {
                 method: 'POST',
                 headers: {
@@ -518,7 +553,7 @@
                 buttonSection.innerHTML = `
                     <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
                         <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Buyer Details & Project Documents</h2>
-                        
+
                         <div class="space-y-3 sm:space-y-4">
                             <div class="flex flex-col sm:flex-row sm:gap-x-6">
                                 <span class="font-medium text-gray-700 text-sm sm:text-base">Project Location:</span>
@@ -535,7 +570,7 @@
                                 <h3 class="font-semibold sm:text-lg text-gray-800">Requested By:</h3>
                                 <p>${details.name}</p>
                             </div>
-                            
+
                             <div class="space-y-3">
                                 ${details.phone ? `
                                 <div class="flex gap-x-4">
@@ -543,34 +578,34 @@
                                     <span class="text-gray-600 text-sm">${details.phone}</span>
                                 </div>
                                 ` : ''}
-                                
+
                                 <div class="flex gap-x-4">
                                     <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Name:</span>
                                     <span class="text-gray-600 text-sm">${details.name}</span>
                                 </div>
-                                
+
                                 ${details.email ? `
                                 <div class="flex gap-x-4">
                                     <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Email:</span>
                                     <span class="text-gray-600 text-sm">${details.email}</span>
                                 </div>
                                 ` : ''}
-                                
+
                                 <div class="flex gap-x-4">
                                     <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Posted:</span>
                                     <span class="text-gray-600 text-sm">${details.posted_at}</span>
                                 </div>
-                                
+
                                 <div class="flex gap-x-4">
                                     <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Deadline:</span>
                                     <span class="text-gray-600 text-sm">${details.deadline}</span>
                                 </div>
-                                
+
                                 <div class="flex gap-x-4">
                                     <span class="font-medium text-gray-700 text-xs sm:text-sm block mb-1">Your Remaining Credits:</span>
                                     <span class="text-gray-600 text-sm">${details.remaining_credits < 0 ? 'Unlimited' : details.remaining_credits}</span>
                                 </div>
-                                
+
                                 ${details.already_viewed ? `
                                 <div class="flex gap-x-4">
                                     <span class="font-medium text-green-700 text-xs sm:text-sm block mb-1">Status:</span>
@@ -579,7 +614,7 @@
                                 ` : ''}
                             </div>
                         </div>
-                        
+
                         ${details.attachments && details.attachments.length > 0 ? `
                         <div class="mt-6 pt-4 border-t border-gray-200">
                             <h3 class="font-semibold text-lg text-gray-800 mb-4">📄 Project Documents</h3>
@@ -593,12 +628,12 @@
                                                 </svg>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium text-gray-900 break-words" 
+                                                <p class="text-sm font-medium text-gray-900 break-words"
                                                    style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">
                                                    ${attachment.filename}
                                                 </p>
                                                 <p class="text-xs text-gray-500 mt-1">${Math.round(attachment.size / 1024)} KB</p>
-                                                <button onclick="downloadAttachment('${attachment.path}', '${attachment.filename}')" 
+                                                <button onclick="downloadAttachment('${attachment.path}', '${attachment.filename}')"
                                                         class="mt-3 bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -612,7 +647,7 @@
                             </div>
                         </div>
                         ` : ''}
-                        
+
                         <div class="mt-6 pt-4 border-t border-gray-200">
                             <button onclick="toggleSave(${details.tender_id})" id="save-btn-${details.tender_id}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
                                 <span id="save-text-${details.tender_id}">Save Tender</span>
@@ -636,7 +671,7 @@
         function showSubscriptionModalWithMessage(message, action) {
             // Show a notification with the message first
             showNotification(message, 'info');
-            
+
             // Then open the subscription modal
             setTimeout(() => {
                 openSubscriptionModal();
@@ -646,13 +681,13 @@
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
-                type === 'success' ? 'bg-green-600' : 
-                type === 'error' ? 'bg-red-600' : 
+                type === 'success' ? 'bg-green-600' :
+                type === 'error' ? 'bg-red-600' :
                 type === 'info' ? 'bg-blue-600' : 'bg-gray-600'
             }`;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 5000);
@@ -672,7 +707,7 @@
             const originalContent = button.innerHTML;
             button.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Downloading...</span>';
             button.disabled = true;
-            
+
             // Create a temporary link to download the file
             const link = document.createElement('a');
             link.href = `/tenders/{{ $tender->id }}/download/${filename}`;
@@ -681,7 +716,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             // Reset button state after a short delay
             setTimeout(() => {
                 button.innerHTML = originalContent;

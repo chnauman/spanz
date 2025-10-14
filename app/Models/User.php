@@ -117,33 +117,43 @@ class User extends Authenticatable
         return $this->hasMany(TenderView::class);
     }
 
+    public function sentInvitations()
+    {
+        return $this->hasMany(SubSupplierInvitation::class, 'inviter_id');
+    }
+
+    public function receivedInvitations()
+    {
+        return $this->hasMany(SubSupplierInvitation::class, 'invitee_id');
+    }
+
     // Role-based methods
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    public function isBuyer()
+    public function isBuyer(): bool
     {
         return $this->role === 'buyer';
     }
 
-    public function isSupplier()
+    public function isSupplier(): bool
     {
         return $this->role === 'supplier';
     }
 
-    public function isSubSupplier()
+    public function isSubSupplier(): bool
     {
         return $this->role === 'sub_supplier';
     }
 
-    public function isGuest()
+    public function isGuest(): bool
     {
         return $this->role === 'guest';
     }
 
-    public function isApproved()
+    public function isApproved(): bool
     {
         return $this->is_approved;
     }
@@ -202,7 +212,7 @@ class User extends Authenticatable
     public function canViewTenderDetailsWithCredits()
     {
         $activeSubscription = $this->getActiveSubscription();
-        
+
         if (!$activeSubscription) {
             return false; // No active subscription
         }
@@ -215,14 +225,14 @@ class User extends Authenticatable
         // Check if user has enough credits
         $totalCredits = $this->getTotalCredits();
         $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
-        
+
         return $totalCredits >= $creditCostPerView;
     }
 
     public function getCreditCostPerView()
     {
         $activeSubscription = $this->getActiveSubscription();
-        
+
         if (!$activeSubscription) {
             return 0;
         }
@@ -233,7 +243,7 @@ class User extends Authenticatable
     public function deductCreditsForTenderView($tenderId)
     {
         $activeSubscription = $this->getActiveSubscription();
-        
+
         if (!$activeSubscription) {
             return false;
         }
@@ -244,12 +254,12 @@ class User extends Authenticatable
         }
 
         $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
-        
+
         // Check if user has already viewed this tender
         if (\App\Models\TenderView::hasUserViewedTender($this->id, $tenderId)) {
             return true; // Already viewed, no need to deduct credits again
         }
-        
+
         // Check if user has enough credits
         if ($this->getTotalCredits() < $creditCostPerView) {
             return false;
@@ -309,7 +319,7 @@ class User extends Authenticatable
     {
         $activeSubscription = $this->getActiveSubscription();
         $totalCredits = $this->getTotalCredits();
-        
+
         if (!$activeSubscription) {
             return [
                 'has_subscription' => false,
@@ -336,7 +346,7 @@ class User extends Authenticatable
         }
 
         $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
-        
+
         // Users with unlimited credits (credits_per_month < 0)
         if ($activeSubscription->subscription->credits_per_month < 0) {
             return [
@@ -358,7 +368,7 @@ class User extends Authenticatable
                 'total_credits' => $totalCredits,
                 'credit_cost_per_view' => $creditCostPerView,
                 'can_view' => false,
-                'message' => $totalCredits <= 0 
+                'message' => $totalCredits <= 0
                     ? 'You have used all your credits. Please upgrade your subscription to get more credits.'
                     : 'You have insufficient credits to view this tender. Please upgrade your subscription.',
                 'action' => 'upgrade'

@@ -16,23 +16,23 @@
         transition: transform 0.3s ease;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
-    
+
     .soft-alert.show {
         transform: translateX(0);
     }
-    
+
     .soft-alert.success {
         background: rgba(34, 197, 94, 0.9);
     }
-    
+
     .soft-alert.error {
         background: rgba(239, 68, 68, 0.9);
     }
-    
+
     .soft-alert.warning {
         background: rgba(245, 158, 11, 0.9);
     }
-    
+
     @keyframes bounce {
         0%, 20%, 50%, 80%, 100% {
             transform: translateX(0);
@@ -44,7 +44,7 @@
             transform: translateX(-5px);
         }
     }
-    
+
     .button-container {
         display: flex;
         gap: 10px; /* Space between buttons */
@@ -78,7 +78,7 @@
     .reject-button:hover {
         background-color: #da190b;
     }
-    
+
     .view-button {
         background-color: #2196F3; /* Blue */
         color: white;
@@ -91,7 +91,7 @@
         text-decoration: none;
         display: inline-block;
     }
-    
+
     .view-button:hover {
         background-color: #1976D2;
     }
@@ -121,19 +121,19 @@
             <!-- Filter Tabs -->
             <div class="mt-6 border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8">
-                    <a href="{{ route('admin.subscription-requests') }}" 
+                    <a href="{{ route('admin.subscription-requests') }}"
                        class="py-2 px-1 border-b-2 font-medium text-sm {{ !request('status') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         All Requests ({{ \App\Models\SubscriptionRequest::count() }})
                     </a>
-                    <a href="{{ route('admin.subscription-requests', ['status' => 'pending']) }}" 
+                    <a href="{{ route('admin.subscription-requests', ['status' => 'pending']) }}"
                        class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         Pending ({{ \App\Models\SubscriptionRequest::where('status', 'pending')->count() }})
                     </a>
-                    <a href="{{ route('admin.subscription-requests', ['status' => 'approved']) }}" 
+                    <a href="{{ route('admin.subscription-requests', ['status' => 'approved']) }}"
                        class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'approved' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         Approved ({{ \App\Models\SubscriptionRequest::where('status', 'approved')->count() }})
                     </a>
-                    <a href="{{ route('admin.subscription-requests', ['status' => 'declined']) }}" 
+                    <a href="{{ route('admin.subscription-requests', ['status' => 'declined']) }}"
                        class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'declined' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         Declined ({{ \App\Models\SubscriptionRequest::where('status', 'declined')->count() }})
                     </a>
@@ -144,7 +144,7 @@
             @if(request('status'))
                 <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p class="text-sm text-blue-800">
-                        <strong>Filtered by:</strong> {{ ucfirst(request('status')) }} requests 
+                        <strong>Filtered by:</strong> {{ ucfirst(request('status')) }} requests
                         ({{ $requests->total() }} {{ $requests->total() == 1 ? 'result' : 'results' }})
                     </p>
                 </div>
@@ -175,7 +175,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    
+
                                     @if($request->status !== 'pending')
                                     <div class="mt-3">
                                         <div class="flex items-center space-x-2">
@@ -194,13 +194,13 @@
                                     </div>
                                     @endif
                                 </div>
-                                
+
                                 <div class="button-container" style="margin-top: 0; justify-content: flex-end;">
                                     <!-- Approve Button -->
                                     @if($request->status === 'pending')
                                     <form action="{{ route('admin.subscriptions.approve-request', $request) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="button" 
+                                        <button type="button"
                                                 onclick="handleButtonClick('Are you sure you want to approve this subscription request?', 'warning', this, 'accept')"
                                                 class="accept-button">
                                             Accept
@@ -210,14 +210,14 @@
                                     <span class="accept-button" style="opacity: 0.7; cursor: default;">
                                         Approved
                                     </span>
-                                   
+
                                     @endif
-                                    
+
                                     <!-- Decline Button -->
                                     @if($request->status === 'pending')
                                     <form action="{{ route('admin.subscriptions.decline-request', $request) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="button" 
+                                        <button type="button"
                                                 onclick="handleButtonClick('Are you sure you want to decline this subscription request?', 'warning', this, 'reject')"
                                                 class="reject-button">
                                             Reject
@@ -227,11 +227,11 @@
                                     <span class="reject-button" style="opacity: 0.7; cursor: default;">
                                         Declined
                                     </span>
-                                  
+
                                     @endif
-                                    
+
                                     <!-- View Details Button -->
-                                    <a href="{{ route('admin.subscriptions.show-request', $request) }}" 
+                                    <a href="{{ route('admin.subscriptions.show-request', $request) }}"
                                        class="view-button">
                                         View Details
                                     </a>
@@ -240,13 +240,13 @@
                         </div>
                         @endforeach
                     </div>
-                    
+
                     <!-- Pagination -->
                     <div class="mt-6">
                         {{ $requests->links() }}
                     </div>
                 @else
-                    <div class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                         <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -276,19 +276,19 @@
                 @csrf
                 <div class="mb-4">
                     <label for="admin_notes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Decline (Optional)</label>
-                    <textarea id="admin_notes" 
-                              name="admin_notes" 
+                    <textarea id="admin_notes"
+                              name="admin_notes"
                               rows="3"
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Provide a reason for declining this request..."></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
-                    <button type="button" 
+                    <button type="button"
                             onclick="closeDeclineModal()"
                             class="bg-gray-600 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" 
+                    <button type="submit"
                             class="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 transition-colors">
                         Decline Request
                     </button>
@@ -319,7 +319,7 @@ document.getElementById('declineModal').addEventListener('click', function(e) {
 function showSoftAlert(message, type, button) {
     // Close any existing alerts first
     closeAllAlerts();
-    
+
     // Create alert element
     const alert = document.createElement('div');
     alert.className = `soft-alert ${type}`;
@@ -332,15 +332,15 @@ function showSoftAlert(message, type, button) {
             </div>
         </div>
     `;
-    
+
     // Store the form reference and button info
     const form = button.closest('form');
     alert._form = form; // Store form reference directly on the element
     alert.dataset.buttonId = button.id || button.className;
     alert.dataset.actionType = message.includes('approve') ? 'approve' : 'decline';
-    
+
     document.body.appendChild(alert);
-    
+
     // Show alert
     setTimeout(() => {
         alert.classList.add('show');
@@ -364,11 +364,11 @@ function handleButtonClick(message, type, button, actionType) {
     // Add thrill effect to button
     button.style.transform = 'scale(0.95)';
     button.style.transition = 'transform 0.1s ease';
-    
+
     setTimeout(() => {
         button.style.transform = 'scale(1)';
     }, 100);
-    
+
     // Check if there's already an alert for this action
     const existingAlert = document.querySelector('.soft-alert');
     if (existingAlert) {
@@ -379,7 +379,7 @@ function handleButtonClick(message, type, button, actionType) {
             return;
         }
     }
-    
+
     // Show the confirmation alert
     showSoftAlert(message, type, button);
 }
@@ -387,7 +387,7 @@ function handleButtonClick(message, type, button, actionType) {
 function showThrillAlert(actionType, button) {
     // Close existing alerts first
     closeAllAlerts();
-    
+
     // Create thrill alert
     const alert = document.createElement('div');
     alert.className = 'soft-alert warning';
@@ -400,14 +400,14 @@ function showThrillAlert(actionType, button) {
             </div>
         </div>
     `;
-    
+
     // Store the form reference from the button that was clicked
     const form = button.closest('form');
     alert._form = form; // Store form reference directly on the element
     alert.dataset.actionType = actionType === 'accept' ? 'approve' : 'decline';
-    
+
     document.body.appendChild(alert);
-    
+
     // Show alert with bounce effect
     setTimeout(() => {
         alert.classList.add('show');
@@ -418,13 +418,13 @@ function showThrillAlert(actionType, button) {
 function confirmAction(button) {
     const alert = button.closest('.soft-alert');
     const form = alert._form; // Use the stored form reference
-    
+
     // Hide alert
     alert.classList.remove('show');
     setTimeout(() => {
         alert.remove();
     }, 300);
-    
+
     // Submit the form
     if (form) {
         console.log('Submitting form:', form);
@@ -436,7 +436,7 @@ function confirmAction(button) {
 
 function cancelAction(button) {
     const alert = button.closest('.soft-alert');
-    
+
     // Hide alert
     alert.classList.remove('show');
     setTimeout(() => {

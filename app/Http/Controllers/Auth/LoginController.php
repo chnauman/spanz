@@ -24,7 +24,7 @@ class LoginController extends Controller
 
         if (auth()->attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            
+
             // Check if user is approved (for suppliers and sub-suppliers)
             if (in_array(auth()->user()->role, ['supplier', 'sub_supplier']) && !auth()->user()->is_approved) {
                 auth()->logout();
@@ -33,7 +33,9 @@ class LoginController extends Controller
                 ]);
             }
 
-            return redirect()->intended('/dashboard');
+            // Check for redirect parameter
+            $redirectTo = $request->get('redirect', '/dashboard');
+            return redirect($redirectTo);
         }
 
         return back()->withErrors([

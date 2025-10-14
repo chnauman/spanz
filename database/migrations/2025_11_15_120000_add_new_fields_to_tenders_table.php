@@ -12,11 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tenders', function (Blueprint $table) {
-            $table->string('request_type')->nullable()->after('title');
-            $table->string('contact_email')->nullable()->after('requirements');
-            $table->string('contact_phone')->nullable()->after('contact_email');
-            $table->json('categories')->nullable()->after('contact_phone'); // Store dynamic categories as JSON
-            $table->json('attachments')->nullable()->after('categories'); // Store file paths as JSON
+            if (!Schema::hasColumn('tenders', 'request_type')) {
+                $table->string('request_type')->nullable()->after('title');
+            }
+            if (!Schema::hasColumn('tenders', 'contact_email')) {
+                $table->string('contact_email')->nullable()->after('requirements');
+            }
+            if (!Schema::hasColumn('tenders', 'contact_phone')) {
+                $table->string('contact_phone')->nullable()->after('contact_email');
+            }
+            if (!Schema::hasColumn('tenders', 'categories')) {
+                $table->json('categories')->nullable()->after('contact_phone'); // Store dynamic categories as JSON
+            }
+            if (!Schema::hasColumn('tenders', 'attachments')) {
+                $table->json('attachments')->nullable()->after('categories'); // Store file paths as JSON
+            }
         });
     }
 

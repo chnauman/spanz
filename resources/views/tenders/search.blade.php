@@ -33,8 +33,43 @@
 
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
-                        <a href="#" class="text-white hover:text-blue-400">For Buyers ▾</a>
-                        <a href="#" class="text-white hover:text-blue-400">For Suppliers ▾</a>
+                        <!-- For Buyers Dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">
+                                For Buyers ▾
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-1">
+                                    @auth
+                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
+                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                    @else
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For Suppliers Dropdown -->
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">
+                                For Suppliers ▾
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-1">
+                                    @auth
+                                        <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
+                                        <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
+                                        <a href="{{ route('tenders.invitations') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invitations</a>
+                                        <a href="{{ route('subscriptions.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Subscription Plans</a>
+                                    @else
+                                        <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
                         <a href="#" class="text-white hover:text-blue-400">About</a>
                     </div>
 
@@ -127,7 +162,7 @@
                     <form method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl">
                         <input type="search" name="search" value="{{ request('search') }}" placeholder="By Category, Company or Brand..."
                             class="w-full px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
-                        
+
                         <!-- Hidden inputs to preserve current filters -->
                         @if(request('category'))
                             <input type="hidden" name="category" value="{{ request('category') }}">
@@ -148,7 +183,7 @@
                     </form>
                 </div>
             </div>
-          
+
         </div>
     </div>
     <div
@@ -211,7 +246,7 @@
                         <ul class="space-y-3" id="mobile-categories-list">
                             @foreach($categories as $category)
                             <li>
-                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}" 
+                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}"
                                    class="text-sm hover:underline hover:text-blue-600 block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
                                     {{ $category->name }}
                                 </a>
@@ -227,7 +262,7 @@
                     </div>
                     <hr class="my-4 border-t border-gray-300" />
                 </div>
-                
+
                 <div class="filter-section">
                     <div class="filter-header cursor-pointer flex items-center justify-between">
                         <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In</h3>
@@ -239,7 +274,7 @@
                         <div class="flex flex-col filtersContainer" id="mobile-locations-list">
                             @foreach($locations as $location)
                             <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" name="location[]" value="{{ $location }}" 
+                                <input type="checkbox" name="location[]" value="{{ $location }}"
                                     id="mobile-{{ str_replace(' ', '-', strtolower($location)) }}" class="location-filter"
                                     {{ in_array($location, (array) request('location', [])) ? 'checked' : '' }}>
                                 <label for="mobile-{{ str_replace(' ', '-', strtolower($location)) }}" class="txt-body-sm  mar-l-2"><a kind="dark"
@@ -287,7 +322,7 @@
                         <ul class="space-y-1 mt-2" id="desktop-categories-list">
                             @foreach($categories as $category)
                             <li>
-                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}" 
+                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}"
                                    class="text-sm sm:text-md hover:underline block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
                                     {{ $category->name }}
                                 </a>
@@ -303,7 +338,7 @@
                     </div>
                 </div>
                 <hr class="my-3 border-t border-gray-400 w-[70%]" />
-                
+
                 <div class="filter-section">
                     <div class="filter-header cursor-pointer flex items-center justify-between">
                         <h3 class="text-md font-semibold text-[#092C48] mb-3">Located In / Near</h3>
@@ -315,7 +350,7 @@
                         <section class="flex flex-col filtersContainer" id="desktop-locations-list">
                             @foreach($locations as $location)
                             <div class="flex align-items-center gap-3 ">
-                                <input type="checkbox" name="location[]" value="{{ $location }}" 
+                                <input type="checkbox" name="location[]" value="{{ $location }}"
                                     id="desktop-{{ str_replace(' ', '-', strtolower($location)) }}" class="location-filter"
                                     {{ in_array($location, (array) request('location', [])) ? 'checked' : '' }}>
                                 <label for="desktop-{{ str_replace(' ', '-', strtolower($location)) }}" class="txt-body-sm  mar-l-2"><a kind="dark"
@@ -361,7 +396,7 @@
                     @endif
                 </div>
             </div>
-            
+
             @forelse($tenders as $tender)
             <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
@@ -408,7 +443,7 @@
             </div>
             @empty
             <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6">
-                <div class="text-center py-8">
+                <div class="text-center py-12">
                     @if(request('search'))
                         <h3 class="text-lg font-semibold text-[#092C48] mb-2">No Tenders Found</h3>
                         <p class="text-gray-600 mb-4">No tenders found for "{{ request('search') }}". Try different keywords or browse all tenders.</p>
@@ -529,7 +564,7 @@
                 const originalSrc = shareIcon.src;
                 shareIcon.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkgMTJMMTUgNk0xNSAxOEw5IDEyTTE1IDEySDlNMTUgNkg5IiBzdHJva2U9IiMxMEE5N0YiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=";
                 shareIcon.style.opacity = "0.5";
-                
+
                 setTimeout(function() {
                     shareIcon.src = originalSrc;
                     shareIcon.style.opacity = "1";
@@ -581,7 +616,7 @@
         function toggleSave(tenderId) {
             const saveBtn = document.getElementById(`save-btn-${tenderId}`);
             const saveText = document.getElementById(`save-text-${tenderId}`);
-            
+
             // Check if already saved
             fetch(`/tenders/${tenderId}/saved-status`)
                 .then(response => response.json())
@@ -661,22 +696,22 @@
             function applyFilters() {
                 const currentUrl = new URL(window.location);
                 const params = new URLSearchParams(currentUrl.search);
-                
+
                 // Clear existing filter parameters
                 params.delete('category');
                 params.delete('location');
                 params.delete('company_type');
-                
+
                 // Add selected filters
                 const selectedCategories = document.querySelectorAll('input[name="category"]:checked');
                 selectedCategories.forEach(cb => params.append('category', cb.value));
-                
+
                 const selectedLocations = document.querySelectorAll('input[name="location[]"]:checked');
                 selectedLocations.forEach(cb => params.append('location', cb.value));
-                
+
                 const selectedCompanyTypes = document.querySelectorAll('input[name="company_type[]"]:checked');
                 selectedCompanyTypes.forEach(cb => params.append('company_type', cb.value));
-                
+
                 // Redirect with new parameters
                 window.location.href = currentUrl.pathname + '?' + params.toString();
             }
@@ -690,7 +725,7 @@
             function toggleFilterSection(header) {
                 const content = header.nextElementSibling;
                 const arrow = header.querySelector('svg');
-                
+
                 if (content.style.display === 'none') {
                     content.style.display = 'block';
                     arrow.style.transform = 'rotate(0deg)';
@@ -759,19 +794,19 @@
             function loadMoreCategories(containerId, showMoreId, isMobile = false) {
                 const container = document.getElementById(containerId);
                 const showMoreBtn = document.getElementById(showMoreId);
-                
+
                 if (showMoreBtn) {
                     showMoreBtn.addEventListener('click', function(e) {
                         e.preventDefault();
-                        
+
                         // Get current page from URL or default to 1
                         const currentUrl = new URL(window.location);
                         const currentPage = parseInt(currentUrl.searchParams.get('category_page') || '1');
                         const nextPage = currentPage + 1;
-                        
+
                         // Update URL with next page
                         currentUrl.searchParams.set('category_page', nextPage);
-                        
+
                         // Redirect to load more categories
                         window.location.href = currentUrl.toString();
                     });
@@ -782,19 +817,19 @@
             function loadMoreLocations(containerId, showMoreId, isMobile = false) {
                 const container = document.getElementById(containerId);
                 const showMoreBtn = document.getElementById(showMoreId);
-                
+
                 if (showMoreBtn) {
                     showMoreBtn.addEventListener('click', function(e) {
                         e.preventDefault();
-                        
+
                         // Get current page from URL or default to 1
                         const currentUrl = new URL(window.location);
                         const currentPage = parseInt(currentUrl.searchParams.get('location_page') || '1');
                         const nextPage = currentPage + 1;
-                        
+
                         // Update URL with next page
                         currentUrl.searchParams.set('location_page', nextPage);
-                        
+
                         // Redirect to load more locations
                         window.location.href = currentUrl.toString();
                     });
@@ -808,6 +843,8 @@
             loadMoreLocations('desktop-locations-list', 'desktop-show-more-locations', false);
         });
     </script>
+
+@include('components.subscription-modal', ['subscriptions' => $subscriptions ?? collect()])
 
 </body>
 

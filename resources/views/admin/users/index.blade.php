@@ -1,0 +1,217 @@
+@extends('layouts.admin')
+
+@section('title', 'User Management')
+
+@push('styles')
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+@section('content')
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
+        <p class="text-gray-600 mt-2">Manage all registered users in the system</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+        <form method="GET" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-64">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                <input type="text" name="search" value="{{ request('search') }}" 
+                       placeholder="Search by name or email..." 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div class="min-w-32">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all" {{ request('role') === 'all' ? 'selected' : '' }}>All Roles</option>
+                    <option value="buyer" {{ request('role') === 'buyer' ? 'selected' : '' }}>Buyers</option>
+                    <option value="supplier" {{ request('role') === 'supplier' ? 'selected' : '' }}>Suppliers</option>
+                    <option value="sub_supplier" {{ request('role') === 'sub_supplier' ? 'selected' : '' }}>Sub Suppliers</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admins</option>
+                </select>
+            </div>
+            
+            <div class="min-w-32">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all" {{ request('status') === 'all' ? 'selected' : '' }}>All Status</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Filter
+            </button>
+            
+            <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                Clear
+            </a>
+        </form>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($users as $user)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="{{ asset('spanz-img/profile.jpg') }}" alt="">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $user->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                @if($user->role === 'admin') bg-red-100 text-red-800
+                                @elseif($user->role === 'buyer') bg-green-100 text-green-800
+                                @elseif($user->role === 'supplier') bg-blue-100 text-blue-800
+                                @elseif($user->role === 'sub_supplier') bg-purple-100 text-purple-800
+                                @else bg-gray-100 text-gray-800
+                                @endif">
+                                {{ ucfirst(str_replace('_', ' ', $user->role)) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($user->is_approved)
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Approved
+                                </span>
+                            @else
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Pending
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ $user->companyDetail ? $user->companyDetail->company_name : 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $user->created_at->format('M d, Y') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <a href="{{ route('admin.users.show', $user) }}" 
+                                   class="text-blue-600 hover:text-blue-900">View</a>
+                                
+                                @if(!$user->is_approved && in_array($user->role, ['supplier', 'sub_supplier']))
+                                    <form method="POST" action="{{ route('admin.users.approve', $user) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="text-green-600 hover:text-green-900">Approve</button>
+                                    </form>
+                                @endif
+                                
+                                @if($user->id !== auth()->id())
+                                    <button onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')" 
+                                            class="text-red-600 hover:text-red-900">Delete</button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                            No users found matching your criteria.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="px-6 py-3 border-t border-gray-200">
+            {{ $users->appends(request()->query())->links() }}
+        </div>
+    </div>
+</div>
+
+<!-- Hidden form for deletion -->
+<form id="deleteForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+@endsection
+
+@push('scripts')
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function confirmDelete(userId, userName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to delete user "${userName}". This action cannot be undone!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the user.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Submit the form
+            const form = document.getElementById('deleteForm');
+            form.action = `/admin/users/${userId}`;
+            form.submit();
+        }
+    });
+}
+
+// Show success message if redirected from successful deletion
+@if(session('success'))
+Swal.fire({
+    title: 'Success!',
+    text: '{{ session('success') }}',
+    icon: 'success',
+    confirmButtonText: 'OK'
+});
+@endif
+
+// Show error message if deletion failed
+@if(session('error'))
+Swal.fire({
+    title: 'Error!',
+    text: '{{ session('error') }}',
+    icon: 'error',
+    confirmButtonText: 'OK'
+});
+@endif
+</script>
+@endpush

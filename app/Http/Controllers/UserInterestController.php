@@ -23,10 +23,10 @@ class UserInterestController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Delete existing interests
         $user->interests()->delete();
-        
+
         // Add new interests
         foreach ($request->interests as $categoryId) {
             UserInterest::create([
@@ -39,5 +39,15 @@ class UserInterestController extends Controller
         $user->update(['interests_set' => true]);
 
         return redirect()->route('dashboard')->with('success', 'Your interests have been saved successfully!');
+    }
+
+    public function skip()
+    {
+        $user = Auth::user();
+
+        // Mark user as having skipped interests
+        $user->update(['interests_set' => true]);
+
+        return redirect()->route('dashboard')->with('info', 'You can set your interests later from your dashboard.');
     }
 }

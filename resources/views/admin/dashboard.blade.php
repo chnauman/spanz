@@ -10,7 +10,7 @@
 
             <!-- Dashboard Content -->
             <div class="mt-6">
-                
+
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
                         {{ session('success') }}
@@ -22,7 +22,7 @@
                         {{ session('info') }}
                     </div>
                 @endif
-                
+
             @if(!$user->companyDetails)
                 <!-- Company Profile Completion Alert -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 @endif
-                
+
                 @if($user->isAdmin())
                     <!-- Admin Dashboard -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white rounded-lg shadow p-6">
                             <div class="flex items-center">
                                 <div class="p-2 bg-yellow-100 rounded-lg">
@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white rounded-lg shadow p-6">
                             <div class="flex items-center">
                                 <div class="p-2 bg-green-100 rounded-lg">
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white rounded-lg shadow p-6">
                             <div class="flex items-center">
                                 <div class="p-2 bg-purple-100 rounded-lg">
@@ -113,7 +113,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white rounded-lg shadow p-6">
                             <div class="flex items-center">
                                 <div class="p-2 bg-green-100 rounded-lg">
@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white rounded-lg shadow p-6">
                             <div class="flex items-center">
                                 <div class="p-2 bg-yellow-100 rounded-lg">
@@ -141,7 +141,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white rounded-lg shadow p-6">
                             <div class="flex items-center">
                                 <div class="p-2 bg-purple-100 rounded-lg">
@@ -157,7 +157,7 @@
                     </div>
                 </div>
             @endif
-                    
+
             <!-- Recent Activity Section -->
             <div class="bg-white rounded-lg shadow">
                         <div class="px-6 py-4 border-b border-gray-200">
@@ -193,7 +193,7 @@
                                 @endforeach
                         </div>
                     @else
-                        <div class="text-center py-8">
+                        <div class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>

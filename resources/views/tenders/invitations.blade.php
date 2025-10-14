@@ -26,13 +26,13 @@
                                     {{ ucfirst($invitation->status) }}
                                 </span>
                             </div>
-                            
+
                             <p class="card-text text-muted small">
                                 Posted by {{ $invitation->tender->user->name }} • {{ $invitation->created_at->diffForHumans() }}
                             </p>
-                            
+
                             <p class="card-text">{{ Str::limit($invitation->tender->description, 150) }}</p>
-                            
+
                             <div class="row text-muted small mb-3">
                                 <div class="col-6">
                                     <strong>Category:</strong> {{ $invitation->tender->category->name }}
@@ -51,7 +51,7 @@
                                 </div>
                                 @endif
                             </div>
-                            
+
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">
                                     @if($invitation->viewed_at)
@@ -67,7 +67,7 @@
                 </div>
                 @empty
                 <div class="col-12">
-                    <div class="text-center py-5">
+                    <div class="text-center py-12">
                         <h4 class="text-muted">No tender invitations yet</h4>
                         <p class="text-muted">You'll receive invitations when tenders are posted in categories you're interested in.</p>
                         <a href="{{ route('user.interests') }}" class="btn btn-primary">Update My Interests</a>
