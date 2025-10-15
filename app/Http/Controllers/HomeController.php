@@ -22,8 +22,9 @@ class HomeController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Get active subscriptions for the modal
+        // Get active subscriptions for the modal (excluding Basic plan)
         $subscriptions = Subscription::where('is_active', true)
+            ->where('name', '!=', 'Basic')
             ->orderBy('price', 'asc')
             ->get();
 

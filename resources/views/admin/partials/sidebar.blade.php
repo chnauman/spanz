@@ -31,7 +31,7 @@
         <h1>Dashboard</h1>
     </a>
     <hr class="border-[#657a9871]" />
-    @if( Auth::user()->isBuyer())
+    @if( Auth::user()->isBuyer() || Auth::user()->isSupplier())
     <!-- Buyer Dropdown Menu -->
     <div>
         <button onclick="toggleDropdown()"

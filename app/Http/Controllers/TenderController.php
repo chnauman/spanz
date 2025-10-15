@@ -107,8 +107,9 @@ class TenderController extends Controller
         $locations = collect($allLocations)->slice($startLocationIndex, $locationsPerPage)->values()->toArray();
         $hasMoreLocations = count($allLocations) > ($locationPage * $locationsPerPage);
 
-        // Get active subscriptions for the modal
+        // Get active subscriptions for the modal (excluding Basic plan)
         $subscriptions = Subscription::where('is_active', true)
+            ->where('name', '!=', 'Basic')
             ->orderBy('price', 'asc')
             ->get();
 

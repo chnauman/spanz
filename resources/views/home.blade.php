@@ -50,14 +50,12 @@
                                             <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
                                             <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Viewed Tenders</a>
                                             <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invite Sub Supplier</a>
+                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Subscription Plans</a>
                                         @else
-                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
-                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
-                                            <a href="{{ route('invitations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invitations</a>
                                             <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
                                         @endif
                                     @else
-                                        <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('home')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
                                     @endauth
                                 </div>
                             </div>
@@ -128,15 +126,12 @@
                             <a href="{{ route('tenders.viewed') }}" class="block pl-4 hover:text-blue-300">Viewed Tenders</a>
                             <a href="{{ route('suppliers.invite') }}" class="block pl-4 hover:text-blue-300">Invite Sub Supplier</a>
                             <a href="{{ route('tenders.invitations') }}" class="block pl-4 hover:text-blue-300">Invitations</a>
-                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
+                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Subscription Plans</a>
                         @else
-                            <a href="{{ route('tenders.saved') }}" class="block pl-4 hover:text-blue-300">Saved Tenders</a>
-                            <a href="{{ route('user.interests') }}" class="block pl-4 hover:text-blue-300">My Interests</a>
-                            <a href="{{ route('tenders.invitations') }}" class="block pl-4 hover:text-blue-300">Invitations</a>
                             <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
                         @endif
                     @else
-                        <a href="#" onclick="openSubscriptionModal(); return false;" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
+                        <a href="{{ route('login') }}?redirect={{ urlencode(route('home')) }}" class="block pl-4 hover:text-blue-300">Become a Supplier</a>
                     @endauth
                 </div>
 

@@ -82,10 +82,11 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'parent_supplier_id');
     }
 
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
+    // Note: role is stored as enum in users table, not as foreign key
+    // public function role()
+    // {
+    //     return $this->belongsTo(Role::class);
+    // }
 
     public function interests()
     {
@@ -177,10 +178,45 @@ class User extends Authenticatable
     // Permission methods
     public function hasPermission($permission)
     {
-        if ($this->role) {
-            return $this->role->hasPermission($permission);
+        // For now, we'll use role-based permissions
+        // This can be enhanced later to use the Role model with permissions
+        $rolePermissions = $this->getRolePermissions();
+        return in_array($permission, $rolePermissions);
+    }
+
+    /**
+     * Get permissions for the user's role
+     */
+    protected function getRolePermissions()
+    {
+        switch ($this->role) {
+            case 'admin':
+                return [
+                    'view-categories', 'create-categories', 'edit-categories', 'delete-categories',
+                    'view-subscriptions', 'create-subscriptions', 'edit-subscriptions', 'delete-subscriptions',
+                    'view-credits', 'manage-credits',
+                    'view-tenders', 'create-tenders', 'edit-tenders', 'delete-tenders', 'bid-tenders',
+                    'access-admin-dashboard', 'access-buyer-dashboard', 'access-supplier-dashboard',
+                ];
+            case 'buyer':
+                return [
+                    'view-tenders', 'create-tenders', 'edit-tenders', 'delete-tenders',
+                    'access-buyer-dashboard',
+                ];
+            case 'supplier':
+                return [
+                    'view-tenders', 'bid-tenders',
+                    'access-supplier-dashboard',
+                ];
+            case 'sub_supplier':
+                return [
+                    'view-tenders', 'bid-tenders',
+                    'access-supplier-dashboard',
+                ];
+            case 'guest':
+            default:
+                return [];
         }
-        return false;
     }
 
     // Subscription-related methods

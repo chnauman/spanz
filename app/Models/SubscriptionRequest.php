@@ -77,6 +77,15 @@ class SubscriptionRequest extends Model
             'admin_notes' => $notes,
         ]);
 
+        // Update user role to supplier when subscription is approved
+        $user = \App\Models\User::find($this->user_id);
+        if ($user && $user->role === 'buyer') {
+            $user->update([
+                'role' => 'supplier',
+                'is_approved' => true
+            ]);
+        }
+
         // Create user subscription
         \App\Models\UserSubscription::create([
             'user_id' => $this->user_id,
