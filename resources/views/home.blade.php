@@ -24,8 +24,8 @@
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Buyers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                <div class="py-1">
+                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                                <div class="py-1 whitespace-nowrap">
                                     @auth
                                         <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
                                         <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
@@ -42,8 +42,8 @@
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Suppliers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                <div class="py-1">
+                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                                <div class="py-1 whitespace-nowrap">
                                     @auth
                                         @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
                                             <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
@@ -67,7 +67,7 @@
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                       <a href="#" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('products.index') }}" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -164,25 +164,23 @@
                     <p class="text-white mt-3 text-sm sm:text-lg">Search the largest network of trusted suppliers</p>
 
                     <!-- Search row: mobile stacked, sm inline -->
-                    <div class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-0 justify-center max-w-xl mx-auto">
-                        <!-- dropdown button -->
+                    <form id="home-search-form" class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-0 justify-center max-w-xl mx-auto" onsubmit="return handleHomeSearch(event)">
+                        <!-- search type selector -->
                         <div class="w-full sm:w-auto">
-                            <button class="flex items-center justify-between w-full sm:w-40 px-3 py-2 bg-gray-100 border border-gray-300 text-gray-700">
-                            Suppliers
-                            <svg class="w-4 h-4 ml-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 011.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                            </svg>
-                            </button>
+                            <select id="home-search-type" class="w-full sm:w-40 px-3 py-2 bg-gray-100 border border-gray-300 text-gray-700">
+                                <option value="tenders">Tenders</option>
+                                <option value="products">Products</option>
+                            </select>
                         </div>
 
                         <!-- input -->
-                        <input type="search" placeholder="By Category, Company or Brand..." class="w-full sm:w-96 px-3 py-2 border border-gray-300 text-gray-700 focus:outline-none"/>
+                        <input id="home-search-input" type="search" placeholder="By Category, Company or Brand..." class="w-full sm:w-96 px-3 py-2 border border-gray-300 text-gray-700 focus:outline-none"/>
 
                         <!-- search button -->
                         <div class="w-full sm:w-auto sm:ml-3">
-                            <button class="w-full sm:w-auto px-4 py-2 bg-[#0D6AED] text-white">Search</button>
+                            <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-[#0D6AED] text-white">Search</button>
                         </div>
-                    </div>
+                    </form>
 
                     <!-- CTA row below search -->
                     <div class="flex p-6 pb-14 justify-center gap-2 flex-wrap">
@@ -470,6 +468,27 @@
   menuBtn.addEventListener("click", () => {
     mobileMenu.classList.toggle("hidden");
   });
+
+  function handleHomeSearch(e) {
+    e.preventDefault();
+    const type = document.getElementById('home-search-type')?.value || 'tenders';
+    const query = document.getElementById('home-search-input')?.value || '';
+    if (!query.trim()) {
+      // navigate to listing page if no query
+      window.location.href = type === 'products' ? "{{ route('products.index') }}" : "{{ route('tenders.search') }}";
+      return false;
+    }
+    if (type === 'products') {
+      const url = new URL("{{ route('products.index') }}", window.location.origin);
+      url.searchParams.set('q', query);
+      window.location.href = url.toString();
+    } else {
+      const url = new URL("{{ route('tenders.search') }}", window.location.origin);
+      url.searchParams.set('search', query);
+      window.location.href = url.toString();
+    }
+    return false;
+  }
 </script>
 
 @include('components.subscription-modal', ['subscriptions' => $subscriptions ?? collect()])

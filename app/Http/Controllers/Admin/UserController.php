@@ -35,6 +35,8 @@ class UserController extends Controller
         }
         
         $users = $query->with(['companyDetail', 'subscriptions.subscription'])
+                      ->withCount('tenders')
+                      ->withSum('credits', 'amount')
                       ->orderBy('created_at', 'desc')
                       ->paginate(15);
         

@@ -63,8 +63,11 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Credits</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenders Posted</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -110,6 +113,22 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $user->created_at->format('M d, Y') }}
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php($plan = $user->getSubscriptionStatus())
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                @if($plan === 'enterprise') bg-purple-100 text-purple-800
+                                @elseif($plan === 'pro') bg-blue-100 text-blue-800
+                                @else bg-gray-100 text-gray-800
+                                @endif">
+                                {{ ucfirst($plan) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ number_format($user->credits_sum_amount ?? 0) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ $user->tenders_count ?? 0 }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
                                 <a href="{{ route('admin.users.show', $user) }}" 
@@ -131,7 +150,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                        <td colspan="9" class="px-6 py-4 text-center text-gray-500">
                             No users found matching your criteria.
                         </td>
                     </tr>

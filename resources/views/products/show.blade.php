@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $product->title }} - Product Details</title>
+    <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+</head>
+
+<body>
+    <div class="bg-[#092C48] py-2">
+        <nav>
+            <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('home') }}" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
+                    </div>
+
+                    <div class="hidden md:flex space-x-6">
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">For Buyers ▾</button>
+                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                                <div class="py-1 whitespace-nowrap">
+                                    @auth
+                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
+                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                    @else
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative group">
+                            <button class="text-white hover:text-blue-400 flex items-center">For Suppliers ▾</button>
+                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                                <div class="py-1 whitespace-nowrap">
+                                    @auth
+                                        @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
+                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved Tenders</a>
+                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Interests</a>
+                                            <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Viewed Tenders</a>
+                                            <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Invite Sub Supplier</a>
+                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Subscription Plans</a>
+                                        @else
+                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Become a Supplier</a>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="#" class="text-white hover:text-blue-400">About</a>
+                    </div>
+
+                    <div class="hidden md:flex items-center space-x-4">
+                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
+                        <a href="{{ route('products.index') }}" class="text-white hover:text-blue-400">Products</a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">Dashboard</a>
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Logout</button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">Login</a>
+                            <a href="{{ route('register') }}" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">Register</a>
+                        @endauth
+                    </div>
+
+                    <div class="md:hidden">
+                        <button id="menu-btn" class="text-white focus:outline-none">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mobile-menu" class="hidden md:hidden bg-[#092c47] text-white px-4 py-4 space-y-3">
+                <a href="#" class="block hover:text-blue-300">For Buyers ▾</a>
+                <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
+                <a href="#" class="block hover:text-blue-300">About</a>
+                <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
+                <a href="{{ route('products.index') }}" class="block hover:text-blue-300">Products</a>
+                <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
+                <a href="#" class="block hover:text-blue-300">Start Advertising</a>
+                @auth
+                    <a href="{{ route('dashboard') }}" class="w-full border border-white text-white px-3 py-2 rounded hover:bg-white hover:text-black text-center block">Dashboard</a>
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <button type="submit" class="w-full bg-blue-700 text-white px-3 py-2 rounded hover:bg-blue-800 text-center block">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="w-full border border-white text-white px-3 py-2 rounded hover:bg-white hover:text-black text-center block">Login</a>
+                    <a href="{{ route('register') }}" class="w-full bg-blue-700 text-white px-3 py-2 rounded hover:bg-blue-800 text-center block">Register</a>
+                @endauth
+            </div>
+        </nav>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div class="border border-gray-300 rounded-sm p-3 sm:p-4 lg:p-6">
+            <div>
+                <h3 class="text-lg sm:text-xl font-semibold">Product Overview</h3>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
+                <h1 class="text-xl sm:text-2xl font-bold">{{ $product->title }}</h1>
+                <span class="text-sm sm:text-base">Category: {{ optional($product->category)->name ?? 'Uncategorized' }}</span>
+            </div>
+
+            <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0">
+                <h3 class="text-base sm:text-lg font-semibold">Product Details</h3>
+                <div class="flex flex-col sm:items-end space-y-3 sm:space-y-4">
+                    @if(!is_null($product->price))
+                    <div class="flex items-center text-[#6C6C6C] space-x-2">
+                        <span class="text-sm sm:text-base">Price:</span>
+                        <span class="text-sm sm:text-base font-semibold">{{ $product->currency }} {{ number_format($product->price, 2) }}</span>
+                    </div>
+                    @endif
+                    @if($product->featured)
+                    <div class="flex items-center text-green-700 space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row lg:gap-8 mt-6 sm:mt-8">
+                <div class="flex-1">
+                    <div class="mt-8">
+                        <h3 class="font-semibold mb-3">Description:</h3>
+                        <div class="text-sm sm:text-base leading-relaxed">{!! nl2br(e($product->description)) !!}</div>
+                    </div>
+
+                    @if(!empty($product->specs))
+                    <div class="mt-6 sm:mt-8">
+                        <h3 class="font-semibold mb-3 text-base sm:text-lg">Specifications:</h3>
+                        <div class="text-sm sm:text-base leading-relaxed">
+                            <pre class="whitespace-pre-wrap">{{ json_encode($product->specs, JSON_PRETTY_PRINT) }}</pre>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="bg-[#092C47] text-white py-10 px-5">
+        <div class="text-center text-sm pt-4">
+            <span class="px-5">Copyright © 2025 SPANZ Publishing Company. All Rights Reserved.</span>
+        </div>
+    </section>
+
+    <script>
+        const menuBtn = document.getElementById("menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener("click", () => {
+                mobileMenu.classList.toggle("hidden");
+            });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -72,7 +72,7 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 overflow-x-auto xl:ml-0">
+        <div class="flex-1 w-full max-w-full overflow-x-auto xl:ml-0 bg-white">
             <!-- Mobile/Tablet spacing (hidden on laptop/desktop) -->
             <div class="xl:hidden h-16"></div>
             @yield('content')
@@ -92,25 +92,38 @@
                 </button>
             </div>
 
-            <form onsubmit="saveProfile(event)" class="space-y-4">
+            <form id="editProfileForm" onsubmit="saveProfile(event)" class="space-y-4" enctype="multipart/form-data">
+                @csrf
                 <!-- Profile Image Upload -->
                 <div class="text-center">
                     <div class="mb-4">
-                        <img id="modalProfileImage" src="{{ asset('spanz-img/profile.jpg') }}" alt="Profile"
-                            class="w-20 h-20 rounded-full mx-auto object-cover">
+                        @php
+                            $profilePhotoUrlModal = null;
+                            if (Auth::check()) {
+                                foreach (['jpg','jpeg','png','webp'] as $ext) {
+                                    $candidate = 'profile-photos/' . Auth::id() . '.' . $ext;
+                                    if (\Storage::disk('public')->exists($candidate)) {
+                                        $profilePhotoUrlModal = asset('storage/' . $candidate) . '?t=' . time();
+                                        break;
+                                    }
+                                }
+                            }
+                        @endphp
+                        <img id="modalProfileImage" src="{{ $profilePhotoUrlModal ?: asset('spanz-img/profile.jpg') }}" alt="Profile"
+                            class="w-20 h-20 rounded-full object-cover mx-auto">
                     </div>
                     <label for="profileImageInput"
                         class="inline-block bg-[#0D6AED] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#0B5AC7] transition-colors duration-200">
                         Change Photo
                     </label>
-                    <input type="file" id="profileImageInput" accept="image/*" class="hidden"
+                    <input type="file" id="profileImageInput" name="photo" accept="image/*" class="hidden"
                         onchange="previewImage(event)">
                 </div>
 
                 <!-- Name Input -->
                 <div>
                     <label for="profileNameInput" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input type="text" id="profileNameInput" value="{{ Auth::user()->name ?? 'Admin User' }}"
+                    <input type="text" id="profileNameInput" name="name" value="{{ Auth::user()->name ?? 'Admin User' }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D6AED] focus:border-transparent">
                 </div>
 
@@ -292,6 +305,57 @@
 
             console.log('Mobile sidebar functionality initialized');
         });
+    </script>
+
+    <script>
+        async function saveProfile(event) {
+            event.preventDefault();
+            const formEl = document.getElementById('editProfileForm');
+            const formData = new FormData(formEl);
+
+            try {
+                const response = await fetch("{{ route('profile.update') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Failed to update profile');
+                }
+
+                // Update UI: name and photo (sidebar and modal)
+                const nameEls = [document.getElementById('profileName'), document.getElementById('profileNameInput')];
+                nameEls.forEach(el => { if (el && data.name) el.textContent = data.name; });
+
+                if (data.photo_url) {
+                    const sidebarImg = document.getElementById('profileImage');
+                    const modalImg = document.getElementById('modalProfileImage');
+                    if (sidebarImg) sidebarImg.src = data.photo_url;
+                    if (modalImg) modalImg.src = data.photo_url;
+                }
+
+                closeEditModal();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const modalImg = document.getElementById('modalProfileImage');
+                    if (modalImg) modalImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 </body>
 </html>

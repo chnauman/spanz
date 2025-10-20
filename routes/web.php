@@ -10,6 +10,8 @@ use App\Http\Controllers\UserInterestController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\CompanyRegistrationController;
 use App\Http\Controllers\PricingController;
+use App\Http\Controllers\ProductController as PublicProductController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -110,6 +112,9 @@ Route::middleware(['auth', 'role:supplier,sub_supplier'])->group(function () {
 // Admin Category Management Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class);
+    Route::resource('products', AdminProductController::class)->scoped([
+        'product' => 'id'
+    ]);
 
     // User Management Routes
     Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
@@ -124,6 +129,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('subscriptions/decline-request/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'declineRequest'])->name('subscriptions.decline-request');
     Route::get('subscriptions/requests/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'showRequest'])->name('subscriptions.show-request');
     Route::resource('subscriptions', \App\Http\Controllers\Admin\SubscriptionController::class);
+});
+
+// Profile update (name and photo)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/profile/update', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::get('/pages/product', function () {
@@ -152,4 +162,9 @@ Route::get('/test/supplier-only', function () {
 Route::get('/test/supplier-or-sub-supplier', function () {
     return 'This page is accessible to suppliers and sub-suppliers. You have access!';
 })->middleware(['auth', 'role:supplier,sub_supplier']);
+
+// Public Products
+Route::get('/products', [PublicProductController::class, 'index'])->name('products.index');
+Route::get('/products/search', [PublicProductController::class, 'search'])->name('products.search');
+Route::get('/products/{product}', [PublicProductController::class, 'show'])->name('products.show');
 

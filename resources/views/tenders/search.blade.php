@@ -38,14 +38,14 @@
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Buyers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                <div class="py-1">
+                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                                <div class="py-1 whitespace-nowrap">
                                     @auth
-                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
-                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
+                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
                                     @else
-                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Post a Tender</a>
-                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Tenders</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
                                     @endauth
                                 </div>
                             </div>
@@ -56,17 +56,17 @@
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Suppliers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                <div class="py-1">
+                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                                <div class="py-1 whitespace-nowrap">
                                     @auth
                                         @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
-                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
-                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
-                                            <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Viewed Tenders</a>
-                                            <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invite Sub Supplier</a>
-                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Subscription Plans</a>
+                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved Tenders</a>
+                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Interests</a>
+                                            <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Viewed Tenders</a>
+                                            <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Invite Sub Supplier</a>
+                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Subscription Plans</a>
                                         @else
-                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
+                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Become a Supplier</a>
                                         @endif
                                     @else
                                         <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
@@ -81,7 +81,7 @@
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                        <a href="#" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('products.index') }}" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -122,7 +122,7 @@
                 <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
                 <a href="#" class="block hover:text-blue-300">About</a>
                 <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
-                <a href="#" class="block hover:text-blue-300">Products</a>
+                <a href="{{ route('products.index') }}" class="block hover:text-blue-300">Products</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth
@@ -150,22 +150,17 @@
             <!-- Search row: centered -->
             <div class="w-full max-w-4xl mx-auto mt-5 px-4 sm:px-8">
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0">
-                    <!-- dropdown button -->
+                    <!-- search type selector -->
                     <div class="w-full sm:w-auto">
-                        <button
-                            class="flex items-center justify-between w-full sm:w-40 px-3 py-3 sm:py-2 bg-gray-100 border border-gray-300 text-gray-700 text-sm">
-                            Tenders
-                            <svg class="w-4 h-4 ml-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 011.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
+                        <select id="tenders-search-type" class="w-full sm:w-40 px-3 py-3 sm:py-2 bg-gray-100 border border-gray-300 text-gray-700 text-sm">
+                            <option value="tenders" selected>Tenders</option>
+                            <option value="products">Products</option>
+                        </select>
                     </div>
 
                     <!-- input -->
-                    <form method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl">
-                        <input type="search" name="search" value="{{ request('search') }}" placeholder="By Category, Company or Brand..."
+                    <form id="tenders-search-form" method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl" onsubmit="return handleTendersSearch(event)">
+                        <input id="tenders-search-input" type="search" name="search" value="{{ request('search') }}" placeholder="By Category, Company or Brand..."
                             class="w-full px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
 
                         <!-- Hidden inputs to preserve current filters -->
@@ -687,12 +682,35 @@
 
         // Search functionality
         document.addEventListener('DOMContentLoaded', function() {
+            function handleTendersSearch(e) {
+                e.preventDefault();
+                const type = document.getElementById('tenders-search-type')?.value || 'tenders';
+                const input = document.getElementById('tenders-search-input');
+                const query = input ? input.value : '';
+                if (type === 'products') {
+                    const url = new URL("{{ route('products.index') }}", window.location.origin);
+                    if (query.trim()) url.searchParams.set('q', query);
+                    window.location.href = url.toString();
+                    return false;
+                }
+                // default tenders: submit current form
+                e.target.submit();
+                return false;
+            }
             // Auto-submit search on Enter key
             const searchInputs = document.querySelectorAll('input[name="search"]');
             searchInputs.forEach(input => {
                 input.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
-                        this.closest('form').submit();
+                        const type = document.getElementById('tenders-search-type')?.value || 'tenders';
+                        if (type === 'products') {
+                            e.preventDefault();
+                            const url = new URL("{{ route('products.index') }}", window.location.origin);
+                            if (input.value.trim()) url.searchParams.set('q', input.value);
+                            window.location.href = url.toString();
+                        } else {
+                            this.closest('form').submit();
+                        }
                     }
                 });
             });

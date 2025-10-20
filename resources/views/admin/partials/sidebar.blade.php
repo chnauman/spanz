@@ -8,7 +8,19 @@
 
     <!-- Profile Section -->
     <div class="h-32 relative flex items-center gap-5 px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-        <img src="{{ asset('spanz-img/profile.jpg') }}" alt="" class="rounded-full w-16" id="profileImage">
+        @php
+            $profilePhotoUrl = null;
+            if (Auth::check()) {
+                foreach (['jpg','jpeg','png','webp'] as $ext) {
+                    $candidate = 'profile-photos/' . Auth::id() . '.' . $ext;
+                    if (\Storage::disk('public')->exists($candidate)) {
+                        $profilePhotoUrl = asset('storage/' . $candidate) . '?t=' . time();
+                        break;
+                    }
+                }
+            }
+        @endphp
+        <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="" class="w-16 h-16 rounded-full object-cover" id="profileImage">
         <span class="text-white" id="profileName">{{ Auth::user()->name ?? 'Admin User' }}</span>
         <!-- edit svg -->
         <svg onclick="openEditModal()" width="15px" height="15px" viewBox="0 0 24 24" fill="none"
@@ -67,6 +79,60 @@
             <a href="{{ route('tenders.search') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Browse Tenders
+            </a>
+        </div>
+    </div>
+    <hr class="border-[#657a9871]" />
+    @endif
+
+    @if(Auth::user()->isBuyer())
+    <!-- Supplier Menu for Buyers -->
+    <div>
+        <button onclick="toggleSupplierForBuyerDropdown()"
+            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <div class="flex items-center gap-2">
+                <svg fill="#ffffff" height="20px" width="20px" version="1.1" id="Capa_1"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 0 297 297" xml:space="preserve">
+                    <path
+                        d="M276.955,114.128h-11.421c-3.076-53.545-42.247-97.577-93.496-108.064C170.499,2.498,166.953,0,162.822,0h-28.645
+                        c-4.131,0-7.676,2.498-9.216,6.064C73.714,16.551,34.543,60.583,31.467,114.128H20.045c-5.542,0-10.036,4.493-10.036,10.036v30.496
+                        c0,5.542,4.493,10.036,10.036,10.036h16.273v0.002c0,6.732,0.607,13.437,1.806,20.02l-15.4,8.892
+                        c-2.305,1.331-3.987,3.522-4.676,6.094c-0.689,2.571-0.328,5.31,1.003,7.615l27.171,47.06c2.772,4.799,8.908,6.446,13.709,3.673
+                        l15.421-8.903c10.251,8.723,22.029,15.534,34.656,20.038v17.778c0,5.542,4.493,10.036,10.036,10.036h54.341
+                        c5.542,0,10.036-4.493,10.036-10.036v-17.778c12.627-4.504,24.405-11.315,34.657-20.038l15.421,8.903
+                        c4.802,2.772,10.938,1.126,13.709-3.673l27.17-47.06c2.772-4.8,1.127-10.937-3.673-13.709l-15.4-8.892
+                        c1.201-6.583,1.807-13.288,1.807-20.02v-0.002h18.847c5.542,0,10.036-4.493,10.036-10.036v-30.496
+                        C286.991,118.622,282.497,114.128,276.955,114.128z M152.787,20.071v65.863h-8.573V20.071H152.787z M81.175,50.937V95.97
+                        c0,5.542,4.493,10.036,10.036,10.036s10.036-4.493,10.036-10.036V36.055c7.128-3.984,14.812-7.081,22.896-9.176V95.97
+                        c0,5.542,4.493,10.036,10.036,10.036h28.645c5.542,0,10.036-4.493,10.036-10.036V26.879c8.084,2.095,15.768,5.192,22.897,9.176
+                        V95.97c0,5.542,4.493,10.036,10.036,10.036c5.542,0,10.036-4.493,10.036-10.036V50.938c16.852,16.214,27.858,38.443,29.578,63.19
+                        H51.597C53.317,89.38,64.324,67.152,81.175,50.937z M238.037,164.697c0,7.638-0.95,15.229-2.823,22.562
+                        c-1.114,4.358,0.81,8.926,4.705,11.175l13.056,7.538l-17.134,29.678l-13.083-7.553c-3.899-2.25-8.819-1.631-12.036,1.517
+                        c-10.922,10.685-24.42,18.489-39.037,22.568c-4.338,1.21-7.338,5.163-7.338,9.666v15.079h-34.27V261.85c0-4.503-3-8.456-7.338-9.666
+                        c-14.617-4.079-28.115-11.883-39.036-22.567c-3.217-3.15-8.139-3.767-12.036-1.518l-13.083,7.553L41.45,205.973l13.057-7.538
+                        c3.896-2.249,5.819-6.816,4.705-11.175c-1.874-7.334-2.823-14.924-2.823-22.562v-0.002h30.86v0.002
+                        c0,33.064,26.899,59.964,59.964,59.964s59.964-26.899,59.964-59.964v-0.002h30.86V164.697z M159.243,164.697
+                        c0,6.634-5.397,12.031-12.031,12.031s-12.031-5.397-12.031-12.031l0-0.002h24.062L159.243,164.697z M147.212,196.799
+                        c17.701,0,32.102-14.401,32.102-32.102v-0.002h7.791v0.002c0,21.997-17.896,39.892-39.893,39.892s-39.892-17.895-39.892-39.892
+                        v-0.002h7.79v0.002C115.11,182.398,129.511,196.799,147.212,196.799z M266.92,144.624H30.08v-10.425H266.92V144.624z" />
+                </svg>
+                <h1>Supplier</h1>
+            </div>
+            <!-- Dropdown Arrow -->
+            <svg id="supplierForBuyerDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
+                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="supplierForBuyerDropdown"
+            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
+            <a href="{{ route('pricing') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Become a Supplier
             </a>
         </div>
     </div>
@@ -213,6 +279,39 @@
         </div>
     </div>
     <hr class="border-[#657a9871]" />
+    
+    <!-- Products Dropdown Menu -->
+    <div>
+        <button onclick="toggleProductsDropdown()"
+            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <div class="flex items-center gap-2">
+                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7H4V5H20V7Z M20 11H4V9H20V11Z M20 15H4V13H20V15Z M20 19H4V17H20V19Z" stroke="#ffffff" stroke-width="0" fill="#ffffff"/>
+                </svg>
+                <h1>Products</h1>
+            </div>
+            <!-- Dropdown Arrow -->
+            <svg id="productsDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
+                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="productsDropdown"
+            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
+            <a href="{{ route('admin.products.index') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                View Products
+            </a>
+            <a href="{{ route('admin.products.create') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Add Product
+            </a>
+        </div>
+    </div>
+    <hr class="border-[#657a9871]" />
     @endif
 
     @if(Auth::user()->isAdmin())
@@ -326,6 +425,19 @@ function toggleCategoriesDropdown() {
     }
 }
 
+function toggleProductsDropdown() {
+    const dropdown = document.getElementById('productsDropdown');
+    const arrow = document.getElementById('productsDropdownArrow');
+
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        dropdown.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
 function toggleSubscriptionsDropdown() {
     const dropdown = document.getElementById('subscriptionsDropdown');
     const arrow = document.getElementById('subscriptionsDropdownArrow');
@@ -342,6 +454,19 @@ function toggleSubscriptionsDropdown() {
 function toggleUsersDropdown() {
     const dropdown = document.getElementById('usersDropdown');
     const arrow = document.getElementById('usersDropdownArrow');
+
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        dropdown.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function toggleSupplierForBuyerDropdown() {
+    const dropdown = document.getElementById('supplierForBuyerDropdown');
+    const arrow = document.getElementById('supplierForBuyerDropdownArrow');
 
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');

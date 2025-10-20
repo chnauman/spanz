@@ -68,8 +68,10 @@ class TenderController extends Controller
                       $categoryQuery->where('name', 'like', '%' . $searchTerm . '%');
                   })
                   ->orWhereHas('user', function($userQuery) use ($searchTerm) {
-                      $userQuery->where('name', 'like', '%' . $searchTerm . '%')
-                               ->orWhere('company_name', 'like', '%' . $searchTerm . '%');
+                      $userQuery->where('name', 'like', '%' . $searchTerm . '%');
+                  })
+                  ->orWhereHas('user.companyDetail', function($companyQuery) use ($searchTerm) {
+                      $companyQuery->where('company_name', 'like', '%' . $searchTerm . '%');
                   });
             });
         }
