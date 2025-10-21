@@ -127,65 +127,78 @@
                 <div class="flex flex-wrap justify-center gap-8 mt-4" style="min-height: 4.5in;">
                     @foreach($subscriptions as $index => $subscription)
                         @if($subscription->is_active)
-                            <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}" 
-                                 data-plan="{{ strtolower($subscription->name) }}" 
-                                 data-subscription-id="{{ $subscription->id }}">
-                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; height: 3.5in;">
-                                    @if($subscription->name === 'Pro')
-                                        <!-- Most Popular Badge -->
-                                        <div class="absolute -top-3 right-4 most-popular-badge">
-                                            <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold">
-                                                MOST POPULAR
+                            @php
+                                $userHasActiveSubscription = auth()->check() && $user->getActiveSubscription();
+                                $isBasicPlan = strtolower($subscription->name) === 'basic';
+                                $shouldShowBasic = !$userHasActiveSubscription;
+                                $shouldHideBasic = $userHasActiveSubscription && $isBasicPlan;
+                            @endphp
+                            
+                            @if(!$shouldHideBasic)
+                                <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}" 
+                                     data-plan="{{ strtolower($subscription->name) }}" 
+                                     data-subscription-id="{{ $subscription->id }}">
+                                    <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; height: 3.5in;">
+                                        @if($subscription->name === 'Pro')
+                                            <!-- Most Popular Badge -->
+                                            <div class="absolute -top-3 right-4 most-popular-badge">
+                                                <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold">
+                                                    MOST POPULAR
+                                                </div>
                                             </div>
-                                        </div>
-                                    @endif
-                                    
-                                    <div class="text-center h-full flex flex-col justify-between">
-                                        <div>
-                                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                                            <div class="text-3xl font-bold text-gray-900 mb-2">
-                                                ${{ $subscription->price }}
-                                                <span class="text-sm text-gray-500">/month</span>
-                                            </div>
-                                            <p class="text-gray-600 text-sm mb-4">{{ $subscription->description ?? 'Premium subscription plan' }}</p>
-                                            
-                                             <!-- Quota/Credits Display -->
-                                             <div class="bg-blue-50 rounded-lg p-3 mb-4">
-                                                 <div class="text-lg font-semibold text-[#0D6AED] mb-1">
-                                                     @if($subscription->credits_per_month < 0)
-                                                         Unlimited Credits
-                                                     @elseif($subscription->credits_per_month == 0)
-                                                         No Credits
-                                                     @else
-                                                         {{ $subscription->credits_per_month }} Credits
-                                                     @endif
-                                                 </div>
-                                                 <p class="text-xs text-gray-600">To view tenders and buyers</p>
-                                             </div>
-                                        </div>
+                                        @endif
                                         
-                                        <div class="text-center">
-                                            @auth
-                                                @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
-                                                    <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
-                                                        Current Plan
-                                                    </button>
+                                        <div class="text-center h-full flex flex-col justify-between">
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
+                                                <div class="text-3xl font-bold text-gray-900 mb-2">
+                                                    ${{ $subscription->price }}
+                                                    <span class="text-sm text-gray-500">/month</span>
+                                                </div>
+                                                <p class="text-gray-600 text-sm mb-4">{{ $subscription->description ?? 'Premium subscription plan' }}</p>
+                                                
+                                                 <!-- Quota/Credits Display -->
+                                                 <div class="bg-blue-50 rounded-lg p-3 mb-4">
+                                                     <div class="text-lg font-semibold text-[#0D6AED] mb-1">
+                                                         @if($subscription->credits_per_month < 0)
+                                                             Unlimited Credits
+                                                         @elseif($subscription->credits_per_month == 0)
+                                                             No Credits
+                                                         @else
+                                                             {{ $subscription->credits_per_month }} Credits
+                                                         @endif
+                                                     </div>
+                                                     <p class="text-xs text-gray-600">To view tenders and buyers</p>
+                                                 </div>
+                                            </div>
+                                            
+                                            <div class="text-center">
+                                                @auth
+                                                    @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
+                                                        <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                            Current Plan
+                                                        </button>
+                                                    @elseif($isBasicPlan && !$userHasActiveSubscription)
+                                                        <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                            Current Plan
+                                                        </button>
+                                                    @else
+                                                        <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
+                                                                onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
+                                                            {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
+                                                        </button>
+                                                    @endif
                                                 @else
-                                                    <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
-                                                            onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
-                                                        {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
-                                                    </button>
-                                                @endif
-                                            @else
-                                                <a href="{{ route('register') }}"
-                                                   class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
-                                                    Sign Up
-                                                </a>
-                                            @endauth
+                                                    <a href="{{ route('register') }}"
+                                                       class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
+                                                        Sign Up
+                                                    </a>
+                                                @endauth
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         @endif
                     @endforeach
                 </div>
@@ -306,25 +319,38 @@
                     
                     cards.forEach(card => {
                         const subscriptionId = card.getAttribute('data-subscription-id');
+                        const planName = card.getAttribute('data-plan');
                         const status = statuses[subscriptionId];
                         const button = card.querySelector('button');
                         
                         if (button) {
-                            if (status === 'pending') {
-                                button.textContent = 'Requested';
-                                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
-                                button.classList.add('bg-yellow-500', 'cursor-not-allowed');
-                                button.disabled = true;
-                            } else if (status === 'approved') {
-                                button.textContent = 'Current Plan';
-                                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
-                                button.classList.add('bg-green-500', 'cursor-not-allowed');
-                                button.disabled = true;
-                            } else if (status === 'declined') {
-                                button.textContent = 'Choose Plan';
-                                button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                                button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
-                                button.disabled = false;
+                            // Handle basic plan logic
+                            if (planName === 'basic') {
+                                // Basic plan should show as "Current Plan" for users without subscription
+                                // This is already handled in the PHP template, but we ensure it stays disabled
+                                if (button.textContent === 'Current Plan') {
+                                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                                    button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                                    button.disabled = true;
+                                }
+                            } else {
+                                // Handle other plans
+                                if (status === 'pending') {
+                                    button.textContent = 'Requested';
+                                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                                    button.classList.add('bg-yellow-500', 'cursor-not-allowed');
+                                    button.disabled = true;
+                                } else if (status === 'approved') {
+                                    button.textContent = 'Current Plan';
+                                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                                    button.classList.add('bg-green-500', 'cursor-not-allowed');
+                                    button.disabled = true;
+                                } else if (status === 'declined') {
+                                    button.textContent = 'Choose Plan';
+                                    button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
+                                    button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                                    button.disabled = false;
+                                }
                             }
                         }
                     });

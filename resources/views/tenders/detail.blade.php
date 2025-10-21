@@ -555,9 +555,62 @@
             // Find the buyer details section by ID
             const buttonSection = document.getElementById('buyer-details-section');
             if (buttonSection) {
+                // Determine the access message and styling based on access type
+                let accessMessageHtml = '';
+                let accessIcon = '';
+                let accessColor = '';
+                
+                if (details.access_type === 'owner') {
+                    accessIcon = '👤';
+                    accessColor = 'text-blue-600 bg-blue-50 border-blue-200';
+                    accessMessageHtml = `
+                        <div class="mb-4 p-3 rounded-lg border ${accessColor}">
+                            <div class="flex items-center">
+                                <span class="text-lg mr-2">${accessIcon}</span>
+                                <span class="font-medium">${details.access_message}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (details.access_type === 'team') {
+                    accessIcon = '👥';
+                    accessColor = 'text-green-600 bg-green-50 border-green-200';
+                    accessMessageHtml = `
+                        <div class="mb-4 p-3 rounded-lg border ${accessColor}">
+                            <div class="flex items-center">
+                                <span class="text-lg mr-2">${accessIcon}</span>
+                                <span class="font-medium">${details.access_message}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (details.access_type === 'previously_viewed') {
+                    accessIcon = '✅';
+                    accessColor = 'text-gray-600 bg-gray-50 border-gray-200';
+                    accessMessageHtml = `
+                        <div class="mb-4 p-3 rounded-lg border ${accessColor}">
+                            <div class="flex items-center">
+                                <span class="text-lg mr-2">${accessIcon}</span>
+                                <span class="font-medium">${details.access_message}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (details.access_type === 'individual') {
+                    accessIcon = '💳';
+                    accessColor = 'text-orange-600 bg-orange-50 border-orange-200';
+                    accessMessageHtml = `
+                        <div class="mb-4 p-3 rounded-lg border ${accessColor}">
+                            <div class="flex items-center">
+                                <span class="text-lg mr-2">${accessIcon}</span>
+                                <span class="font-medium">${details.access_message}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 buttonSection.innerHTML = `
                     <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
                         <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Buyer Details & Project Documents</h2>
+                        
+                        ${accessMessageHtml}
 
                         <div class="space-y-3 sm:space-y-4">
                             <div class="flex flex-col sm:flex-row sm:gap-x-6">

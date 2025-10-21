@@ -50,8 +50,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index');
 Route::get('/tenders/search', [TenderController::class, 'search'])->name('tenders.search');
 Route::get('/tenders/{tender}/detail', [TenderController::class, 'detail'])->name('tenders.detail');
-// Buyer-specific routes (only buyers can create and manage tenders)
-Route::middleware(['auth', 'role:buyer'])->group(function () {
+// Buyer and Sub-supplier specific routes (buyers and sub-suppliers can create and manage tenders)
+Route::middleware(['auth', 'role:buyer,sub_supplier'])->group(function () {
     Route::get('/tenders/create', [TenderController::class, 'create'])->name('tenders.create');
     Route::post('/tenders', [TenderController::class, 'store'])->name('tenders.store');
     Route::get('/my-tenders', [TenderController::class, 'myTenders'])->name('tenders.my-tenders');
@@ -167,4 +167,14 @@ Route::get('/test/supplier-or-sub-supplier', function () {
 Route::get('/products', [PublicProductController::class, 'search'])->name('products.index');
 Route::get('/products/search', [PublicProductController::class, 'search'])->name('products.search');
 Route::get('/products/{product}', [PublicProductController::class, 'show'])->name('products.show');
+
+// Purchase Request Routes (Public access)
+Route::post('/purchase-requests', [\App\Http\Controllers\PurchaseRequestController::class, 'store'])->name('purchase-requests.store');
+
+// Admin Purchase Request Management Routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('purchase-requests', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
+    Route::put('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'update'])->name('purchase-requests.update');
+    Route::delete('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'destroy'])->name('purchase-requests.destroy');
+});
 

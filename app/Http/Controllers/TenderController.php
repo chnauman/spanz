@@ -393,32 +393,62 @@ class TenderController extends Controller
 
         $user = Auth::user();
 
-        // Check if user has already viewed this tender
-        $hasViewed = $user->hasViewedTender($tender->id);
+        // Check if user is the owner of this tender
+        $isOwner = $user->id === $tender->user_id;
+        $hasViewed = false; // Initialize variable
 
-        // If user has already viewed this tender, allow access regardless of current credit status
-        if ($hasViewed) {
-            // User has already paid for this tender, allow access
+        $accessType = 'individual'; // Default access type
+        $creditsDeducted = 0;
+        $accessMessage = '';
+
+        // If user is the owner, allow free access without credit deduction
+        if ($isOwner) {
+            // Owner can view their own tender for free
+            $hasViewed = true; // Owner has "viewed" their own tender
+            $accessType = 'owner';
+            $accessMessage = 'You are viewing your own tender. No credits deducted.';
         } else {
-            // User hasn't viewed this tender before, check subscription and credit status
-            $status = $user->getSubscriptionAndCreditStatus();
+            // Check if user has already viewed this tender
+            $hasViewed = $user->hasViewedTender($tender->id);
 
-            // If user can't view, return appropriate error with action
-            if (!$status['can_view']) {
-                return response()->json([
-                    'error' => $status['message'],
-                    'action' => $status['action'],
-                    'total_credits' => $status['total_credits'],
-                    'credit_cost_per_view' => $status['credit_cost_per_view'],
-                    'subscription_expired' => $status['subscription_expired'] ?? false
-                ], 403);
-            }
+            // If user has already viewed this tender, allow access regardless of current credit status
+            if ($hasViewed) {
+                // User has already paid for this tender, allow access
+                $accessType = 'previously_viewed';
+                $accessMessage = 'You have previously viewed this tender. No additional credits deducted.';
+            } else {
+                // User hasn't viewed this tender before, check subscription and credit status with team access
+                $status = $user->getSubscriptionAndCreditStatus($tender->id);
 
-            // Deduct credits for viewing (only if not already viewed)
-            if (!$user->deductCreditsForTenderView($tender->id)) {
-                return response()->json(['error' => 'Failed to deduct credits'], 500);
+                // If user can't view, return appropriate error with action
+                if (!$status['can_view']) {
+                    return response()->json([
+                        'error' => $status['message'],
+                        'action' => $status['action'],
+                        'total_credits' => $status['total_credits'],
+                        'credit_cost_per_view' => $status['credit_cost_per_view'],
+                        'subscription_expired' => $status['subscription_expired'] ?? false
+                    ], 403);
+                }
+
+                // Check if this is team access
+                if (isset($status['team_access']) && $status['team_access']) {
+                    $accessType = 'team';
+                    $accessMessage = 'A team member has already viewed this tender. You can view it for free.';
+                } else {
+                    $accessType = 'individual';
+                    $accessMessage = 'Credits have been deducted for viewing this tender.';
+                }
+
+                // Deduct credits for viewing (only if not already viewed and not team access)
+                if (!$user->deductCreditsForTenderView($tender->id)) {
+                    return response()->json(['error' => 'Failed to deduct credits'], 500);
+                }
             }
         }
+
+        // Load necessary relationships
+        $tender->load(['user', 'category']);
 
         // Get attachments if they exist
         $attachments = $tender->attachments ?? [];
@@ -444,7 +474,11 @@ class TenderController extends Controller
             'deadline' => $tender->getFormattedDeadline('M d, Y'),
             'remaining_credits' => $remainingCredits,
             'attachments' => $attachments,
-            'already_viewed' => $hasViewed
+            'already_viewed' => $hasViewed,
+            'is_owner' => $isOwner,
+            'access_type' => $accessType,
+            'access_message' => $accessMessage,
+            'credits_deducted' => $creditsDeducted
         ];
 
         return response()->json([

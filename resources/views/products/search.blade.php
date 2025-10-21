@@ -360,11 +360,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-end items-end mt-4">
+                <div class="flex justify-end items-end mt-4 gap-3">
                     <a href="{{ route('products.show', $product) }}"
                         class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
                         View Details
                     </a>
+                   
+                    <a onclick="openPurchaseModal({{ $product->id }}, '{{ $product->title }}')" 
+                    class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
+                        Purchase
+    </a>
                 </div>
             </div>
             @empty
@@ -664,10 +669,171 @@
             // Initialize Show More functionality
             loadMoreCategories('mobile-categories-list', 'mobile-show-more-categories', true);
             loadMoreCategories('desktop-categories-list', 'desktop-show-more-categories', false);
+
+            // Purchase modal functionality
+            const purchaseModal = document.getElementById('purchase-modal');
+            const closePurchaseModal = document.getElementById('close-purchase-modal');
+            const cancelPurchase = document.getElementById('cancel-purchase');
+            const purchaseForm = document.getElementById('purchase-form');
+
+            // Close modal functions
+            function closePurchaseModalFunc() {
+                purchaseModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            closePurchaseModal?.addEventListener('click', closePurchaseModalFunc);
+            cancelPurchase?.addEventListener('click', closePurchaseModalFunc);
+
+            // Close modal when clicking outside
+            purchaseModal?.addEventListener('click', (e) => {
+                if (e.target === purchaseModal) {
+                    closePurchaseModalFunc();
+                }
+            });
+
+            // Form submission
+            purchaseForm?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const submitBtn = document.getElementById('submit-purchase');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(this);
+                
+                fetch('{{ route("purchase-requests.store") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        closePurchaseModalFunc();
+                        location.reload(); // Reload to show "Requested" status
+                    } else {
+                        alert(data.message || 'An error occurred. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                })
+                .finally(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                });
+            });
         });
+
+        // Global function to open purchase modal
+        function openPurchaseModal(productId, productTitle) {
+            console.log('Purchase button clicked for product:', productId, productTitle);
+       
+            
+            document.getElementById('purchase-product-id').value = productId;
+            document.getElementById('purchase-product-title').textContent = productTitle;
+            document.getElementById('purchase-quantity').value = 1;
+            document.getElementById('purchase-notes').value = '';
+            
+            // Check if user is authenticated
+            const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+            const contactSection = document.getElementById('contact-info-section');
+            
+            if (isAuthenticated) {
+                contactSection.style.display = 'none';
+            } else {
+                contactSection.style.display = 'block';
+                // Clear contact fields
+                document.getElementById('purchase-name').value = '';
+                document.getElementById('purchase-email').value = '';
+                document.getElementById('purchase-phone').value = '';
+            }
+            
+            const purchaseModal = document.getElementById('purchase-modal');
+            purchaseModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
 </script>
 
 @include('components.subscription-modal', ['subscriptions' => $subscriptions ?? collect()])
+
+<!-- Purchase Request Modal -->
+<div id="purchase-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-[#092C48]">Purchase Request</h3>
+                <button id="close-purchase-modal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Product:</p>
+                <p class="font-medium text-[#092C48]" id="purchase-product-title"></p>
+            </div>
+            
+                <form id="purchase-form">
+                    <input type="hidden" id="purchase-product-id" name="product_id">
+                    
+                    <!-- Contact Information for Non-Authenticated Users -->
+                    <div id="contact-info-section" class="mb-4" style="display: none;">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Contact Information</h4>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div>
+                                <label for="purchase-name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                                <input type="text" id="purchase-name" name="name" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="purchase-email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" id="purchase-email" name="email" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="purchase-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                                <input type="tel" id="purchase-phone" name="phone" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="purchase-quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                        <input type="number" id="purchase-quantity" name="quantity" min="1" value="1" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="purchase-notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                        <textarea id="purchase-notes" name="notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder="Any additional information about your purchase request..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button type="button" id="cancel-purchase" 
+                                class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submit-purchase" 
+                                class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+        </div>
+    </div>
+</div>
 
 </body>
 

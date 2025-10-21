@@ -43,7 +43,7 @@
         <h1>Dashboard</h1>
     </a>
     <hr class="border-[#657a9871]" />
-    @if( Auth::user()->isBuyer() || Auth::user()->isSupplier())
+    @if( Auth::user()->isBuyer() || Auth::user()->isSupplier() || Auth::user()->isSubSupplier())
     <!-- Buyer Dropdown Menu -->
     <div>
         <button onclick="toggleDropdown()"
@@ -199,10 +199,12 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Invitations
             </a>
+            @if(Auth::user()->subSuppliers()->count() > 0)
             <a href="{{ route('suppliers.sub-suppliers') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Sub Suppliers
             </a>
+            @endif
         </div>
     </div>
     <hr class="border-[#657a9871]" />
@@ -349,6 +351,20 @@
                 Create Plan
             </a>
         </div>
+    </div>
+    <hr class="border-[#657a9871]" />
+
+    <!-- Purchase Requests Menu -->
+    <div>
+        <a href="{{ route('admin.purchase-requests.index') }}"
+            class="w-full text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <div class="flex items-center gap-2">
+                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V19C17 19.6 16.6 20 16 20H8C7.4 20 7 19.6 7 19V13M17 13H7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Purchase Requests</h1>
+            </div>
+        </a>
     </div>
     <hr class="border-[#657a9871]" />
     @endif

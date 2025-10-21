@@ -49,6 +49,22 @@ class Product extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function purchaseRequests()
+    {
+        return $this->hasMany(PurchaseRequest::class);
+    }
+
+    public function hasPendingRequest($userId = null)
+    {
+        $query = $this->purchaseRequests()->where('status', 'pending');
+        
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+        
+        return $query->exists();
+    }
 }
 
 

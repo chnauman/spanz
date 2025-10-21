@@ -33,9 +33,24 @@ class SubSupplierInvitationController extends Controller
                   ->orWhere('email', 'like', "%{$query}%");
             })
             ->with('companyDetail')
-            ->paginate(10);
+            ->get();
 
-        return response()->json($suppliers);
+        // Get existing invitations for these suppliers
+        $invitedSupplierIds = SubSupplierInvitation::where('inviter_id', $currentUserId)
+            ->whereIn('invitee_id', $suppliers->pluck('id'))
+            ->pluck('invitee_id')
+            ->toArray();
+
+        // Add invitation status to each supplier
+        $suppliers->transform(function ($supplier) use ($invitedSupplierIds) {
+            $supplier->already_invited = in_array($supplier->id, $invitedSupplierIds);
+            return $supplier;
+        });
+
+        return response()->json([
+            'data' => $suppliers,
+            'total' => $suppliers->count()
+        ]);
     }
 
     /**

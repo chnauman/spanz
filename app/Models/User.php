@@ -128,6 +128,11 @@ class User extends Authenticatable
         return $this->hasMany(SubSupplierInvitation::class, 'invitee_id');
     }
 
+    public function purchaseRequests()
+    {
+        return $this->hasMany(PurchaseRequest::class);
+    }
+
     // Role-based methods
     public function isAdmin(): bool
     {
@@ -291,9 +296,24 @@ class User extends Authenticatable
 
         $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
 
+        // Check if user is the owner of this tender
+        $tender = \App\Models\Tender::find($tenderId);
+        if ($tender && $this->id === $tender->user_id) {
+            // Owner can view their own tender for free - record view without deducting credits
+            \App\Models\TenderView::recordView($this->id, $tenderId, 0, $creditCostPerView);
+            return true;
+        }
+
         // Check if user has already viewed this tender
         if (\App\Models\TenderView::hasUserViewedTender($this->id, $tenderId)) {
             return true; // Already viewed, no need to deduct credits again
+        }
+
+        // Check if any team member has viewed this tender (team access)
+        if ($this->hasTeamMemberViewedTender($tenderId)) {
+            // Record the tender view without deducting credits (team access)
+            \App\Models\TenderView::recordView($this->id, $tenderId, 0, $creditCostPerView);
+            return true;
         }
 
         // Check if user has enough credits
@@ -349,9 +369,64 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all team members (sub suppliers for main supplier, or parent + siblings for sub supplier)
+     */
+    public function getTeamMembers()
+    {
+        if ($this->isSupplier()) {
+            // For main suppliers, return all sub suppliers
+            return $this->subSuppliers()->get();
+        } elseif ($this->isSubSupplier() && $this->parentSupplier) {
+            // For sub suppliers, return parent and all siblings
+            $teamMembers = collect([$this->parentSupplier]);
+            $teamMembers = $teamMembers->merge($this->parentSupplier->subSuppliers()->get());
+            return $teamMembers->unique('id');
+        }
+        
+        return collect();
+    }
+
+    /**
+     * Check if any team member has viewed a specific tender
+     */
+    public function hasTeamMemberViewedTender($tenderId)
+    {
+        $teamMembers = $this->getTeamMembers();
+        
+        if ($teamMembers->isEmpty()) {
+            return false;
+        }
+
+        $teamMemberIds = $teamMembers->pluck('id')->toArray();
+        
+        return \App\Models\TenderView::where('tender_id', $tenderId)
+            ->whereIn('user_id', $teamMemberIds)
+            ->exists();
+    }
+
+    /**
+     * Check if user can view tender details considering team access
+     */
+    public function canViewTenderDetailsWithTeamAccess($tenderId)
+    {
+        // First check if user has already viewed this tender
+        if ($this->hasViewedTender($tenderId)) {
+            return true;
+        }
+
+        // Check if any team member has viewed this tender
+        if ($this->hasTeamMemberViewedTender($tenderId)) {
+            return true;
+        }
+
+        // If no team member has viewed, check individual access
+        return $this->canViewTenderDetailsWithCredits();
+    }
+
+    /**
      * Get comprehensive subscription and credit status
      */
-    public function getSubscriptionAndCreditStatus()
+    public function getSubscriptionAndCreditStatus($tenderId = null)
     {
         $activeSubscription = $this->getActiveSubscription();
         $totalCredits = $this->getTotalCredits();
@@ -393,6 +468,37 @@ class User extends Authenticatable
                 'can_view' => true,
                 'message' => 'You have unlimited access.',
                 'action' => null
+            ];
+        }
+
+        // Check if user is the owner of this tender (owner access)
+        if ($tenderId) {
+            $tender = \App\Models\Tender::find($tenderId);
+            if ($tender && $this->id === $tender->user_id) {
+                return [
+                    'has_subscription' => true,
+                    'subscription_expired' => false,
+                    'total_credits' => $totalCredits,
+                    'credit_cost_per_view' => 0,
+                    'can_view' => true,
+                    'message' => 'You can view your own tender for free.',
+                    'action' => null,
+                    'owner_access' => true
+                ];
+            }
+        }
+
+        // Check if any team member has viewed this tender (team access)
+        if ($tenderId && $this->hasTeamMemberViewedTender($tenderId)) {
+            return [
+                'has_subscription' => true,
+                'subscription_expired' => false,
+                'total_credits' => $totalCredits,
+                'credit_cost_per_view' => 0,
+                'can_view' => true,
+                'message' => 'A team member has already viewed this tender. You can view it for free.',
+                'action' => null,
+                'team_access' => true
             ];
         }
 

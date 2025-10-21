@@ -9,13 +9,13 @@
                     <h1 class="text-xl sm:text-2xl font-bold">Sub Suppliers</h1>
                     <p class="text-gray-300 mt-1">Manage your sub suppliers and their invitations</p>
                 </div>
-                <a href="{{ route('suppliers.invite') }}"
+                <!-- <a href="{{ route('suppliers.invite') }}"
                    class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors">
                     <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     Invite Sub Supplier
-                </a>
+                </a> -->
             </div>
 
             @if(session('success'))
