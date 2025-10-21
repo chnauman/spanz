@@ -174,6 +174,7 @@ Route::post('/purchase-requests', [\App\Http\Controllers\PurchaseRequestControll
 // Admin Purchase Request Management Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('purchase-requests', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
+    Route::get('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'show'])->name('purchase-requests.show');
     Route::put('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'update'])->name('purchase-requests.update');
     Route::delete('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'destroy'])->name('purchase-requests.destroy');
 });

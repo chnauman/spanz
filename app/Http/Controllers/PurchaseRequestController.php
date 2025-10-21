@@ -94,6 +94,39 @@ class PurchaseRequestController extends Controller
         ]);
     }
 
+    public function show(PurchaseRequest $purchaseRequest)
+    {
+        // Only admin can view purchase request details
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $purchaseRequest->load(['user', 'product', 'product.category']);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $purchaseRequest->id,
+                'user' => $purchaseRequest->user ? [
+                    'name' => $purchaseRequest->user->name,
+                    'email' => $purchaseRequest->user->email,
+                    'phone' => $purchaseRequest->user->phone ?? 'Not provided'
+                ] : null,
+                'product' => [
+                    'title' => $purchaseRequest->product->title,
+                    'description' => $purchaseRequest->product->description,
+                    'category' => $purchaseRequest->product->category ? $purchaseRequest->product->category->name : 'Uncategorized',
+                    'price' => $purchaseRequest->product->price ?? 'Not specified'
+                ],
+                'quantity' => $purchaseRequest->quantity,
+                'status' => $purchaseRequest->status,
+                'notes' => $purchaseRequest->notes,
+                'created_at' => $purchaseRequest->created_at->format('M d, Y H:i'),
+                'updated_at' => $purchaseRequest->updated_at->format('M d, Y H:i')
+            ]
+        ]);
+    }
+
     public function destroy(PurchaseRequest $purchaseRequest)
     {
         // Only admin can delete purchase requests
