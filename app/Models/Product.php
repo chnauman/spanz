@@ -55,16 +55,7 @@ class Product extends Model
         return $this->hasMany(PurchaseRequest::class);
     }
 
-    public function hasPendingRequest($userId = null)
-    {
-        $query = $this->purchaseRequests()->where('status', 'pending');
-        
-        if ($userId) {
-            $query->where('user_id', $userId);
-        }
-        
-        return $query->exists();
-    }
+    // Multiple purchase requests are now allowed - no need to check for pending requests
 }
 
 

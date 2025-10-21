@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="p-4 max-w-7xl">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold text-[#092C48]">Purchase Requests</h1>
@@ -151,67 +152,125 @@ document.getElementById('status-filter').addEventListener('change', function() {
 
 // Update request status
 function updateStatus(requestId, status) {
-    if (!confirm(`Are you sure you want to ${status} this request?`)) {
-        return;
-    }
-
-    fetch(`/admin/purchase-requests/${requestId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert(data.message || 'An error occurred.');
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Are you sure you want to ${status} this request?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#0D6AED',
+        cancelButtonColor: '#d33',
+        confirmButtonText: `Yes, ${status} it!`
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/purchase-requests/${requestId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ status: status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0D6AED'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'An error occurred.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0D6AED'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0D6AED'
+                });
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred.');
     });
 }
 
 // Delete request
 function deleteRequest(requestId) {
-    if (!confirm('Are you sure you want to delete this request?')) {
-        return;
-    }
-
-    fetch(`/admin/purchase-requests/${requestId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json'
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#0D6AED',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/purchase-requests/${requestId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: data.message,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0D6AED'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'An error occurred.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0D6AED'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0D6AED'
+                });
+            });
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert(data.message || 'An error occurred.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred.');
     });
 }
 
 // View request details
 function viewDetails(requestId) {
-    // For now, just show a simple alert with the request ID
-    // In a real implementation, you would fetch the details via AJAX
-    alert(`Viewing details for request #${requestId}`);
+    Swal.fire({
+        title: 'Request Details',
+        text: `Viewing details for request #${requestId}`,
+        icon: 'info',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#0D6AED'
+    });
     
     // You can implement a modal to show detailed information here
     const modal = document.getElementById('details-modal');

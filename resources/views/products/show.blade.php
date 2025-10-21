@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $product->title }} - Product Details</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -288,20 +289,39 @@
                     'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    closePurchaseModalFunc();
-                    location.reload(); // Reload to show "Requested" status
-                } else {
-                    alert(data.message || 'An error occurred. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#0D6AED'
+                        }).then(() => {
+                            closePurchaseModalFunc();
+                            location.reload(); // Reload to show "Requested" status
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Notice',
+                            text: data.message || 'An error occurred. Please try again.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#0D6AED'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#0D6AED'
+                    });
+                })
             .finally(() => {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;

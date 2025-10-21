@@ -28,20 +28,7 @@ class PurchaseRequestController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        // For authenticated users, check if they already have a pending request
-        if (Auth::check()) {
-            $existingRequest = PurchaseRequest::where('user_id', Auth::id())
-                ->where('product_id', $product->id)
-                ->where('status', 'pending')
-                ->first();
-
-            if ($existingRequest) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You already have a pending purchase request for this product.'
-                ], 422);
-            }
-        }
+        // Allow multiple purchase requests - no duplicate checking
 
         // Create the purchase request
         $purchaseRequestData = [
@@ -67,7 +54,7 @@ class PurchaseRequestController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Purchase request submitted successfully! We will contact you soon.',
+            'message' => 'Purchase request submitted successfully! You can make multiple requests if needed.',
             'request_id' => $purchaseRequest->id
         ]);
     }
