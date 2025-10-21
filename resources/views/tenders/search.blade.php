@@ -81,7 +81,7 @@
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                        <a href="{{ route('products.index') }}" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -122,7 +122,7 @@
                 <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
                 <a href="#" class="block hover:text-blue-300">About</a>
                 <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
-                <a href="{{ route('products.index') }}" class="block hover:text-blue-300">Products</a>
+                <a href="{{ route('products.search') }}" class="block hover:text-blue-300">Products</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth
@@ -159,7 +159,7 @@
                     </div>
 
                     <!-- input -->
-                    <form id="tenders-search-form" method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl" onsubmit="return handleTendersSearch(event)">
+                    <form id="tenders-search-form" method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl">
                         <input id="tenders-search-input" type="search" name="search" value="{{ request('search') }}" placeholder="By Category, Company or Brand..."
                             class="w-full px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
 
@@ -687,8 +687,9 @@
                 const type = document.getElementById('tenders-search-type')?.value || 'tenders';
                 const input = document.getElementById('tenders-search-input');
                 const query = input ? input.value : '';
+                
                 if (type === 'products') {
-                    const url = new URL("{{ route('products.index') }}", window.location.origin);
+                    const url = new URL("{{ route('products.search') }}", window.location.origin);
                     if (query.trim()) url.searchParams.set('q', query);
                     window.location.href = url.toString();
                     return false;
@@ -697,15 +698,22 @@
                 e.target.submit();
                 return false;
             }
+
+            // Add form submit handler
+            const tendersSearchForm = document.getElementById('tenders-search-form');
+            if (tendersSearchForm) {
+                tendersSearchForm.addEventListener('submit', handleTendersSearch);
+            }
+
             // Auto-submit search on Enter key
             const searchInputs = document.querySelectorAll('input[name="search"]');
             searchInputs.forEach(input => {
                 input.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
+                        e.preventDefault();
                         const type = document.getElementById('tenders-search-type')?.value || 'tenders';
                         if (type === 'products') {
-                            e.preventDefault();
-                            const url = new URL("{{ route('products.index') }}", window.location.origin);
+                            const url = new URL("{{ route('products.search') }}", window.location.origin);
                             if (input.value.trim()) url.searchParams.set('q', input.value);
                             window.location.href = url.toString();
                         } else {

@@ -67,7 +67,7 @@
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                        <a href="{{ route('products.index') }}" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -475,11 +475,11 @@
     const query = document.getElementById('home-search-input')?.value || '';
     if (!query.trim()) {
       // navigate to listing page if no query
-      window.location.href = type === 'products' ? "{{ route('products.index') }}" : "{{ route('tenders.search') }}";
+      window.location.href = type === 'products' ? "{{ route('products.search') }}" : "{{ route('tenders.search') }}";
       return false;
     }
     if (type === 'products') {
-      const url = new URL("{{ route('products.index') }}", window.location.origin);
+      const url = new URL("{{ route('products.search') }}", window.location.origin);
       url.searchParams.set('q', query);
       window.location.href = url.toString();
     } else {

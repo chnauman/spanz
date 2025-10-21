@@ -59,7 +59,7 @@
 
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                        <a href="{{ route('products.index') }}" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">Dashboard</a>
                             <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -87,7 +87,7 @@
                 <a href="#" class="block hover:text-blue-300">For Suppliers ▾</a>
                 <a href="#" class="block hover:text-blue-300">About</a>
                 <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
-                <a href="{{ route('products.index') }}" class="block hover:text-blue-300">Products</a>
+                <a href="{{ route('products.search') }}" class="block hover:text-blue-300">Products</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth

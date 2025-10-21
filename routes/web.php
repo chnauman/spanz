@@ -164,7 +164,7 @@ Route::get('/test/supplier-or-sub-supplier', function () {
 })->middleware(['auth', 'role:supplier,sub_supplier']);
 
 // Public Products
-Route::get('/products', [PublicProductController::class, 'index'])->name('products.index');
+Route::get('/products', [PublicProductController::class, 'search'])->name('products.index');
 Route::get('/products/search', [PublicProductController::class, 'search'])->name('products.search');
 Route::get('/products/{product}', [PublicProductController::class, 'show'])->name('products.show');
 
