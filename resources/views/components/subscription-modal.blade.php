@@ -95,6 +95,42 @@
     background: #f3f4f6;
     color: #092C48;
 }
+
+/* Requested button styling - always visible */
+.subscription-card button.bg-yellow-500 {
+    background-color: #eab308 !important;
+    color: white !important;
+    cursor: not-allowed !important;
+}
+
+.subscription-card.active button.bg-yellow-500 {
+    background-color: #eab308 !important;
+    color: white !important;
+}
+
+/* Current Plan button styling - always visible */
+.subscription-card button.bg-gray-400 {
+    background-color: #9ca3af !important;
+    color: white !important;
+    cursor: not-allowed !important;
+}
+
+.subscription-card.active button.bg-gray-400 {
+    background-color: #9ca3af !important;
+    color: white !important;
+}
+
+/* Current Plan button styling for green variant */
+.subscription-card button.bg-green-500 {
+    background-color: #10b981 !important;
+    color: white !important;
+    cursor: not-allowed !important;
+}
+
+.subscription-card.active button.bg-green-500 {
+    background-color: #10b981 !important;
+    color: white !important;
+}
 </style>
 
 <div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full hidden z-[9999] backdrop-blur-sm flex items-start justify-center p-4 pt-8" onclick="closeModalOnBackdrop(event)">
@@ -154,7 +190,7 @@
                                                          {{ $subscription->credits_per_month }} Credits
                                                      @endif
                                                  </div>
-                                                 <p class="text-xs text-gray-600">To view tenders and buyers</p>
+                                                 <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
                                              </div>
                                         </div>
                                         
@@ -178,7 +214,7 @@
                             <h4 class="text-lg font-semibold text-blue-900">Secure & Reliable</h4>
                         </div>
                         <p class="text-blue-700 text-sm">
-                            All subscription requests are reviewed by our admin team. You'll be notified once your request is processed.
+                            All subscription requests are reviewed by our admin team.
                         </p>
                     </div>
                 </div>
@@ -193,6 +229,9 @@ function openSubscriptionModal() {
     const modalContent = document.getElementById('modalContent');
     
     modal.classList.remove('hidden');
+    
+    // Check localStorage status when modal opens
+    checkLocalStorageStatus();
     
     // Trigger animation
     setTimeout(() => {
@@ -267,6 +306,20 @@ function initializeSubscriptionCards() {
 }
 
 function requestSubscription(subscriptionId, planName, button) {
+    console.log('Requesting subscription:', { subscriptionId, planName });
+    console.log('Subscription ID type:', typeof subscriptionId);
+    console.log('Subscription ID value:', subscriptionId);
+    
+    // Test if basic routing is working first
+    fetch('/test-subscription-route')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Test route response:', data);
+        })
+        .catch(error => {
+            console.error('Test route error:', error);
+        });
+    
     // Show loading state
     const originalText = button.textContent;
     button.textContent = 'Processing...';
@@ -274,14 +327,33 @@ function requestSubscription(subscriptionId, planName, button) {
     button.classList.add('opacity-75', 'cursor-not-allowed');
     
     // Make AJAX request
-    fetch(`/subscription-requests/${subscriptionId}`, {
+    let csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        // Fallback: try to get token from a hidden input or use a default method
+        csrfToken = document.querySelector('input[name="_token"]');
+        if (!csrfToken) {
+            console.error('CSRF token not found');
+            showNotification('Security token not found. Please refresh the page.', 'error');
+            return;
+        }
+    }
+    
+    // Use the fallback route that doesn't use model binding
+    const url = `/subscription-requests-by-id/${subscriptionId}`;
+    console.log('Making request to:', url);
+    console.log('Subscription ID:', subscriptionId);
+    
+    fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content') || csrfToken.value
         }
     })
     .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
         if (!response.ok) {
             if (response.status === 401) {
                 throw new Error('You must be logged in to request a subscription. Please login first.');
@@ -293,19 +365,41 @@ function requestSubscription(subscriptionId, planName, button) {
                 throw new Error('Request failed. Please try again.');
             }
         }
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Response is not JSON, content-type:', contentType);
+            // Let's see what the actual response is
+            return response.text().then(text => {
+                console.error('Server response (HTML):', text.substring(0, 500));
+                throw new Error('Server returned HTML instead of JSON. Please check server logs.');
+            });
+        }
+        
         return response.json();
     })
+    .catch(error => {
+        console.error('JSON parsing error:', error);
+        throw new Error('Server returned invalid response. Please try again.');
+    })
     .then(data => {
+        console.log('Subscription request response:', data);
         if (data.success) {
             // Show success message
-            showNotification('Subscription request submitted successfully! Admin has been notified.', 'success');
-            closeSubscriptionModal();
+            showNotification('Subscription request submitted successfully!', 'success');
+            console.log('Subscription request successful');
             
-            // Update button state to "Requested"
+            // Update button state to "Requested" immediately (don't close modal)
             button.textContent = 'Requested';
-            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105');
             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
             button.disabled = true;
+            
+            // Force the styling to be applied immediately
+            button.style.backgroundColor = '#eab308';
+            button.style.color = 'white';
+            button.style.cursor = 'not-allowed';
             
             // Store the request state in localStorage
             localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
@@ -337,13 +431,46 @@ document.addEventListener('keydown', function(event) {
 
 // Check subscription request status on page load
 document.addEventListener('DOMContentLoaded', function() {
+    checkLocalStorageStatus();
     checkSubscriptionStatus();
 });
 
+function checkLocalStorageStatus() {
+    const cards = document.querySelectorAll('.subscription-card');
+    
+    cards.forEach(card => {
+        const subscriptionId = card.getAttribute('data-subscription-id');
+        const button = card.querySelector('button');
+        
+        if (button) {
+            // Check for requested status in localStorage
+            const requestStatus = localStorage.getItem(`subscription_request_${subscriptionId}`);
+            
+            if (requestStatus === 'requested') {
+                button.textContent = 'Requested';
+                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                button.classList.add('bg-yellow-500', 'cursor-not-allowed');
+                button.disabled = true;
+                
+                // Force the styling to be applied immediately
+                button.style.backgroundColor = '#eab308';
+                button.style.color = 'white';
+                button.style.cursor = 'not-allowed';
+            }
+        }
+    });
+}
+
 function checkSubscriptionStatus() {
-    // Check actual status from server
+    // Check actual status from server first
     fetch('/subscription-requests/status')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                console.log('Server status check failed, relying on localStorage');
+                return {};
+            }
+            return response.json();
+        })
         .then(statuses => {
             const cards = document.querySelectorAll('.subscription-card');
             
@@ -352,26 +479,61 @@ function checkSubscriptionStatus() {
                 const status = statuses[subscriptionId];
                 const button = card.querySelector('button');
                 
+                // Clear localStorage for this subscription if no status from server
+                if (!status) {
+                    localStorage.removeItem(`subscription_request_${subscriptionId}`);
+                }
+                
                 if (status === 'pending') {
                     button.textContent = 'Requested';
-                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
                     button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                     button.disabled = true;
+                    
+                    // Force the styling to be applied immediately
+                    button.style.backgroundColor = '#eab308';
+                    button.style.color = 'white';
+                    button.style.cursor = 'not-allowed';
+                    
+                    // Update localStorage to match server state
+                    localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                 } else if (status === 'approved') {
                     button.textContent = 'Current Plan';
-                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
                     button.classList.add('bg-green-500', 'cursor-not-allowed');
                     button.disabled = true;
+                    
+                    // Force the styling to be applied immediately
+                    button.style.backgroundColor = '#10b981';
+                    button.style.color = 'white';
+                    button.style.cursor = 'not-allowed';
+                    
+                    // Update localStorage to match server state
+                    localStorage.setItem(`subscription_request_${subscriptionId}`, 'approved');
                 } else if (status === 'declined') {
                     button.textContent = 'Choose Plan';
                     button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
                     button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
                     button.disabled = false;
+                    
+                    // Clear localStorage for declined requests
+                    localStorage.removeItem(`subscription_request_${subscriptionId}`);
+                } else {
+                    // No status from server, reset button to default
+                    button.textContent = 'Choose Plan';
+                    button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
+                    button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                    button.disabled = false;
+                    
+                    // Clear localStorage
+                    localStorage.removeItem(`subscription_request_${subscriptionId}`);
                 }
             });
         })
         .catch(error => {
             console.error('Error checking subscription status:', error);
+            // If server check fails, fall back to localStorage
+            checkLocalStorageStatus();
         });
 }
 
@@ -387,4 +549,27 @@ function showNotification(message, type) {
         notification.remove();
     }, 5000);
 }
+
+// Function to clear all subscription request states from localStorage
+function clearAllSubscriptionStates() {
+    const cards = document.querySelectorAll('.subscription-card');
+    cards.forEach(card => {
+        const subscriptionId = card.getAttribute('data-subscription-id');
+        localStorage.removeItem(`subscription_request_${subscriptionId}`);
+    });
+    
+    // Reset all buttons to default state
+    const buttons = document.querySelectorAll('.subscription-card button');
+    buttons.forEach(button => {
+        button.textContent = 'Choose Plan';
+        button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
+        button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+        button.disabled = false;
+    });
+    
+    console.log('All subscription states cleared from localStorage');
+}
+
+// Make the function available globally for debugging
+window.clearAllSubscriptionStates = clearAllSubscriptionStates;
 </script>

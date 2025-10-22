@@ -6,7 +6,6 @@ use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Jobs\SendSubscriptionRequestJob;
 
 class SubscriptionRequestController extends Controller
 {
@@ -21,56 +20,162 @@ class SubscriptionRequestController extends Controller
 
     public function request(Subscription $subscription)
     {
-        $user = auth()->user();
+        try {
+            \Log::info('Subscription request started', [
+                'subscription_id' => $subscription->id,
+                'subscription_name' => $subscription->name,
+                'user_id' => auth()->id()
+            ]);
+            
+            $user = auth()->user();
+            
+            if (!$user) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You must be logged in to request a subscription.'
+                    ], 401);
+                }
+                return redirect()->route('login');
+            }
 
-        // Check if user already has a pending request for this subscription
-        $existingRequest = SubscriptionRequest::where('user_id', $user->id)
-            ->where('subscription_id', $subscription->id)
-            ->where('status', 'pending')
-            ->first();
+            // Check if user already has a pending request for this subscription
+            $existingRequest = SubscriptionRequest::where('user_id', $user->id)
+                ->where('subscription_id', $subscription->id)
+                ->where('status', 'pending')
+                ->first();
 
-        if ($existingRequest) {
+            if ($existingRequest) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You already have a pending request for this subscription.'
+                    ]);
+                }
+                return redirect()->back()
+                    ->with('info', 'You already have a pending request for this subscription.');
+            }
+
+            // Check if user already has this subscription
+            $activeSubscription = $user->getActiveSubscription();
+            if ($activeSubscription && $activeSubscription->subscription_id === $subscription->id) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You already have this subscription.'
+                    ]);
+                }
+                return redirect()->back()
+                    ->with('info', 'You already have this subscription.');
+            }
+
+            // Create subscription request
+            $request = SubscriptionRequest::create([
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+                'requested_at' => now(),
+            ]);
+
+            // Log the subscription request
+            \Log::info('Subscription request created for user: ' . $user->email . ', subscription: ' . $subscription->name);
+
             if (request()->ajax()) {
+                \Log::info('Returning JSON response for subscription request');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Subscription request submitted successfully!'
+                ]);
+            }
+
+            return redirect()->back()
+                ->with('success', 'Subscription request submitted successfully!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Subscription request error: ' . $e->getMessage());
+            
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred while processing your request. Please try again.'
+                ], 500);
+            }
+            
+            return redirect()->back()
+                ->with('error', 'An error occurred while processing your request. Please try again.');
+        }
+    }
+
+    public function requestById($id)
+    {
+        try {
+            \Log::info('Subscription request by ID started', [
+                'subscription_id' => $id,
+                'user_id' => auth()->id()
+            ]);
+            
+            $subscription = Subscription::find($id);
+            if (!$subscription) {
+                \Log::error('Subscription not found', ['id' => $id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Subscription not found.'
+                ], 404);
+            }
+            
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must be logged in to request a subscription.'
+                ], 401);
+            }
+
+            // Check if user already has a pending request for this subscription
+            $existingRequest = SubscriptionRequest::where('user_id', $user->id)
+                ->where('subscription_id', $subscription->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($existingRequest) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You already have a pending request for this subscription.'
                 ]);
             }
-            return redirect()->back()
-                ->with('info', 'You already have a pending request for this subscription.');
-        }
 
-        // Check if user already has this subscription
-        if ($user->getActiveSubscription() && $user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id === $subscription->id) {
-            if (request()->ajax()) {
+            // Check if user already has this subscription
+            $activeSubscription = $user->getActiveSubscription();
+            if ($activeSubscription && $activeSubscription->subscription_id === $subscription->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You already have this subscription.'
                 ]);
             }
-            return redirect()->back()
-                ->with('info', 'You already have this subscription.');
-        }
 
-        // Create subscription request
-        $request = SubscriptionRequest::create([
-            'user_id' => $user->id,
-            'subscription_id' => $subscription->id,
-            'requested_at' => now(),
-        ]);
+            // Create subscription request
+            $request = SubscriptionRequest::create([
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id,
+                'requested_at' => now(),
+            ]);
 
-        // Dispatch job to send email to admin
-        SendSubscriptionRequestJob::dispatch($request, 'new_request');
+            \Log::info('Subscription request created successfully', [
+                'user_id' => $user->id,
+                'subscription_id' => $subscription->id
+            ]);
 
-        if (request()->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Subscription request submitted successfully! Admin has been notified.'
+                'message' => 'Subscription request submitted successfully!'
             ]);
+                
+        } catch (\Exception $e) {
+            \Log::error('Subscription request error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request. Please try again.'
+            ], 500);
         }
-
-        return redirect()->back()
-            ->with('success', 'Subscription request submitted successfully! You will be notified once it\'s processed.');
     }
 
     public function myRequests()
@@ -119,4 +224,5 @@ class SubscriptionRequestController extends Controller
         
         return response()->json($status);
     }
+
 }

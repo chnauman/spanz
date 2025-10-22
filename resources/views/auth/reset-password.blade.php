@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPANZ Forgot Password</title>
+    <title>SPANZ Reset Password</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
 </head>
 <body>
@@ -13,8 +13,8 @@
             <div class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8">
                 <div class="text-center mb-4 sm:mb-6">
                     <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2">SPANZ</h1>
-                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Forgot your password?</h2>
-                    <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">No problem. Just let us know your email address and we will email you a password reset link.</span>
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Reset your password</h2>
+                    <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">Enter your new password below.</span>
                 </div>
 
                 @if ($errors->any())
@@ -33,20 +33,33 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('password.email') }}" class="space-y-3 sm:space-y-4">
+                <form method="POST" action="{{ route('password.update') }}" class="space-y-3 sm:space-y-4">
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+                    <input type="hidden" name="email" value="{{ $email }}">
+
                     <div>
-                        <label for="email" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address</label>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('email') border-red-500 @enderror" 
-                            placeholder="Enter your email address">
-                        @error('email')
+                        <label for="password" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">New Password</label>
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('password') border-red-500 @enderror" 
+                            placeholder="Enter your new password">
+                        @error('password')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm New Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" required
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('password_confirmation') border-red-500 @enderror" 
+                            placeholder="Confirm your new password">
+                        @error('password_confirmation')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <button type="submit" class="w-full mt-4 sm:mt-6 bg-[#0D6AED] text-white py-2 sm:py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium text-sm sm:text-base">
-                        Email Password Reset Link
+                        Reset Password
                     </button>
                 </form>
 

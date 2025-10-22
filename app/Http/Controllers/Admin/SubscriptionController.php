@@ -7,7 +7,6 @@ use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Jobs\SendSubscriptionRequestJob;
 
 class SubscriptionController extends Controller
 {
@@ -100,22 +99,20 @@ class SubscriptionController extends Controller
     {
         $request->approve(auth()->id());
 
-        // Dispatch job to send approval email to user
-        SendSubscriptionRequestJob::dispatch($request, 'approved');
+        \Log::info('Subscription request approved: ' . $request->id);
 
         return redirect()->back()
-            ->with('success', 'Subscription request approved successfully! User has been notified.');
+            ->with('success', 'Subscription request approved successfully!');
     }
 
     public function declineRequest(Request $httpRequest, SubscriptionRequest $request)
     {
         $request->decline(auth()->id(), $httpRequest->input('admin_notes'));
 
-        // Dispatch job to send decline email to user
-        SendSubscriptionRequestJob::dispatch($request, 'declined');
+        \Log::info('Subscription request declined: ' . $request->id);
 
         return redirect()->back()
-            ->with('success', 'Subscription request declined successfully! User has been notified.');
+            ->with('success', 'Subscription request declined successfully!');
     }
 
     public function showRequest(SubscriptionRequest $request)

@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
 </head>
 <body>
-    <div class="bg-image w-full bg-cover bg-center bg-no-repeat flex flex-col" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
+    <div class="bg-image w-full min-h-screen bg-cover bg-center bg-no-repeat flex flex-col" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
         <!-- Main Content Area -->
-        <div class="flex-1 flex items-center justify-center px-4 py-6 sm:py-8 lg:py-12">
+        <div class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 xl:py-20">
             <div class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8">
                 <div class="text-center mb-4 sm:mb-6">
                     <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2">SPANZ</h1>
@@ -81,7 +81,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="text-center px-4 py-3 sm:py-4">
+        <footer class="text-center px-4 py-8 sm:py-12 lg:py-16 mt-8 sm:mt-12 lg:mt-16">
             <div class="bg-black bg-opacity-60 rounded-md sm:rounded-lg px-3 sm:px-4 py-2 inline-block max-w-full">
                 <p class="text-white text-xs sm:text-sm leading-relaxed">
                     <span class="block sm:inline">©2025 SPANZ Publishing Company. All rights reserved.</span>
