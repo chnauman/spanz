@@ -120,12 +120,22 @@ class TenderController extends Controller
 
     public function create()
     {
+        // Prevent admin users from creating tenders
+        if (auth()->user()->isAdmin()) {
+            abort(403, 'Admin users cannot create tenders.');
+        }
+        
         $categories = Category::where('is_active', true)->get();
         return view('tenders.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
+        // Prevent admin users from creating tenders
+        if (auth()->user()->isAdmin()) {
+            abort(403, 'Admin users cannot create tenders.');
+        }
+        
         try {
             $request->validate([
                 'request_type' => 'required|string|in:rfq,rft,rfp,eoi',
@@ -223,6 +233,11 @@ class TenderController extends Controller
 
     public function myTenders()
     {
+        // Prevent admin users from viewing their tenders
+        if (auth()->user()->isAdmin()) {
+            abort(403, 'Admin users cannot view their tenders.');
+        }
+        
         $tenders = Auth::user()->tenders()
             ->with('category')
             ->orderBy('created_at', 'desc')

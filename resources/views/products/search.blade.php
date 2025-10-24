@@ -18,6 +18,78 @@
         .filter-section {
             margin-bottom: 1rem;
         }
+
+        /* Fix dropdown hover behavior */
+        .dropdown-group {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: auto;
+            background: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.3s ease-in-out;
+            z-index: 50;
+            min-width: 16rem;
+        }
+
+        /* Show dropdown on hover with delay */
+        .dropdown-group:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition-delay: 0.1s;
+        }
+
+        /* Keep dropdown open when hovering over it */
+        .dropdown-menu:hover {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Add a small gap to prevent flickering when moving from button to dropdown */
+        .dropdown-group::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 0.5rem;
+            background: transparent;
+            z-index: 49;
+        }
+
+        /* Ensure dropdowns are hidden by default */
+        .dropdown-menu {
+            display: block;
+        }
+
+        /* Prevent any CSS conflicts */
+        .dropdown-group .dropdown-menu {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateY(-10px) !important;
+        }
+
+        .dropdown-group:hover .dropdown-menu {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transform: translateY(0) !important;
+        }
     </style>
 </head>
 
@@ -35,15 +107,17 @@
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
                         <!-- For Buyers Dropdown -->
-                        <div class="relative group">
+                        <div class="dropdown-group">
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Buyers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                            <div class="dropdown-menu">
                                 <div class="py-1 whitespace-nowrap">
                                     @auth
-                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
-                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                        @if(!auth()->user()->isAdmin())
+                                            <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
+                                            <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                        @endif
                                     @else
                                         <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
                                         <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
@@ -53,18 +127,20 @@
                         </div>
 
                         <!-- For Suppliers Dropdown -->
-                        <div class="relative group">
+                        <div class="dropdown-group">
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Suppliers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                            <div class="dropdown-menu">
                                 <div class="py-1 whitespace-nowrap">
                                     @auth
                                         @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
                                             <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved Tenders</a>
                                             <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Interests</a>
                                             <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Viewed Tenders</a>
-                                            <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Invite Sub Supplier</a>
+                                            @if(auth()->user()->isSupplier())
+                                                <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Invite Sub Supplier</a>
+                                            @endif
                                             <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Subscription Plans</a>
                                         @else
                                             <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Become a Supplier</a>
@@ -366,8 +442,8 @@
                         class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
                         View Details
                     </a>
-                   
-                    <a onclick="openPurchaseModal({{ $product->id }}, '{{ $product->title }}')" 
+
+                    <a onclick="openPurchaseModal({{ $product->id }}, '{{ $product->title }}')"
                     class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
                         Purchase
                     </a>
@@ -551,7 +627,7 @@
         const type = document.getElementById('products-search-type')?.value || 'products';
         const input = document.getElementById('products-search-input');
         const query = input ? input.value : '';
-                
+
         if (type === 'tenders') {
             const url = new URL("{{ route('tenders.search') }}", window.location.origin);
             if (query.trim()) url.searchParams.set('search', query);
@@ -696,14 +772,14 @@
             // Form submission
             purchaseForm?.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 const submitBtn = document.getElementById('submit-purchase');
                 const originalText = submitBtn.textContent;
                 submitBtn.textContent = 'Submitting...';
                 submitBtn.disabled = true;
 
                 const formData = new FormData(this);
-                
+
                 fetch('{{ route("purchase-requests.store") }}', {
                     method: 'POST',
                     body: formData,
@@ -755,17 +831,17 @@
         // Global function to open purchase modal
         function openPurchaseModal(productId, productTitle) {
             console.log('Purchase button clicked for product:', productId, productTitle);
-       
-            
+
+
             document.getElementById('purchase-product-id').value = productId;
             document.getElementById('purchase-product-title').textContent = productTitle;
             document.getElementById('purchase-quantity').value = 1;
             document.getElementById('purchase-notes').value = '';
-            
+
             // Check if user is authenticated
             const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
             const contactSection = document.getElementById('contact-info-section');
-            
+
             if (isAuthenticated) {
                 contactSection.style.display = 'none';
             } else {
@@ -775,7 +851,7 @@
                 document.getElementById('purchase-email').value = '';
                 document.getElementById('purchase-phone').value = '';
             }
-            
+
             const purchaseModal = document.getElementById('purchase-modal');
             purchaseModal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -796,56 +872,56 @@
                     </svg>
                 </button>
             </div>
-            
+
             <div class="mb-4">
                 <p class="text-sm text-gray-600 mb-2">Product:</p>
                 <p class="font-medium text-[#092C48]" id="purchase-product-title"></p>
             </div>
-            
+
                 <form id="purchase-form">
                     <input type="hidden" id="purchase-product-id" name="product_id">
-                    
+
                     <!-- Contact Information for Non-Authenticated Users -->
                     <div id="contact-info-section" class="mb-4" style="display: none;">
                         <h4 class="text-sm font-medium text-gray-700 mb-3">Contact Information</h4>
                         <div class="grid grid-cols-1 gap-3">
                             <div>
                                 <label for="purchase-name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                                <input type="text" id="purchase-name" name="name" 
+                                <input type="text" id="purchase-name" name="name"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label for="purchase-email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                                <input type="email" id="purchase-email" name="email" 
+                                <input type="email" id="purchase-email" name="email"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label for="purchase-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
-                                <input type="tel" id="purchase-phone" name="phone" 
+                                <input type="tel" id="purchase-phone" name="phone"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label for="purchase-quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                        <input type="number" id="purchase-quantity" name="quantity" min="1" value="1" 
+                        <input type="number" id="purchase-quantity" name="quantity" min="1" value="1"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
-                    
+
                     <div class="mb-6">
                         <label for="purchase-notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-                        <textarea id="purchase-notes" name="notes" rows="3" 
+                        <textarea id="purchase-notes" name="notes" rows="3"
                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   placeholder="Any additional information about your purchase request..."></textarea>
                     </div>
-                    
+
                     <div class="flex gap-3">
-                        <button type="button" id="cancel-purchase" 
+                        <button type="button" id="cancel-purchase"
                                 class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
                             Cancel
                         </button>
-                        <button type="submit" id="submit-purchase" 
+                        <button type="submit" id="submit-purchase"
                                 class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
                             Submit Request
                         </button>

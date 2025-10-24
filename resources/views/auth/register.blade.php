@@ -33,8 +33,18 @@
                     </div>
                 @endif
 
+                @if($invitation)
+                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded">
+                    <p class="text-sm font-medium">You're invited by {{ $invitation->supplier->name }} to join as a Sub Supplier!</p>
+                    <p class="text-xs mt-1">This invitation expires on {{ $invitation->expires_at->format('M d, Y \a\t g:i A') }}.</p>
+                </div>
+                @endif
+
                 <form method="POST" action="{{ route('register') }}" class="space-y-3 sm:space-y-4">
                     @csrf
+                    @if($invitation)
+                    <input type="hidden" name="token" value="{{ $invitation->token }}">
+                    @endif
                     <div>
                         <label for="name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Full Name</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" required
@@ -52,7 +62,7 @@
                         <input type="password" id="password" name="password" required
                             class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                     </div>
-                    
+
                     <div>
                         <label for="password_confirmation" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm Password</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" required
@@ -86,7 +96,7 @@
                 <p class="text-white text-xs sm:text-sm leading-relaxed">
                     <span class="block sm:inline">©2025 SPANZ Publishing Company. All rights reserved.</span>
                     <span class="block sm:inline sm:ml-1 mt-1 sm:mt-0">
-                        See <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Terms & Conditions</a> and 
+                        See <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Terms & Conditions</a> and
                         <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Privacy Statement</a>.
                     </span>
                 </p>

@@ -1,0 +1,30 @@
+# Mailtrap Configuration for SPANZ
+# Add these lines to your .env file:
+
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=1a33cba95bb3b4
+MAIL_PASSWORD=92e1236653df35
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="noreply@spanz.com"
+MAIL_FROM_NAME="SPANZ"
+
+# Additional recommended settings:
+APP_NAME=SPANZ
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+# Database settings (adjust as needed):
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=spanz
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Session and Cache settings:
+SESSION_DRIVER=file
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync

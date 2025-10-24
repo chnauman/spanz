@@ -9,23 +9,22 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
+use App\Models\SupplierInvitation;
 
 class SupplierInvitationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $supplier;
-    public $subSupplier;
-    public $message;
+    public $invitation;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $supplier, User $subSupplier, $message = null)
+    public function __construct(User $supplier, SupplierInvitation $invitation)
     {
         $this->supplier = $supplier;
-        $this->subSupplier = $subSupplier;
-        $this->message = $message;
+        $this->invitation = $invitation;
     }
 
     /**

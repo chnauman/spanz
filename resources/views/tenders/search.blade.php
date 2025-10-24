@@ -17,6 +17,78 @@
         .filter-section {
             margin-bottom: 1rem;
         }
+
+        /* Fix dropdown hover behavior */
+        .dropdown-group {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: auto;
+            background: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.3s ease-in-out;
+            z-index: 50;
+            min-width: 16rem;
+        }
+
+        /* Show dropdown on hover with delay */
+        .dropdown-group:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition-delay: 0.1s;
+        }
+
+        /* Keep dropdown open when hovering over it */
+        .dropdown-menu:hover {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Add a small gap to prevent flickering when moving from button to dropdown */
+        .dropdown-group::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 0.5rem;
+            background: transparent;
+            z-index: 49;
+        }
+
+        /* Ensure dropdowns are hidden by default */
+        .dropdown-menu {
+            display: block;
+        }
+
+        /* Prevent any CSS conflicts */
+        .dropdown-group .dropdown-menu {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateY(-10px) !important;
+        }
+
+        .dropdown-group:hover .dropdown-menu {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transform: translateY(0) !important;
+        }
     </style>
 </head>
 
@@ -34,15 +106,17 @@
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
                         <!-- For Buyers Dropdown -->
-                        <div class="relative group">
+                        <div class="dropdown-group">
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Buyers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                            <div class="dropdown-menu">
                                 <div class="py-1 whitespace-nowrap">
                                     @auth
-                                        <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
-                                        <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                        @if(!auth()->user()->isAdmin())
+                                            <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
+                                            <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                        @endif
                                     @else
                                         <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
                                         <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
@@ -52,18 +126,20 @@
                         </div>
 
                         <!-- For Suppliers Dropdown -->
-                        <div class="relative group">
+                        <div class="dropdown-group">
                             <button class="text-white hover:text-blue-400 flex items-center">
                                 For Suppliers ▾
                             </button>
-                            <div class="absolute left-0 mt-2 w-auto bg-white rounded-md shadow-lg opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50" style="min-width: 16rem;">
+                            <div class="dropdown-menu">
                                 <div class="py-1 whitespace-nowrap">
                                     @auth
                                         @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
                                             <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved Tenders</a>
                                             <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Interests</a>
                                             <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Viewed Tenders</a>
-                                            <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Invite Sub Supplier</a>
+                                            @if(auth()->user()->isSupplier())
+                                                <a href="{{ route('invite.sub-suppliers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Invite Sub Supplier</a>
+                                            @endif
                                             <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Subscription Plans</a>
                                         @else
                                             <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Become a Supplier</a>
@@ -687,7 +763,7 @@
                 const type = document.getElementById('tenders-search-type')?.value || 'tenders';
                 const input = document.getElementById('tenders-search-input');
                 const query = input ? input.value : '';
-                
+
                 if (type === 'products') {
                     const url = new URL("{{ route('products.search') }}", window.location.origin);
                     if (query.trim()) url.searchParams.set('q', query);

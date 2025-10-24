@@ -195,10 +195,16 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Saved Tenders
             </a>
-            <a href="{{ route('invitations.index') }}"
+            {{--  <a href="{{ route('invitations.index') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Invitations
+            </a>  --}}
+            @if(Auth::user()->isSupplier())
+            <a href="{{ route('suppliers.invite') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Invite Sub Supplier
             </a>
+            @endif
             @if(Auth::user()->subSuppliers()->count() > 0)
             <a href="{{ route('suppliers.sub-suppliers') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
@@ -281,7 +287,7 @@
         </div>
     </div>
     <hr class="border-[#657a9871]" />
-    
+
     <!-- Products Dropdown Menu -->
     <div>
         <button onclick="toggleProductsDropdown()"

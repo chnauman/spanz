@@ -48,14 +48,14 @@
     </div>
 
     <div class="content">
-        <h2>Hello {{ $subSupplier->name }},</h2>
+        <h2>Hello {{ $invitation->name }},</h2>
 
         <p><strong>{{ $supplier->name }}</strong> has invited you to join SPANZ as a Sub Supplier.</p>
 
-        @if($message)
+        @if($invitation->message)
         <div style="background-color: #e8f4fd; padding: 15px; border-left: 4px solid #0D6AED; margin: 20px 0;">
             <strong>Message from {{ $supplier->name }}:</strong><br>
-            {{ $message }}
+            {{ $invitation->message }}
         </div>
         @endif
 
@@ -69,9 +69,11 @@
 
         <p>To get started, please complete your registration:</p>
 
-        <a href="{{ route('register') }}" class="button">Complete Registration</a>
+        <a href="{{ route('register', ['token' => $invitation->token]) }}" class="button">Complete Registration</a>
 
         <p>If you have any questions, please contact {{ $supplier->name }} directly.</p>
+
+        <p><small>This invitation expires on {{ $invitation->expires_at->format('M d, Y \a\t g:i A') }}.</small></p>
     </div>
 
     <div class="footer">

@@ -53,8 +53,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index');
 Route::get('/tenders/search', [TenderController::class, 'search'])->name('tenders.search');
 Route::get('/tenders/{tender}/detail', [TenderController::class, 'detail'])->name('tenders.detail');
-// Buyer and Sub-supplier specific routes (buyers and sub-suppliers can create and manage tenders)
-Route::middleware(['auth', 'role:buyer,sub_supplier'])->group(function () {
+// Tender creation and management routes (all authenticated users except admin)
+Route::middleware('auth')->group(function () {
     Route::get('/tenders/create', [TenderController::class, 'create'])->name('tenders.create');
     Route::post('/tenders', [TenderController::class, 'store'])->name('tenders.store');
     Route::get('/my-tenders', [TenderController::class, 'myTenders'])->name('tenders.my-tenders');
@@ -86,7 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/subscription-requests/{request}', [\App\Http\Controllers\SubscriptionRequestController::class, 'cancelRequest'])->name('subscription-requests.cancel');
     Route::get('/subscription-requests/status', [\App\Http\Controllers\SubscriptionRequestController::class, 'checkStatus'])->name('subscription-requests.status');
     Route::get('/subscription-summary', [\App\Http\Controllers\SubscriptionRequestController::class, 'getSubscriptionSummary'])->name('subscription-summary');
-    
+
     // Test route to check if routing is working
     Route::get('/test-subscription-route', function() {
         return response()->json(['message' => 'Route is working', 'timestamp' => now()]);
@@ -101,7 +101,6 @@ Route::middleware(['auth', 'role:supplier'])->group(function () {
     Route::get('/suppliers/invite', [\App\Http\Controllers\SupplierController::class, 'showInviteForm'])->name('suppliers.invite');
     Route::post('/suppliers/invite', [\App\Http\Controllers\SupplierController::class, 'sendInvitation'])->name('suppliers.invite.send');
     Route::get('/suppliers/sub-suppliers', [\App\Http\Controllers\SupplierController::class, 'subSuppliers'])->name('suppliers.sub-suppliers');
-    Route::post('/suppliers/{subSupplier}/approve', [\App\Http\Controllers\SupplierController::class, 'approveSubSupplier'])->name('suppliers.approve-sub-supplier');
     Route::delete('/suppliers/{subSupplier}/remove', [\App\Http\Controllers\SupplierController::class, 'removeSubSupplier'])->name('suppliers.remove-sub-supplier');
 
     // Sub Supplier Invitation Routes
@@ -186,5 +185,52 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'show'])->name('purchase-requests.show');
     Route::put('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'update'])->name('purchase-requests.update');
     Route::delete('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'destroy'])->name('purchase-requests.destroy');
+});
+
+// Test email route (remove in production)
+Route::get('/test-email', function () {
+    try {
+        $supplier = new \App\Models\User();
+        $supplier->name = 'Test Supplier';
+        $supplier->email = 'supplier@test.com';
+
+        // Create a test invitation
+        $invitation = \App\Models\SupplierInvitation::createInvitation(
+            $supplier->id,
+            'test@example.com',
+            'Test Sub Supplier',
+            'Test invitation email'
+        );
+
+        \Illuminate\Support\Facades\Mail::to('test@example.com')->send(new \App\Mail\SupplierInvitationMail($supplier, $invitation));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Test email sent successfully! Check your Mailtrap inbox.',
+            'invitation_token' => $invitation->token,
+            'registration_url' => route('register', ['token' => $invitation->token]),
+            'config' => [
+                'mail_driver' => config('mail.default'),
+                'smtp_host' => config('mail.mailers.smtp.host'),
+                'smtp_port' => config('mail.mailers.smtp.port'),
+                'smtp_username' => config('mail.mailers.smtp.username'),
+                'from_address' => config('mail.from.address'),
+                'from_name' => config('mail.from.name')
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'config' => [
+                'mail_driver' => config('mail.default'),
+                'smtp_host' => config('mail.mailers.smtp.host'),
+                'smtp_port' => config('mail.mailers.smtp.port'),
+                'smtp_username' => config('mail.mailers.smtp.username'),
+                'from_address' => config('mail.from.address'),
+                'from_name' => config('mail.from.name')
+            ]
+        ], 500);
+    }
 });
 

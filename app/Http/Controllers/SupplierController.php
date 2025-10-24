@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use App\Models\SupplierInvitation;
 use App\Mail\SupplierInvitationMail;
 
 class SupplierController extends Controller
@@ -44,18 +45,27 @@ class SupplierController extends Controller
             return redirect()->back()->with('error', 'A user with this email already exists.');
         }
 
-        // Create the sub supplier user
-        $subSupplier = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => 'sub_supplier',
-            'parent_supplier_id' => $user->id,
-            'is_approved' => false, // Needs approval
-            'password' => bcrypt('temp_password_' . time()), // Temporary password
-        ]);
+        // Check if there's already a pending invitation for this email
+        $existingInvitation = SupplierInvitation::where('email', $request->email)
+            ->where('supplier_id', $user->id)
+            ->where('is_used', false)
+            ->where('expires_at', '>', now())
+            ->first();
 
-        // Send invitation email
-        Mail::to($request->email)->send(new SupplierInvitationMail($user, $subSupplier, $request->message));
+        if ($existingInvitation) {
+            return redirect()->back()->with('error', 'An invitation has already been sent to this email address.');
+        }
+
+        // Create invitation token
+        $invitation = SupplierInvitation::createInvitation(
+            $user->id,
+            $request->email,
+            $request->name,
+            $request->message
+        );
+
+        // Send invitation email with unique URL
+        Mail::to($request->email)->send(new SupplierInvitationMail($user, $invitation));
 
         return redirect()->back()->with('success', 'Invitation sent successfully to ' . $request->email);
     }
@@ -76,24 +86,6 @@ class SupplierController extends Controller
         return view('suppliers.sub-suppliers', compact('subSuppliers'));
     }
 
-    public function approveSubSupplier(User $subSupplier)
-    {
-        $user = Auth::user();
-
-        // Allow suppliers and admins to approve sub suppliers
-        if (!$user->isSupplier() && !$user->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can approve sub suppliers.');
-        }
-
-        // Check if this sub supplier belongs to the current supplier
-        if ($subSupplier->parent_supplier_id !== $user->id) {
-            return redirect()->route('suppliers.sub-suppliers')->with('error', 'You can only approve your own sub suppliers.');
-        }
-
-        $subSupplier->update(['is_approved' => true]);
-
-        return redirect()->route('suppliers.sub-suppliers')->with('success', 'Sub supplier approved successfully.');
-    }
 
     public function removeSubSupplier(User $subSupplier)
     {
@@ -109,8 +101,13 @@ class SupplierController extends Controller
             return redirect()->route('suppliers.sub-suppliers')->with('error', 'You can only remove your own sub suppliers.');
         }
 
-        $subSupplier->delete();
+        // Convert sub-supplier back to buyer role instead of deleting
+        $subSupplier->update([
+            'role' => 'buyer',
+            'parent_supplier_id' => null,
+            'is_approved' => true // Buyers are auto-approved
+        ]);
 
-        return redirect()->route('suppliers.sub-suppliers')->with('success', 'Sub supplier removed successfully.');
+        return redirect()->route('suppliers.sub-suppliers')->with('success', 'Sub supplier removed successfully. They are now a buyer.');
     }
 }
