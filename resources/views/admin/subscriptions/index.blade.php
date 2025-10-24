@@ -34,28 +34,28 @@
                                 {{ $subscription->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </div>
-                        
+
                         <div class="mb-4">
                             <div class="text-3xl font-bold text-gray-900">${{ number_format($subscription->price, 2) }}</div>
                             <div class="text-sm text-gray-500">per month</div>
                         </div>
-                        
+
                         <div class="mb-4">
                             <div class="text-sm text-gray-600">
-                                <strong>Credits:</strong> 
+                                <strong>Credits:</strong>
                                 {{ $subscription->credits_per_month == -1 ? 'Unlimited' : $subscription->credits_per_month }}
                             </div>
                             <div class="text-sm text-gray-600 mt-1">
-                                <strong>Cost per View:</strong> 
+                                <strong>Cost per View:</strong>
                                 {{ $subscription->credit_cost_per_view ?? 1 }} credit{{ ($subscription->credit_cost_per_view ?? 1) > 1 ? 's' : '' }}
                             </div>
                             @if($subscription->description)
                             <div class="text-sm text-gray-600 mt-2">{{ $subscription->description }}</div>
                             @endif
                         </div>
-                        
+
                         <div class="flex space-x-2">
-                            <a href="{{ route('admin.subscriptions.edit', $subscription) }}" 
+                            <a href="{{ route('admin.subscriptions.edit', $subscription) }}"
                                class="flex-1 bg-blue-600 text-white text-center px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors">
                                 Edit
                             </a>
@@ -63,7 +63,7 @@
                             <form action="{{ route('admin.subscriptions.destroy', $subscription) }}" method="POST" class="flex-1">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" 
+                                <button type="submit"
                                         class="w-full bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 transition-colors"
                                         onclick="return confirm('Are you sure you want to delete this subscription?')">
                                     Delete
@@ -80,11 +80,11 @@
             <div class="mt-8 bg-gray-50 rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                 <div class="flex flex-wrap gap-4">
-                    <a href="{{ route('admin.subscription-requests') }}" 
+                    <a href="{{ route('admin.subscription-requests') }}"
                        class="bg-yellow-600 text-white px-4 py-2 rounded text-sm hover:bg-yellow-700 transition-colors">
                         View Subscription Requests
                     </a>
-                    <a href="{{ route('admin.subscriptions.create') }}" 
+                    <a href="{{ route('admin.subscriptions.create') }}"
                        class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition-colors">
                         Create New Plan
                     </a>
