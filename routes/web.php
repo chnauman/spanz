@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/interests', [UserInterestController::class, 'show'])->name('user.interests');
     Route::post('/user/interests', [UserInterestController::class, 'store'])->name('user.interests.store');
     Route::post('/user/interests/skip', [UserInterestController::class, 'skip'])->name('user.interests.skip');
+    Route::get('/user/interests/management', [UserInterestController::class, 'management'])->name('user.interests.management');
+    Route::delete('/user/interests/{interest}', [UserInterestController::class, 'delete'])->name('user.interests.delete');
+    Route::post('/user/interests/save-budget', [UserInterestController::class, 'saveBudget'])->name('user.interests.save-budget');
 });
 
 // Tender Routes
@@ -144,6 +147,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/update', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
+// Account Settings Routes
+Route::middleware(['auth'])->prefix('account')->name('account.')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\AccountController::class, 'profile'])->name('profile');
+    Route::get('/plan', [\App\Http\Controllers\AccountController::class, 'plan'])->name('plan');
+    Route::get('/credits', [\App\Http\Controllers\AccountController::class, 'credits'])->name('credits');
+});
+
 Route::get('/pages/product', function () {
     return view('pages.product');
 });
@@ -185,6 +195,88 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'show'])->name('purchase-requests.show');
     Route::put('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'update'])->name('purchase-requests.update');
     Route::delete('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'destroy'])->name('purchase-requests.destroy');
+});
+
+// Test storage route (remove in production)
+Route::get('/test-storage', function () {
+    try {
+        $testContent = 'Test file content';
+        $testPath = 'test-file.txt';
+
+        // Test writing to storage
+        \Storage::disk('public')->put($testPath, $testContent);
+
+        // Test reading from storage
+        $content = \Storage::disk('public')->get($testPath);
+
+        // Clean up
+        \Storage::disk('public')->delete($testPath);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Storage test successful',
+            'content' => $content,
+            'storage_path' => storage_path('app/public'),
+            'public_path' => public_path('storage')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'storage_path' => storage_path('app/public'),
+            'public_path' => public_path('storage')
+        ], 500);
+    }
+});
+
+// Test file upload route (remove in production)
+Route::post('/test-upload', function (\Illuminate\Http\Request $request) {
+    try {
+        if (!$request->hasFile('photo')) {
+            return response()->json(['success' => false, 'message' => 'No file uploaded'], 400);
+        }
+
+        $file = $request->file('photo');
+        $fileName = 'test-' . time() . '.' . $file->getClientOriginalExtension();
+        $targetDirectory = storage_path('app/public/profile-photos');
+
+        // Ensure directory exists
+        if (!is_dir($targetDirectory)) {
+            mkdir($targetDirectory, 0755, true);
+        }
+
+        // Move file
+        $moved = $file->move($targetDirectory, $fileName);
+
+        if ($moved) {
+            // Clean up test file
+            unlink($targetDirectory . '/' . $fileName);
+            return response()->json(['success' => true, 'message' => 'File upload test successful']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Failed to move file'], 500);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
+// Test upload form (remove in production)
+Route::get('/test-upload-form', function () {
+    return '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Test File Upload</title>
+    </head>
+    <body>
+        <h1>Test File Upload</h1>
+        <form action="/test-upload" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_token" value="' . csrf_token() . '">
+            <input type="file" name="photo" accept="image/*" required>
+            <button type="submit">Test Upload</button>
+        </form>
+    </body>
+    </html>';
 });
 
 // Test email route (remove in production)

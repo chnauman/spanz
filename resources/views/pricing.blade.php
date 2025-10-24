@@ -169,10 +169,10 @@
                                 $shouldShowBasic = !$userHasActiveSubscription;
                                 $shouldHideBasic = $userHasActiveSubscription && $isBasicPlan;
                             @endphp
-                            
+
                             @if(!$shouldHideBasic)
-                                <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}" 
-                                     data-plan="{{ strtolower($subscription->name) }}" 
+                                <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
+                                     data-plan="{{ strtolower($subscription->name) }}"
                                      data-subscription-id="{{ $subscription->id }}">
                                     <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; height: 3.5in;">
                                         @if($subscription->name === 'Pro')
@@ -183,7 +183,7 @@
                                                 </div>
                                             </div>
                                         @endif
-                                        
+
                                         <div class="text-center h-full flex flex-col justify-between">
                                             <div>
                                                 <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
@@ -192,7 +192,7 @@
                                                     <span class="text-sm text-gray-500">/month</span>
                                                 </div>
                                                 <p class="text-gray-600 text-sm mb-4">{{ $subscription->description ?? 'Premium subscription plan' }}</p>
-                                                
+
                                                  <!-- Quota/Credits Display -->
                                                  <div class="bg-blue-50 rounded-lg p-3 mb-4">
                                                      <div class="text-lg font-semibold text-[#0D6AED] mb-1">
@@ -207,7 +207,7 @@
                                                      <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
                                                  </div>
                                             </div>
-                                            
+
                                             <div class="text-center">
                                                 @auth
                                                     @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
@@ -284,16 +284,16 @@
 
         function initializeSubscriptionCards() {
             const cards = document.querySelectorAll('.subscription-card');
-            
+
             // Handle card clicks for selection
             cards.forEach(card => {
                 card.addEventListener('click', function() {
                     // Remove active class from all cards
                     cards.forEach(c => c.classList.remove('active'));
-                    
+
                     // Add active class to clicked card
                     this.classList.add('active');
-                    
+
                     // Hide "MOST POPULAR" badge on all cards
                     const badges = document.querySelectorAll('.most-popular-badge');
                     badges.forEach(badge => badge.style.display = 'none');
@@ -305,7 +305,7 @@
             console.log('Requesting subscription:', { subscriptionId, planName });
             console.log('Subscription ID type:', typeof subscriptionId);
             console.log('Subscription ID value:', subscriptionId);
-            
+
             // Test if basic routing is working first
             fetch('/test-subscription-route')
                 .then(response => response.json())
@@ -315,23 +315,23 @@
                 .catch(error => {
                     console.error('Test route error:', error);
                 });
-            
+
             // Show loading state
             const originalText = button.textContent;
             button.textContent = 'Processing...';
             button.disabled = true;
             button.classList.add('opacity-75', 'cursor-not-allowed');
-            
+
             // Set a flag to prevent status checks from interfering
             window.subscriptionRequestInProgress = true;
-            
+
             // Log the request start
             console.log('Starting subscription request for:', subscriptionId);
-            
+
             // Use the fallback route that doesn't use model binding
             const url = `/subscription-requests-by-id/${subscriptionId}`;
             console.log('Making request to:', url);
-            
+
             // Make AJAX request
             fetch(url, {
                 method: 'POST',
@@ -343,7 +343,7 @@
             .then(response => {
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
-                
+
                 if (!response.ok) {
                     if (response.status === 401) {
                         throw new Error('You must be logged in to request a subscription. Please login first.');
@@ -355,7 +355,7 @@
                         throw new Error('Request failed. Please try again.');
                     }
                 }
-                
+
                 // Check if response is JSON
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
@@ -366,7 +366,7 @@
                         throw new Error('Server returned HTML instead of JSON. Please check server logs.');
                     });
                 }
-                
+
                 return response.json();
             })
             .catch(error => {
@@ -379,30 +379,33 @@
                     // Show success message
                     showNotification('Subscription request submitted successfully!', 'success');
                     console.log('Subscription request successful');
-                    
+
                     // Update button state to "Requested" immediately (don't close modal)
                     button.textContent = 'Requested';
                     button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105');
                     button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                     button.disabled = true;
-                    
+
                     // Force the styling to be applied immediately
                     button.style.backgroundColor = '#eab308';
                     button.style.color = 'white';
                     button.style.cursor = 'not-allowed';
-                    
+
                     // Store the request state in localStorage
                     localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
-                    
+
                     // Prevent any other status checks from overriding this state
                     const card = button.closest('.subscription-card');
                     if (card) {
                         card.setAttribute('data-just-requested', 'true');
                     }
-                    
+
+                    // Disable all other subscription cards
+                    disableAllOtherSubscriptionCards(subscriptionId);
+
                     // Clear the request in progress flag
                     window.subscriptionRequestInProgress = false;
-                    
+
                 } else {
                     showNotification(data.message || 'An error occurred. Please try again.', 'error');
                     resetButtonToOriginal(button, originalText);
@@ -420,35 +423,35 @@
         function updateButtonToRequested(button, subscriptionId) {
             // Update button text
             button.textContent = 'Requested';
-            
+
             // Remove all existing classes that might interfere
             button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105', 'bg-yellow-500', 'cursor-not-allowed');
-            
+
             // Add new classes for requested state
             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
-            
+
             // Set disabled state
             button.disabled = true;
-            
+
             // Force the styling to be applied immediately with !important
             button.style.setProperty('background-color', '#eab308', 'important');
             button.style.setProperty('color', 'white', 'important');
             button.style.setProperty('cursor', 'not-allowed', 'important');
             button.style.setProperty('opacity', '1', 'important');
-            
+
             // Store the request state in localStorage
             localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
-            
+
             // Update the card's data attribute for consistency
             const card = button.closest('.subscription-card');
             if (card) {
                 card.setAttribute('data-request-status', 'requested');
                 card.setAttribute('data-just-requested', 'true');
             }
-            
+
             // Log for debugging
             console.log('Button updated to Requested for subscription:', subscriptionId);
-            
+
             // Force a re-render to ensure the changes are visible
             button.offsetHeight; // Trigger reflow
         }
@@ -459,7 +462,7 @@
             button.disabled = false;
             button.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-yellow-500', 'bg-green-500', 'bg-gray-400');
             button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
-            
+
             // Reset inline styles
             button.style.removeProperty('background-color');
             button.style.removeProperty('color');
@@ -473,36 +476,39 @@
                 console.log('Skipping localStorage check - request in progress');
                 return;
             }
-            
+
             const cards = document.querySelectorAll('.subscription-card');
             console.log('Checking localStorage status for', cards.length, 'cards');
-            
+
             cards.forEach(card => {
                 const subscriptionId = card.getAttribute('data-subscription-id');
                 const button = card.querySelector('button');
-                
+
                 // Skip if this card was just requested (don't override the state)
                 if (card.getAttribute('data-just-requested') === 'true') {
                     return;
                 }
-                
+
                 // Also skip if button is already showing "Requested"
                 if (button && button.textContent === 'Requested') {
                     return;
                 }
-                
+
                 if (button) {
                     console.log('Checking subscription', subscriptionId, 'button text:', button.textContent);
-                    
+
                     // Check for requested status in localStorage
                     const requestStatus = localStorage.getItem(`subscription_request_${subscriptionId}`);
                     console.log('localStorage status for', subscriptionId, ':', requestStatus);
-                    
+
                     if (requestStatus === 'requested') {
                         console.log('Setting button to requested for subscription', subscriptionId);
                         updateButtonToRequested(button, subscriptionId);
+
+                        // Also disable all other cards if this one is requested
+                        disableAllOtherSubscriptionCards(subscriptionId);
                     }
-                    
+
                     // Check for current plan buttons and apply styling immediately
                     if (button.textContent === 'Current Plan') {
                         if (button.classList.contains('bg-gray-400')) {
@@ -529,28 +535,28 @@
                 })
                 .then(statuses => {
                     const cards = document.querySelectorAll('.subscription-card');
-                    
+
                     cards.forEach(card => {
                         const subscriptionId = card.getAttribute('data-subscription-id');
                         const status = statuses[subscriptionId];
                         const button = card.querySelector('button');
-                        
+
                         // Clear localStorage for this subscription if no status from server
                         if (!status) {
                             localStorage.removeItem(`subscription_request_${subscriptionId}`);
                         }
-                        
+
                         if (status === 'pending') {
                             button.textContent = 'Requested';
                             button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
                             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                             button.disabled = true;
-                            
+
                             // Force the styling to be applied immediately
                             button.style.backgroundColor = '#eab308';
                             button.style.color = 'white';
                             button.style.cursor = 'not-allowed';
-                            
+
                             // Update localStorage to match server state
                             localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                         } else if (status === 'approved') {
@@ -558,12 +564,12 @@
                             button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
                             button.classList.add('bg-green-500', 'cursor-not-allowed');
                             button.disabled = true;
-                            
+
                             // Force the styling to be applied immediately
                             button.style.backgroundColor = '#10b981';
                             button.style.color = 'white';
                             button.style.cursor = 'not-allowed';
-                            
+
                             // Update localStorage to match server state
                             localStorage.setItem(`subscription_request_${subscriptionId}`, 'approved');
                         } else if (status === 'declined') {
@@ -571,16 +577,19 @@
                             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
                             button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
                             button.disabled = false;
-                            
+
                             // Clear localStorage for declined requests
                             localStorage.removeItem(`subscription_request_${subscriptionId}`);
+
+                            // Re-enable all cards when a request is declined
+                            enableAllSubscriptionCards();
                         } else {
                             // No status from server, reset button to default
                             button.textContent = 'Choose Plan';
                             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
                             button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
                             button.disabled = false;
-                            
+
                             // Clear localStorage
                             localStorage.removeItem(`subscription_request_${subscriptionId}`);
                         }
@@ -600,7 +609,7 @@
             }`;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.remove();
             }, 5000);
@@ -613,7 +622,7 @@
                 const subscriptionId = card.getAttribute('data-subscription-id');
                 localStorage.removeItem(`subscription_request_${subscriptionId}`);
             });
-            
+
             // Reset all buttons to default state
             const buttons = document.querySelectorAll('.subscription-card button');
             buttons.forEach(button => {
@@ -622,12 +631,76 @@
                 button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
                 button.disabled = false;
             });
-            
+
             console.log('All subscription states cleared from localStorage');
+        }
+
+        // Function to disable all other subscription cards when one is requested
+        function disableAllOtherSubscriptionCards(requestedSubscriptionId) {
+            const cards = document.querySelectorAll('.subscription-card');
+
+            cards.forEach(card => {
+                const subscriptionId = card.getAttribute('data-subscription-id');
+                const button = card.querySelector('button');
+
+                // Skip the card that was just requested
+                if (subscriptionId === requestedSubscriptionId) {
+                    return;
+                }
+
+                // Disable all other cards
+                if (button && !button.disabled) {
+                    button.textContent = 'Request Pending';
+                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                    button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    button.disabled = true;
+
+                    // Force the styling to be applied immediately
+                    button.style.backgroundColor = '#9ca3af';
+                    button.style.color = 'white';
+                    button.style.cursor = 'not-allowed';
+
+                    // Add a visual indicator that this card is disabled
+                    card.style.opacity = '0.6';
+                    card.style.pointerEvents = 'none';
+                }
+            });
+
+            console.log('All other subscription cards disabled due to pending request');
+        }
+
+        // Function to re-enable all subscription cards (when request is declined or cancelled)
+        function enableAllSubscriptionCards() {
+            const cards = document.querySelectorAll('.subscription-card');
+
+            cards.forEach(card => {
+                const button = card.querySelector('button');
+
+                // Only re-enable cards that are not the current plan or already requested
+                if (button && button.textContent === 'Request Pending') {
+                    button.textContent = 'Request Subscription';
+                    button.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                    button.disabled = false;
+
+                    // Reset inline styles
+                    button.style.removeProperty('background-color');
+                    button.style.removeProperty('color');
+                    button.style.removeProperty('cursor');
+
+                    // Re-enable card interactions
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                }
+            });
+
+            console.log('All subscription cards re-enabled');
         }
 
         // Make the function available globally for debugging
         window.clearAllSubscriptionStates = clearAllSubscriptionStates;
+        window.disableAllOtherSubscriptionCards = disableAllOtherSubscriptionCards;
+        window.enableAllSubscriptionCards = enableAllSubscriptionCards;
     </script>
 </body>
 </html>

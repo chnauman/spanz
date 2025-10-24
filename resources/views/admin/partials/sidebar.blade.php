@@ -375,6 +375,44 @@
     <hr class="border-[#657a9871]" />
     @endif
 
+    <!-- Account Settings Dropdown Menu -->
+    <div>
+        <button onclick="toggleAccountSettingsDropdown()"
+            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <div class="flex items-center gap-2">
+                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Account Settings</h1>
+            </div>
+            <!-- Dropdown Arrow -->
+            <svg id="accountSettingsDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
+                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="accountSettingsDropdown"
+            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
+            <a href="{{ route('account.profile') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Profile
+            </a>
+            <a href="{{ route('account.plan') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Update Plan
+            </a>
+            <a href="{{ route('account.credits') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Show Credits
+            </a>
+        </div>
+    </div>
+    <hr class="border-[#657a9871]" />
+
     <!-- Spacer to push logout to bottom -->
     <div class="flex-grow"></div>
 
@@ -489,6 +527,19 @@ function toggleUsersDropdown() {
 function toggleSupplierForBuyerDropdown() {
     const dropdown = document.getElementById('supplierForBuyerDropdown');
     const arrow = document.getElementById('supplierForBuyerDropdownArrow');
+
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        dropdown.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function toggleAccountSettingsDropdown() {
+    const dropdown = document.getElementById('accountSettingsDropdown');
+    const arrow = document.getElementById('accountSettingsDropdownArrow');
 
     if (dropdown.classList.contains('hidden')) {
         dropdown.classList.remove('hidden');

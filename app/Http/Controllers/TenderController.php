@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TenderInvitationMail;
 use App\Jobs\SendTenderInvitationJob;
+use App\Jobs\SendTenderNotificationJob;
 
 class TenderController extends Controller
 {
@@ -124,7 +125,7 @@ class TenderController extends Controller
         if (auth()->user()->isAdmin()) {
             abort(403, 'Admin users cannot create tenders.');
         }
-        
+
         $categories = Category::where('is_active', true)->get();
         return view('tenders.create', compact('categories'));
     }
@@ -135,7 +136,7 @@ class TenderController extends Controller
         if (auth()->user()->isAdmin()) {
             abort(403, 'Admin users cannot create tenders.');
         }
-        
+
         try {
             $request->validate([
                 'request_type' => 'required|string|in:rfq,rft,rfp,eoi',
@@ -207,8 +208,11 @@ class TenderController extends Controller
             // Send invitations to users with matching interests
             $this->sendTenderInvitations($tender);
 
+            // Send notifications to users with matching interests (including budget)
+            SendTenderNotificationJob::dispatch($tender);
+
             return redirect()->route('tenders.my-tenders')
-                ->with('success', 'Tender posted successfully! Invitations have been sent to interested users.');
+                ->with('success', 'Tender posted successfully! Notifications have been sent to interested users.');
 
         // } catch (\Exception $e) {
         //     // Log the error for debugging
@@ -228,7 +232,89 @@ class TenderController extends Controller
         $subscriptions = Subscription::where('is_active', true)
             ->where('name', '!=', 'Basic')
             ->get();
-        return view('tenders.detail', compact('tender', 'subscriptions'));
+
+        // Initialize buyer details variables
+        $buyerDetails = null;
+        $buyerDetailsError = null;
+        $buyerDetailsAction = null;
+
+        // If user is authenticated and has active subscription, check if they should see buyer details
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            // Check if user has active subscription
+            if ($user->hasActiveSubscription()) {
+                try {
+                    $isOwner = $user->id === $tender->user_id;
+                    $hasViewed = $user->hasViewedTender($tender->id);
+
+                    // Only auto-load buyer details if:
+                    // 1. User is the owner (free access)
+                    // 2. User has already viewed this tender before (already paid)
+                    // 3. Team member has already viewed (team access)
+                    if ($isOwner || $hasViewed) {
+                        $accessType = 'individual';
+                        $creditsDeducted = 0;
+                        $accessMessage = '';
+
+                        // If user is the owner, allow free access without credit deduction
+                        if ($isOwner) {
+                            $accessType = 'owner';
+                            $accessMessage = 'You are viewing your own tender. No credits deducted.';
+                        } else {
+                            // Check for team access first
+                            $status = $user->getSubscriptionAndCreditStatus($tender->id);
+
+                            if (isset($status['team_access']) && $status['team_access']) {
+                                $accessType = 'team';
+                                $accessMessage = 'A team member has already viewed this tender. You can view it for free.';
+                            } else {
+                                // User has already paid for this tender, allow access
+                                $accessType = 'previously_viewed';
+                                $accessMessage = 'You have previously viewed this tender. No additional credits deducted.';
+                            }
+                        }
+
+                        // Get attachments if they exist
+                        $attachments = $tender->attachments ?? [];
+
+                        // Get remaining credits - check if user has unlimited credits
+                        $activeSubscription = $user->getActiveSubscription();
+                        $remainingCredits = $user->getTotalCredits();
+
+                        // If user has unlimited credits (credits_per_month < 0), show as unlimited
+                        if ($activeSubscription && $activeSubscription->subscription->credits_per_month < 0) {
+                            $remainingCredits = -1; // Use -1 to indicate unlimited
+                        }
+
+                        // Prepare buyer details
+                        $buyerDetails = [
+                            'tender_id' => $tender->id,
+                            'name' => $tender->user->name,
+                            'email' => $tender->contact_email ?? $tender->user->email,
+                            'phone' => $tender->contact_phone,
+                            'location' => $tender->location,
+                            'category' => $tender->category->name,
+                            'posted_at' => $tender->created_at->diffForHumans(),
+                            'deadline' => $tender->getFormattedDeadline('M d, Y'),
+                            'remaining_credits' => $remainingCredits,
+                            'attachments' => $attachments,
+                            'already_viewed' => $hasViewed,
+                            'is_owner' => $isOwner,
+                            'access_type' => $accessType,
+                            'access_message' => $accessMessage,
+                            'credits_deducted' => $creditsDeducted
+                        ];
+                    }
+                    // If user hasn't viewed before and is not owner, don't auto-load details
+                    // They will see the eye icon button to click and use their credit
+                } catch (\Exception $e) {
+                    $buyerDetailsError = 'An error occurred while loading buyer details.';
+                }
+            }
+        }
+
+        return view('tenders.detail', compact('tender', 'subscriptions', 'buyerDetails', 'buyerDetailsError', 'buyerDetailsAction'));
     }
 
     public function myTenders()
@@ -237,7 +323,7 @@ class TenderController extends Controller
         if (auth()->user()->isAdmin()) {
             abort(403, 'Admin users cannot view their tenders.');
         }
-        
+
         $tenders = Auth::user()->tenders()
             ->with('category')
             ->orderBy('created_at', 'desc')

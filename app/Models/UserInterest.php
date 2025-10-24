@@ -12,6 +12,9 @@ class UserInterest extends Model
     protected $fillable = [
         'user_id',
         'category_id',
+        'min_budget',
+        'max_budget',
+        'currency',
     ];
 
     public function user()

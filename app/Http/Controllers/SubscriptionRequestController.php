@@ -26,9 +26,9 @@ class SubscriptionRequestController extends Controller
                 'subscription_name' => $subscription->name,
                 'user_id' => auth()->id()
             ]);
-            
+
             $user = auth()->user();
-            
+
             if (!$user) {
                 if (request()->ajax()) {
                     return response()->json([
@@ -54,6 +54,22 @@ class SubscriptionRequestController extends Controller
                 }
                 return redirect()->back()
                     ->with('info', 'You already have a pending request for this subscription.');
+            }
+
+            // Check if user has any pending request (across all subscriptions)
+            $anyPendingRequest = SubscriptionRequest::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($anyPendingRequest) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You already have a pending subscription request. Please wait for it to be processed before making another request.'
+                    ]);
+                }
+                return redirect()->back()
+                    ->with('info', 'You already have a pending subscription request. Please wait for it to be processed before making another request.');
             }
 
             // Check if user already has this subscription
@@ -89,17 +105,17 @@ class SubscriptionRequestController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Subscription request submitted successfully!');
-                
+
         } catch (\Exception $e) {
             \Log::error('Subscription request error: ' . $e->getMessage());
-            
+
             if (request()->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'An error occurred while processing your request. Please try again.'
                 ], 500);
             }
-            
+
             return redirect()->back()
                 ->with('error', 'An error occurred while processing your request. Please try again.');
         }
@@ -112,7 +128,7 @@ class SubscriptionRequestController extends Controller
                 'subscription_id' => $id,
                 'user_id' => auth()->id()
             ]);
-            
+
             $subscription = Subscription::find($id);
             if (!$subscription) {
                 \Log::error('Subscription not found', ['id' => $id]);
@@ -121,7 +137,7 @@ class SubscriptionRequestController extends Controller
                     'message' => 'Subscription not found.'
                 ], 404);
             }
-            
+
             $user = auth()->user();
             if (!$user) {
                 return response()->json([
@@ -140,6 +156,18 @@ class SubscriptionRequestController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'You already have a pending request for this subscription.'
+                ]);
+            }
+
+            // Check if user has any pending request (across all subscriptions)
+            $anyPendingRequest = SubscriptionRequest::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($anyPendingRequest) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You already have a pending subscription request. Please wait for it to be processed before making another request.'
                 ]);
             }
 
@@ -168,7 +196,7 @@ class SubscriptionRequestController extends Controller
                 'success' => true,
                 'message' => 'Subscription request submitted successfully!'
             ]);
-                
+
         } catch (\Exception $e) {
             \Log::error('Subscription request error: ' . $e->getMessage());
             return response()->json([
@@ -221,7 +249,7 @@ class SubscriptionRequestController extends Controller
     {
         $user = auth()->user();
         $status = $user->getSubscriptionAndCreditStatus();
-        
+
         return response()->json($status);
     }
 
