@@ -121,42 +121,41 @@ class UserInterestController extends Controller
     public function saveBudget(Request $request)
     {
         $request->validate([
-            'budget_ranges' => 'nullable|array',
-            'budget_ranges.*.category_id' => 'required_with:budget_ranges|exists:categories,id',
-            'budget_ranges.*.min_budget' => 'nullable|numeric|min:0',
-            'budget_ranges.*.max_budget' => 'nullable|numeric|min:0|gte:budget_ranges.*.min_budget',
-            'budget_ranges.*.currency' => 'required_with:budget_ranges|string|in:USD,AUD,EUR,GBP,SGD,NZD'
+            'category_id' => 'required|exists:categories,id',
+            'min_budget' => 'nullable|numeric|min:0',
+            'max_budget' => 'nullable|numeric|min:0|gte:min_budget',
+            'currency' => 'required|string|in:USD,AUD,EUR,GBP,SGD,NZD'
         ]);
 
         $user = Auth::user();
 
         try {
-            // Update or create budget ranges for each category (if provided)
-            if ($request->has('budget_ranges') && !empty($request->budget_ranges)) {
-                foreach ($request->budget_ranges as $range) {
-                    UserInterest::updateOrCreate(
-                        [
-                            'user_id' => $user->id,
-                            'category_id' => $range['category_id']
-                        ],
-                        [
-                            'min_budget' => $range['min_budget'] ?? null,
-                            'max_budget' => $range['max_budget'] ?? null,
-                            'currency' => $range['currency']
-                        ]
-                    );
-                }
+            // Check if user has this category as an interest
+            $existingInterest = $user->interests()->where('category_id', $request->category_id)->first();
+
+            if (!$existingInterest) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must select this category as an interest first.'
+                ], 400);
             }
+
+            // Update the budget for this category
+            $existingInterest->update([
+                'min_budget' => $request->min_budget,
+                'max_budget' => $request->max_budget,
+                'currency' => $request->currency
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Preferences saved successfully!'
+                'message' => 'Budget saved successfully!'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error saving budget ranges: ' . $e->getMessage());
+            \Log::error('Error saving budget: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error saving budget ranges: ' . $e->getMessage()
+                'message' => 'Error saving budget: ' . $e->getMessage()
             ], 500);
         }
     }

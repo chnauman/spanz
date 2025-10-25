@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class UserSubscription extends Model
 {
@@ -31,5 +32,21 @@ class UserSubscription extends Model
     public function subscription()
     {
         return $this->belongsTo(Subscription::class);
+    }
+
+    /**
+     * Get the expires_at attribute as a Carbon instance
+     */
+    public function getExpiresAtAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    /**
+     * Get the starts_at attribute as a Carbon instance
+     */
+    public function getStartsAtAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
     }
 }

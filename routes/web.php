@@ -140,6 +140,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('subscriptions/decline-request/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'declineRequest'])->name('subscriptions.decline-request');
     Route::get('subscriptions/requests/{request}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'showRequest'])->name('subscriptions.show-request');
     Route::resource('subscriptions', \App\Http\Controllers\Admin\SubscriptionController::class);
+
+    // Downgrade Request Management
+    Route::get('downgrade-requests', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'index'])->name('downgrade-requests.index');
+    Route::get('downgrade-requests/{downgradeRequest}', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'show'])->name('downgrade-requests.show');
+    Route::post('downgrade-requests/{downgradeRequest}/approve', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'approve'])->name('downgrade-requests.approve');
+    Route::post('downgrade-requests/{downgradeRequest}/decline', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'decline'])->name('downgrade-requests.decline');
 });
 
 // Profile update (name and photo)
@@ -152,6 +158,15 @@ Route::middleware(['auth'])->prefix('account')->name('account.')->group(function
     Route::get('/profile', [\App\Http\Controllers\AccountController::class, 'profile'])->name('profile');
     Route::get('/plan', [\App\Http\Controllers\AccountController::class, 'plan'])->name('plan');
     Route::get('/credits', [\App\Http\Controllers\AccountController::class, 'credits'])->name('credits');
+});
+
+// Downgrade Request Routes
+Route::middleware(['auth'])->prefix('downgrade-requests')->name('downgrade-requests.')->group(function () {
+    Route::get('/create', [\App\Http\Controllers\DowngradeRequestController::class, 'create'])->name('create');
+    Route::post('/store', [\App\Http\Controllers\DowngradeRequestController::class, 'store'])->name('store');
+    Route::get('/my-requests', [\App\Http\Controllers\DowngradeRequestController::class, 'myRequests'])->name('my-requests');
+    Route::delete('/cancel/{downgradeRequest}', [\App\Http\Controllers\DowngradeRequestController::class, 'cancel'])->name('cancel');
+    Route::get('/status', [\App\Http\Controllers\DowngradeRequestController::class, 'getStatus'])->name('status');
 });
 
 Route::get('/pages/product', function () {

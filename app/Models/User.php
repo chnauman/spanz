@@ -114,6 +114,11 @@ class User extends Authenticatable
         return $this->hasMany(SubscriptionRequest::class);
     }
 
+    public function downgradeRequests()
+    {
+        return $this->hasMany(DowngradeRequest::class);
+    }
+
     public function tenderViews()
     {
         return $this->hasMany(TenderView::class);
@@ -383,7 +388,7 @@ class User extends Authenticatable
             $teamMembers = $teamMembers->merge($this->parentSupplier->subSuppliers()->get());
             return $teamMembers->unique('id');
         }
-        
+
         return collect();
     }
 
@@ -393,13 +398,13 @@ class User extends Authenticatable
     public function hasTeamMemberViewedTender($tenderId)
     {
         $teamMembers = $this->getTeamMembers();
-        
+
         if ($teamMembers->isEmpty()) {
             return false;
         }
 
         $teamMemberIds = $teamMembers->pluck('id')->toArray();
-        
+
         return \App\Models\TenderView::where('tender_id', $tenderId)
             ->whereIn('user_id', $teamMemberIds)
             ->exists();

@@ -26,7 +26,28 @@ class AccountController extends Controller
         $activeSubscription = $user->getActiveSubscription();
         $subscriptions = \App\Models\Subscription::where('is_active', true)->get();
 
-        return view('account.plan', compact('user', 'activeSubscription', 'subscriptions'));
+        // Get the latest downgrade request status (only the most recent one)
+        $latestDowngradeRequest = $user->downgradeRequests()->orderBy('created_at', 'desc')->first();
+
+        $pendingDowngradeRequest = null;
+        $approvedDowngradeRequest = null;
+        $declinedDowngradeRequest = null;
+
+        if ($latestDowngradeRequest) {
+            switch ($latestDowngradeRequest->status) {
+                case 'pending':
+                    $pendingDowngradeRequest = $latestDowngradeRequest;
+                    break;
+                case 'approved':
+                    $approvedDowngradeRequest = $latestDowngradeRequest;
+                    break;
+                case 'declined':
+                    $declinedDowngradeRequest = $latestDowngradeRequest;
+                    break;
+            }
+        }
+
+        return view('account.plan', compact('user', 'activeSubscription', 'subscriptions', 'pendingDowngradeRequest', 'approvedDowngradeRequest', 'declinedDowngradeRequest'));
     }
 
     /**

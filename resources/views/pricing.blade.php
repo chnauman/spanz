@@ -268,6 +268,7 @@
             initializeSubscriptionCards();
             clearStaleLocalStorage();
             checkSubscriptionStatus();
+            checkDowngradeRequestStatus();
         });
 
         function clearStaleLocalStorage() {
@@ -479,6 +480,8 @@
 
             const cards = document.querySelectorAll('.subscription-card');
             console.log('Checking localStorage status for', cards.length, 'cards');
+            let hasRequestedCard = false;
+            let requestedSubscriptionId = null;
 
             cards.forEach(card => {
                 const subscriptionId = card.getAttribute('data-subscription-id');
@@ -502,11 +505,11 @@
                     console.log('localStorage status for', subscriptionId, ':', requestStatus);
 
                     if (requestStatus === 'requested') {
+                        hasRequestedCard = true;
+                        requestedSubscriptionId = subscriptionId;
+
                         console.log('Setting button to requested for subscription', subscriptionId);
                         updateButtonToRequested(button, subscriptionId);
-
-                        // Also disable all other cards if this one is requested
-                        disableAllOtherSubscriptionCards(subscriptionId);
                     }
 
                     // Check for current plan buttons and apply styling immediately
@@ -521,6 +524,11 @@
                     }
                 }
             });
+
+            // If there's a requested card, disable all other cards
+            if (hasRequestedCard && requestedSubscriptionId) {
+                disableAllOtherSubscriptionCards(requestedSubscriptionId);
+            }
         }
 
         function checkSubscriptionStatus() {
@@ -535,6 +543,8 @@
                 })
                 .then(statuses => {
                     const cards = document.querySelectorAll('.subscription-card');
+                    let hasPendingRequest = false;
+                    let pendingSubscriptionId = null;
 
                     cards.forEach(card => {
                         const subscriptionId = card.getAttribute('data-subscription-id');
@@ -547,6 +557,9 @@
                         }
 
                         if (status === 'pending') {
+                            hasPendingRequest = true;
+                            pendingSubscriptionId = subscriptionId;
+
                             button.textContent = 'Requested';
                             button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
                             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
@@ -594,11 +607,55 @@
                             localStorage.removeItem(`subscription_request_${subscriptionId}`);
                         }
                     });
+
+                    // If there's a pending request, disable all other cards
+                    if (hasPendingRequest && pendingSubscriptionId) {
+                        disableAllOtherSubscriptionCards(pendingSubscriptionId);
+                    }
                 })
                 .catch(error => {
                     console.error('Error checking subscription status:', error);
                     // If server check fails, fall back to localStorage
                     checkLocalStorageStatus();
+                });
+        }
+
+        function checkDowngradeRequestStatus() {
+            // Check downgrade request status
+            fetch('/downgrade-requests/status')
+                .then(response => {
+                    if (!response.ok) {
+                        console.log('Downgrade request status check failed');
+                        return {};
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'pending') {
+                        // If there's a pending downgrade request, disable all subscription cards
+                        const cards = document.querySelectorAll('.subscription-card');
+                        cards.forEach(card => {
+                            const button = card.querySelector('button');
+                            if (button && !button.disabled && button.textContent !== 'Current Plan') {
+                                button.textContent = 'Request Pending';
+                                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                                button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                                button.disabled = true;
+
+                                // Force the styling to be applied immediately
+                                button.style.backgroundColor = '#9ca3af';
+                                button.style.color = 'white';
+                                button.style.cursor = 'not-allowed';
+
+                                // Add a visual indicator that this card is disabled
+                                card.style.opacity = '0.6';
+                                card.style.pointerEvents = 'none';
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking downgrade request status:', error);
                 });
         }
 

@@ -12,6 +12,28 @@
             </div>
 
             <div class="p-6">
+                <!-- Search Bar -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text"
+                               id="categorySearch"
+                               placeholder="Search categories by name or description..."
+                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               onkeyup="filterCategories()">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <button type="button"
+                                    id="clearSearch"
+                                    onclick="clearSearch()"
+                                    class="text-gray-400 hover:text-gray-600 hidden">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <form method="POST" action="{{ route('user.interests.store') }}" id="interestsForm">
                     @csrf
 
@@ -19,9 +41,12 @@
                         <span id="selectedCount">0</span> categories selected
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" id="categoriesGrid">
                         @foreach($categories as $category)
-                        <div class="category-item bg-gray-50 border-2 border-transparent rounded-lg p-6 transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-blue-300" onclick="toggleCategory({{ $category->id }})">
+                        <div class="category-item bg-gray-50 border-2 border-transparent rounded-lg p-6 transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-blue-300"
+                             data-category-name="{{ strtolower($category->name) }}"
+                             data-category-description="{{ strtolower($category->description ?? '') }}"
+                             onclick="toggleCategory({{ $category->id }})">
                             <input class="category-checkbox hidden" type="checkbox" name="interests[]"
                                    value="{{ $category->id }}" id="category_{{ $category->id }}"
                                    {{ in_array($category->id, old('interests', [])) ? 'checked' : '' }}>
@@ -33,6 +58,18 @@
                             </label>
                         </div>
                         @endforeach
+                    </div>
+
+                    <!-- No results message -->
+                    <div id="noResultsMessage" class="hidden text-center py-12">
+                        <div class="text-gray-500 text-lg mb-2">
+                            <i class="fas fa-search text-4xl mb-4"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No categories found</h3>
+                        <p class="text-gray-500">Try adjusting your search terms or browse all categories.</p>
+                        <button onclick="clearSearch()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Clear Search
+                        </button>
                     </div>
 
                     @error('interests')
@@ -102,6 +139,48 @@ function updateSelectionCounter() {
     counter.textContent = checkedBoxes.length;
 }
 
+// Search functionality
+function filterCategories() {
+    const searchTerm = document.getElementById('categorySearch').value.toLowerCase();
+    const categoryItems = document.querySelectorAll('.category-item');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const clearButton = document.getElementById('clearSearch');
+    let visibleCount = 0;
+
+    categoryItems.forEach(item => {
+        const categoryName = item.getAttribute('data-category-name');
+        const categoryDescription = item.getAttribute('data-category-description');
+
+        if (categoryName.includes(searchTerm) || categoryDescription.includes(searchTerm)) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Show/hide no results message
+    if (visibleCount === 0 && searchTerm.length > 0) {
+        noResultsMessage.classList.remove('hidden');
+    } else {
+        noResultsMessage.classList.add('hidden');
+    }
+
+    // Show/hide clear button
+    if (searchTerm.length > 0) {
+        clearButton.classList.remove('hidden');
+    } else {
+        clearButton.classList.add('hidden');
+    }
+}
+
+// Clear search function
+function clearSearch() {
+    document.getElementById('categorySearch').value = '';
+    filterCategories();
+    document.getElementById('categorySearch').focus();
+}
+
 // Skip interests function
 function skipInterests() {
     document.getElementById('skipForm').submit();
@@ -119,6 +198,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     updateSelectionCounter();
+
+    // Add search input event listeners
+    const searchInput = document.getElementById('categorySearch');
+    searchInput.addEventListener('input', filterCategories);
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Escape') {
+            clearSearch();
+        }
+    });
 });
 </script>
 @endsection
