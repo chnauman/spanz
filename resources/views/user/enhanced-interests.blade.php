@@ -656,6 +656,13 @@ let paginationState = {
 };
 
 function switchTab(tabName) {
+    // Check if switching to summary tab (Your Interest) and refresh immediately
+    if (tabName === 'summary') {
+        // Refresh the page when switching to summary tab
+        window.location.reload();
+        return;
+    }
+
     // Save current pagination state for categories tab
     paginationState.categories.currentPage = currentPage;
     paginationState.categories.pageSize = pageSize;
@@ -693,14 +700,8 @@ function switchTab(tabName) {
     // Update progress indicator
     updateProgressIndicator(tabName);
 
-    // Populate summary tab if it's being activated
-    if (tabName === 'summary') {
-        // Restore pagination state when switching to summary
-        summaryCurrentPage = paginationState.summary.currentPage;
-        summaryPageSize = paginationState.summary.pageSize;
-        document.getElementById('summaryPageSize').value = summaryPageSize;
-        populateSummaryTab();
-    } else if (tabName === 'categories') {
+    // Handle categories tab logic
+    if (tabName === 'categories') {
         // Only restore pagination state and reinitialize if we're switching TO categories tab
         // Don't call initializeCategories() if we're already on categories tab
         const currentActiveTab = document.querySelector('.tab-button.active');
