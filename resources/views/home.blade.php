@@ -461,7 +461,7 @@
             </div>
 
             <!-- Pricing Cards -->
-            <div class="flex flex-wrap justify-center gap-8 mt-4" style="min-height: 4.5in;">
+            <div class="flex flex-wrap justify-center gap-8 mt-10" style="min-height: 4.5in;">
                 @foreach($subscriptions as $index => $subscription)
                     @if($subscription->is_active)
                         @php

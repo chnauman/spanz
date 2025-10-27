@@ -94,6 +94,11 @@ class User extends Authenticatable
         return $this->hasMany(UserInterest::class);
     }
 
+    public function budgetRanges()
+    {
+        return $this->hasMany(UserBudgetRange::class);
+    }
+
     public function tenders()
     {
         return $this->hasMany(Tender::class);

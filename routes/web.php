@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/interests/management', [UserInterestController::class, 'management'])->name('user.interests.management');
     Route::delete('/user/interests/{interest}', [UserInterestController::class, 'delete'])->name('user.interests.delete');
     Route::post('/user/interests/save-budget', [UserInterestController::class, 'saveBudget'])->name('user.interests.save-budget');
+    Route::delete('/user/interests/budget/{budgetRangeId}', [UserInterestController::class, 'deleteBudget'])->name('user.interests.delete-budget');
 });
 
 // Tender Routes
