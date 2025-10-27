@@ -26,10 +26,10 @@
                     <div class="bg-gray-50 rounded-lg p-2">
                         <nav class="flex space-x-2">
                             <button type="button" onclick="switchTab('summary')" id="summary-tab" class="tab-button active flex items-center px-6 py-3 rounded-md font-semibold text-sm transition-all duration-200">
-                                <i class="fas fa-list-check me-3"></i>Your Interest
+                                Your Interest
                             </button>
                             <button type="button" onclick="switchTab('categories')" id="categories-tab" class="tab-button flex items-center px-6 py-3 rounded-md font-semibold text-sm transition-all duration-200">
-                                <i class="fas fa-tags me-3"></i>Add Interests
+                               Add Interests
                             </button>
                         </nav>
                     </div>
