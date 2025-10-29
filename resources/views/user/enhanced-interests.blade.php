@@ -307,7 +307,7 @@
                 <!-- Budget Type Selection -->
                 <div class="mb-4">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-filter mr-1 text-blue-600"></i>Budget Type
+                        <i class="fas fa-filter mr-1 text-blue-600"></i> Budget Type
                     </label>
                     <div class="space-y-2">
                         <label class="flex items-center p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -330,7 +330,7 @@
                     <div class="grid grid-cols-2 gap-3" id="budgetFields">
                         <div id="minField">
                             <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                <i class="fas fa-arrow-down mr-1 text-green-600"></i>Min Budget
+                                <i class="fas fa-arrow-down mr-1 text-green-600"></i> Min Budget
                             </label>
                             <div class="relative">
                                 <input type="number" id="budgetMin" placeholder="0.00" step="0.01" min="0"
@@ -343,7 +343,7 @@
 
                         <div id="maxField">
                             <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                <i class="fas fa-arrow-up mr-1 text-red-600"></i>Max Budget
+                                <i class="fas fa-arrow-up mr-1 text-red-600"></i> Max Budget
                             </label>
                             <div class="relative">
                                 <input type="number" id="budgetMax" placeholder="1000000.00" step="0.01" min="0"

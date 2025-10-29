@@ -314,7 +314,7 @@ Route::get('/test-email', function () {
 
         return response()->json([
             'success' => true,
-            'message' => 'Test email sent successfully! Check your Mailtrap inbox.',
+            'message' => 'Test email sent successfully! Check your Hostinger email inbox.',
             'invitation_token' => $invitation->token,
             'registration_url' => route('register', ['token' => $invitation->token]),
             'config' => [
