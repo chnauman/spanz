@@ -17,9 +17,10 @@ class CustomResetPasswordNotification extends LaravelResetPasswordNotification
         }
 
         $url = $this->resetUrl($notifiable);
+        $email = $notifiable->getEmailForPasswordReset();
         
         // Return custom Mailable for consistent email design
-        return new ResetPasswordMail($url);
+        return new ResetPasswordMail($url, $email);
     }
 
     /**
