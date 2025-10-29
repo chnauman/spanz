@@ -16,7 +16,13 @@ class CustomResetPasswordNotification extends LaravelResetPasswordNotification
             return call_user_func(static::$toMailCallback, $notifiable, $this->token);
         }
 
-        return $this->buildMailMessage($this->resetUrl($notifiable));
+        $url = $this->resetUrl($notifiable);
+        
+        // Use a custom Mailable-like approach by returning a MailMessage with view
+        // Note: MailMessage doesn't support view() directly, so we'll use via() with custom channel
+        return (new MailMessage)
+            ->subject('Reset Password - Spanz')
+            ->markdown('emails.reset-password', ['url' => $url]);
     }
 
     /**
@@ -32,20 +38,5 @@ class CustomResetPasswordNotification extends LaravelResetPasswordNotification
             'token' => $this->token,
             'email' => $notifiable->getEmailForPasswordReset(),
         ], false));
-    }
-
-    /**
-     * Build the mail message.
-     */
-    protected function buildMailMessage($url)
-    {
-        return (new MailMessage)
-            ->subject('Reset Password - Spanz')
-            ->greeting('Hello!')
-            ->line('You are receiving this email because we received a password reset request for your account.')
-            ->action('Reset Password', $url)
-            ->line('This password reset link will expire in :count minutes.', ['count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire')])
-            ->line('If you did not request a password reset, no further action is required.')
-            ->salutation('Best regards, Spanz Team');
     }
 }

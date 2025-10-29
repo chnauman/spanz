@@ -44,7 +44,8 @@
 </head>
 <body>
     <div class="header">
-        <h1>You're Invited to Join SPANZ</h1>
+        <h1 style="font-size: 28px; font-weight: bold; margin: 0 0 10px 0;">SPANZ</h1>
+        <h2 style="margin: 10px 0; font-size: 20px;">You're Invited to Join SPANZ</h2>
     </div>
 
     <div class="content">

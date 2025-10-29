@@ -53,8 +53,9 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🚨 Last Day to Renew</h1>
+    <div class="header" style="background-color: #0D6AED; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px;">
+        <h1 style="font-size: 28px; font-weight: bold; margin: 0 0 10px 0; color: white;">SPANZ</h1>
+        <h2 style="margin: 10px 0; font-size: 20px; color: white;">🚨 Last Day to Renew</h2>
     </div>
     
     <div class="content">

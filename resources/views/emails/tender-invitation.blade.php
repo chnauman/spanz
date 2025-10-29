@@ -51,8 +51,9 @@
 </head>
 <body>
     <div class="header">
-        <h1>New Tender Posted!</h1>
-        <p>Hello {{ $user->name }}, a new tender has been posted that matches your interests.</p>
+        <h1 style="font-size: 28px; font-weight: bold; margin: 0 0 10px 0;">SPANZ</h1>
+        <h2 style="margin: 10px 0; font-size: 20px;">New Tender Posted!</h2>
+        <p style="margin: 0;">Hello {{ $user->name }}, a new tender has been posted that matches your interests.</p>
     </div>
     
     <div class="content">
