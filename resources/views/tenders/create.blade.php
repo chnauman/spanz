@@ -35,15 +35,15 @@
                 <select id="budget" name="budget" required
                                 class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('budget') border-red-300 @enderror">
                                 <option value="">Select amount</option>
-                                <option value="1000" {{ old('budget') == '1000' ? 'selected' : '' }}>Less than 1,000 AUD</option>
-                                <option value="5000" {{ old('budget') == '5000' ? 'selected' : '' }}>1,000 - 5,000 AUD</option>
-                                <option value="10000" {{ old('budget') == '10000' ? 'selected' : '' }}>5,000 - 10,000 AUD</option>
-                                <option value="30000" {{ old('budget') == '30000' ? 'selected' : '' }}>10,000 - 30,000 AUD</option>
-                                <option value="50000" {{ old('budget') == '50000' ? 'selected' : '' }}>30,000 - 50,000 AUD</option>
-                                <option value="100000" {{ old('budget') == '100000' ? 'selected' : '' }}>50,000 - 100,000 AUD</option>
-                                <option value="500000" {{ old('budget') == '500000' ? 'selected' : '' }}>100,000 - 500,000 AUD</option>
-                                <option value="1000000" {{ old('budget') == '1000000' ? 'selected' : '' }}>500,000 - 1 million AUD</option>
-                                <option value="1000001" {{ old('budget') == '1000001' ? 'selected' : '' }}>over 1 million AUD</option>
+                                <option value="1000" {{ old('budget') == '1000' ? 'selected' : '' }}>Less than 1,000</option>
+                                <option value="5000" {{ old('budget') == '5000' ? 'selected' : '' }}>1,000 - 5,000</option>
+                                <option value="10000" {{ old('budget') == '10000' ? 'selected' : '' }}>5,000 - 10,000</option>
+                                <option value="30000" {{ old('budget') == '30000' ? 'selected' : '' }}>10,000 - 30,000</option>
+                                <option value="50000" {{ old('budget') == '50000' ? 'selected' : '' }}>30,000 - 50,000</option>
+                                <option value="100000" {{ old('budget') == '100000' ? 'selected' : '' }}>50,000 - 100,000</option>
+                                <option value="500000" {{ old('budget') == '500000' ? 'selected' : '' }}>100,000 - 500,000</option>
+                                <option value="1000000" {{ old('budget') == '1000000' ? 'selected' : '' }}>500,000 - 1 million</option>
+                                <option value="1000001" {{ old('budget') == '1000001' ? 'selected' : '' }}>over 1 million</option>
                             </select>
                             @error('budget')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -55,12 +55,7 @@
                             <select id="currency" name="currency" required
                                 class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('currency') border-red-300 @enderror">
                                 <option value="">Select currency</option>
-                                <option value="AUD" {{ old('currency') == 'AUD' ? 'selected' : '' }}>AUD (Australian Dollar)</option>
-                                <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
-                                <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>EUR (Euro)</option>
-                                <option value="GBP" {{ old('currency') == 'GBP' ? 'selected' : '' }}>GBP (British Pound)</option>
-                                <option value="SGD" {{ old('currency') == 'SGD' ? 'selected' : '' }}>SGD (Singapore Dollar)</option>
-                                <option value="NZD" {{ old('currency') == 'NZD' ? 'selected' : '' }}>NZD (New Zealand Dollar)</option>
+                                <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }} default>USD (US Dollar)</option>
                             </select>
                             @error('currency')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
