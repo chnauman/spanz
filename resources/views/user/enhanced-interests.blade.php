@@ -6,6 +6,12 @@
 <!-- FontAwesome CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+    /* Add space between radio buttons and text */
+    input[name="budgetType"] {
+        margin-right: 24px !important;
+    }
+</style>
 <div class="min-h-screen bg-gray-50">
     <!-- Full-width header -->
     <div class="bg-[#092C48] text-white py-8">
@@ -311,15 +317,15 @@
                     </label>
                     <div class="space-y-2">
                         <label class="flex items-center p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="radio" name="budgetType" value="less" class="mr-3 text-[#092C48] focus:ring-[#092C48]" onchange="toggleBudgetFields()">
+                            <input type="radio" name="budgetType" value="less" class="mr-6 text-[#092C48] focus:ring-[#092C48]" onchange="toggleBudgetFields()">
                             <span class="text-sm font-medium text-gray-700">Less than (Maximum amount)</span>
                         </label>
                         <label class="flex items-center p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="radio" name="budgetType" value="greater" class="mr-3 text-[#092C48] focus:ring-[#092C48]" onchange="toggleBudgetFields()">
+                            <input type="radio" name="budgetType" value="greater" class="mr-6 text-[#092C48] focus:ring-[#092C48]" onchange="toggleBudgetFields()">
                             <span class="text-sm font-medium text-gray-700">Greater than (Minimum amount)</span>
                         </label>
                         <label class="flex items-center p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                            <input type="radio" name="budgetType" value="range" class="mr-3 text-[#092C48] focus:ring-[#092C48]" onchange="toggleBudgetFields()" checked>
+                            <input type="radio" name="budgetType" value="range" class="mr-6 text-[#092C48] focus:ring-[#092C48]" onchange="toggleBudgetFields()" checked>
                             <span class="text-sm font-medium text-gray-700">Range (Min to Max)</span>
                         </label>
                     </div>
@@ -330,7 +336,7 @@
                     <div class="grid grid-cols-2 gap-3" id="budgetFields">
                         <div id="minField">
                             <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                <i class="fas fa-arrow-down mr-1 text-green-600"></i> Min Budget
+                                 Min Budget
                             </label>
                             <div class="relative">
                                 <input type="number" id="budgetMin" placeholder="0.00" step="0.01" min="0"
@@ -343,7 +349,7 @@
 
                         <div id="maxField">
                             <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                <i class="fas fa-arrow-up mr-1 text-red-600"></i> Max Budget
+                                Max Budget
                             </label>
                             <div class="relative">
                                 <input type="number" id="budgetMax" placeholder="1000000.00" step="0.01" min="0"
@@ -1229,22 +1235,22 @@ function toggleBudgetFields() {
         maxField.style.display = 'block';
         budgetFields.className = 'grid grid-cols-1 gap-3';
         // Update max field label
-        maxField.querySelector('label').innerHTML = '<i class="fas fa-arrow-up mr-1 text-red-600"></i>Maximum Budget';
+        maxField.querySelector('label').innerHTML = 'Maximum Budget';
     } else if (budgetType === 'greater') {
         // Show only min field
         minField.style.display = 'block';
         maxField.style.display = 'none';
         budgetFields.className = 'grid grid-cols-1 gap-3';
         // Update min field label
-        minField.querySelector('label').innerHTML = '<i class="fas fa-arrow-down mr-1 text-green-600"></i>Minimum Budget';
+        minField.querySelector('label').innerHTML = 'Minimum Budget';
     } else if (budgetType === 'range') {
         // Show both fields
         minField.style.display = 'block';
         maxField.style.display = 'block';
         budgetFields.className = 'grid grid-cols-2 gap-3';
         // Reset labels
-        minField.querySelector('label').innerHTML = '<i class="fas fa-arrow-down mr-1 text-green-600"></i>Min Budget';
-        maxField.querySelector('label').innerHTML = '<i class="fas fa-arrow-up mr-1 text-red-600"></i>Max Budget';
+        minField.querySelector('label').innerHTML = 'Min Budget';
+        maxField.querySelector('label').innerHTML = 'Max Budget';
     }
 }
 
