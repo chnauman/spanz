@@ -6,7 +6,7 @@
 @endphp
 
 @section('content')
-<h2 style="color: #333; margin-top: 0;">Hello {{ $invitation->name }},</h2>
+<h2>Hello {{ $invitation->name }},</h2>
 
 <p><strong>{{ $supplier->name }}</strong> has invited you to join SPANZ as a Sub Supplier.</p>
 
@@ -28,10 +28,10 @@
 <p>To get started, please complete your registration:</p>
 
 <div class="button-center">
-    <a href="{{ route('register', ['token' => $invitation->token]) }}" class="button">Complete Registration</a>
+    <a href="{{ route('register', ['token' => $invitation->token]) }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none;">Complete Registration</a>
 </div>
 
 <p>If you have any questions, please contact {{ $supplier->name }} directly.</p>
 
-<p><small>This invitation expires on {{ $invitation->expires_at->format('M d, Y \a\t g:i A') }}.</small></p>
+<p style="color: #718096; font-size: 14px; margin-top: 24px;">This invitation expires on {{ $invitation->expires_at->format('M d, Y \a\t g:i A') }}.</p>
 @endsection

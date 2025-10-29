@@ -6,17 +6,17 @@
 @endphp
 
 @section('content')
-<h2 style="color: #333; margin-top: 0;">Hello {{ $user->name }},</h2>
+<h2>Hello {{ $user->name }},</h2>
 
 <p>A new tender has been posted that matches your interests!</p>
 
-<div class="content-box" style="background-color: #e8f4fd; border-left-color: #2196F3;">
+<div class="content-box" style="background-color: #ebf8ff; border-left-color: #4299e1;">
     <strong>Why this tender matches your interests:</strong><br>
     {{ $matchReason }}
 </div>
 
 <div class="content-box">
-    <h3 style="margin-top: 0; color: #0D6AED;">{{ $tender->title }}</h3>
+    <h3 style="margin-top: 0;">{{ $tender->title }}</h3>
 
     <p><strong>Description:</strong><br>
     {{ Str::limit($tender->description, 200) }}</p>
@@ -41,11 +41,11 @@
 </div>
 
 <div class="button-center">
-    <a href="{{ route('tenders.detail', $tender->id) }}" class="button">View Tender Details</a>
+    <a href="{{ route('tenders.detail', $tender->id) }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none;">View Tender Details</a>
 </div>
 
 <p>Don't miss out on this opportunity! Log in to your dashboard to see more details and submit your response.</p>
 
-<p>Best regards,<br>
+<p style="margin-top: 24px;">Best regards,<br>
 <strong>Spanz Team</strong></p>
 @endsection

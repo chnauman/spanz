@@ -6,12 +6,12 @@
 @endphp
 
 @section('content')
-<h2 style="color: #333; margin-top: 0;">Hello {{ $user->name }},</h2>
+<h2>Hello {{ $user->name }},</h2>
 
 <p>A new tender has been posted that matches your interests.</p>
 
 <div class="content-box">
-    <h2 style="margin-top: 0; color: #0D6AED;">{{ $tender->title }}</h2>
+    <h2 style="margin-top: 0;">{{ $tender->title }}</h2>
     <p><strong>Category:</strong> {{ $tender->category->name }}</p>
     <p><strong>Posted by:</strong> {{ $tender->user->name }}</p>
     @if($tender->budget)
@@ -22,17 +22,17 @@
     <p><strong>Location:</strong> {{ $tender->location }}</p>
     @endif
     
-    <h3 style="color: #0D6AED;">Description:</h3>
+    <h3>Description:</h3>
     <p>{{ $tender->description }}</p>
     
     @if($tender->requirements)
-    <h3 style="color: #0D6AED;">Requirements:</h3>
+    <h3>Requirements:</h3>
     <p>{{ $tender->requirements }}</p>
     @endif
 </div>
 
 <div class="button-center">
-    <a href="{{ route('tenders.detail', $tender->id) }}" class="button">View Tender Details</a>
+    <a href="{{ route('tenders.detail', $tender->id) }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none;">View Tender Details</a>
 </div>
 
 <p>This email was sent because you have expressed interest in the "{{ $tender->category->name }}" category.</p>
