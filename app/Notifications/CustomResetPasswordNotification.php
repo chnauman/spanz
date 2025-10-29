@@ -3,7 +3,7 @@
 namespace App\Notifications;
 
 use Illuminate\Auth\Notifications\ResetPassword as LaravelResetPasswordNotification;
-use Illuminate\Notifications\Messages\MailMessage;
+use App\Mail\ResetPasswordMail;
 
 class CustomResetPasswordNotification extends LaravelResetPasswordNotification
 {
@@ -18,11 +18,8 @@ class CustomResetPasswordNotification extends LaravelResetPasswordNotification
 
         $url = $this->resetUrl($notifiable);
         
-        // Use a custom Mailable-like approach by returning a MailMessage with view
-        // Note: MailMessage doesn't support view() directly, so we'll use via() with custom channel
-        return (new MailMessage)
-            ->subject('Reset Password - Spanz')
-            ->markdown('emails.reset-password', ['url' => $url]);
+        // Return custom Mailable for consistent email design
+        return new ResetPasswordMail($url);
     }
 
     /**

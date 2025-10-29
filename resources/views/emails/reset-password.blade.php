@@ -1,16 +1,20 @@
-@component('mail::message')
-# Hello!
+@extends('emails.layout')
 
-You are receiving this email because we received a password reset request for your account.
+@section('title', 'Reset Password - Spanz')
 
-@component('mail::button', ['url' => $url])
-Reset Password
-@endcomponent
+@section('content')
+<h2 style="color: #333; margin-top: 0;">Hello!</h2>
 
-This password reset link will expire in 60 minutes.
+<p>You are receiving this email because we received a password reset request for your account.</p>
 
-If you did not request a password reset, no further action is required.
+<div class="button-center">
+    <a href="{{ $url }}" class="button">Reset Password</a>
+</div>
 
-Best regards,  
-Spanz Team
-@endcomponent
+<p>This password reset link will expire in 60 minutes.</p>
+
+<p>If you did not request a password reset, no further action is required.</p>
+
+<p>Best regards,<br>
+<strong>Spanz Team</strong></p>
+@endsection
