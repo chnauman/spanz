@@ -34,6 +34,9 @@ class SendTenderNotificationJob implements ShouldQueue
      */
     public function handle(): void
     {
+        // Reload the tender with category relationship (in case it was serialized)
+        $this->tender->load('category');
+        
         // Get all users with interests that match this tender
         $matchingUsers = $this->getMatchingUsers();
 
@@ -53,6 +56,7 @@ class SendTenderNotificationJob implements ShouldQueue
 
     /**
      * Get users whose interests match this tender
+     * Both category AND budget range must match to send notification
      */
     private function getMatchingUsers(): array
     {
@@ -71,12 +75,9 @@ class SendTenderNotificationJob implements ShouldQueue
                 ->where('category_id', $this->tender->category_id)
                 ->get();
 
-            // If no budget ranges, send notification for category match only
+            // REQUIRE BOTH category AND budget range to match
+            // If no budget ranges exist, skip this user (don't send notification)
             if ($budgetRanges->isEmpty()) {
-                $matchingUsers[] = [
-                    'user' => $user,
-                    'reason' => "Category: " . $this->tender->category->name
-                ];
                 continue;
             }
 
@@ -91,9 +92,10 @@ class SendTenderNotificationJob implements ShouldQueue
                 }
             }
 
-            // If any budget range matches, add to matching users
+            // Only add to matching users if BOTH category AND budget match
             if ($budgetMatchFound) {
-                $reason = "Category: " . $this->tender->category->name;
+                $categoryName = $this->tender->category ? $this->tender->category->name : 'Unknown Category';
+                $reason = "Category: " . $categoryName;
                 if (!empty($budgetReasons)) {
                     $reason .= " | " . implode(', ', $budgetReasons);
                 }
@@ -114,31 +116,46 @@ class SendTenderNotificationJob implements ShouldQueue
     private function checkBudgetMatch(UserBudgetRange $budgetRange): bool
     {
         $tenderBudget = $this->tender->budget;
-        $tenderCurrency = $this->tender->currency;
+        $tenderCurrency = $this->tender->currency ?? 'USD';
 
-        // If tender has no budget, don't match
-        if (!$tenderBudget) {
+        // If tender has no budget or budget is 0, don't match
+        if (!$tenderBudget || $tenderBudget <= 0) {
             return false;
         }
 
+        // Ensure currency is set, default to USD
+        if (!$tenderCurrency || !CurrencyConversionService::isSupported($tenderCurrency)) {
+            $tenderCurrency = 'USD';
+        }
+
         // Convert tender budget to budget range currency for comparison
+        // Since both are USD, conversion will return same value
         $convertedTenderBudget = CurrencyConversionService::convert(
             $tenderBudget,
             $tenderCurrency,
-            $budgetRange->currency
+            $budgetRange->currency ?? 'USD'
         );
 
         switch ($budgetRange->budget_type) {
             case 'less':
                 // User wants tenders less than their max budget
+                // Example: If max_budget is 1000, tender budget 500 should match (< 1000)
+                if (!$budgetRange->max_budget) {
+                    return false;
+                }
                 return $convertedTenderBudget < $budgetRange->max_budget;
 
             case 'greater':
                 // User wants tenders greater than their min budget
+                // Example: If min_budget is 1000, tender budget 2000 should match (> 1000)
+                if (!$budgetRange->min_budget) {
+                    return false;
+                }
                 return $convertedTenderBudget > $budgetRange->min_budget;
 
             case 'range':
                 // User wants tenders within their budget range
+                // Example: If range is 222-466789, tender budget 500 should match (>= 222 AND <= 466789)
                 $minMatch = $budgetRange->min_budget ? $convertedTenderBudget >= $budgetRange->min_budget : true;
                 $maxMatch = $budgetRange->max_budget ? $convertedTenderBudget <= $budgetRange->max_budget : true;
                 return $minMatch && $maxMatch;
@@ -154,13 +171,22 @@ class SendTenderNotificationJob implements ShouldQueue
     private function getBudgetMatchReason(UserBudgetRange $budgetRange): string
     {
         $tenderBudget = $this->tender->budget;
-        $tenderCurrency = $this->tender->currency;
+        $tenderCurrency = $this->tender->currency ?? 'USD';
+        $budgetRangeCurrency = $budgetRange->currency ?? 'USD';
+
+        // Ensure currency is supported
+        if (!CurrencyConversionService::isSupported($tenderCurrency)) {
+            $tenderCurrency = 'USD';
+        }
+        if (!CurrencyConversionService::isSupported($budgetRangeCurrency)) {
+            $budgetRangeCurrency = 'USD';
+        }
 
         // Convert tender budget to budget range currency for display
         $convertedTenderBudget = CurrencyConversionService::convert(
             $tenderBudget,
             $tenderCurrency,
-            $budgetRange->currency
+            $budgetRangeCurrency
         );
 
         switch ($budgetRange->budget_type) {
@@ -168,18 +194,18 @@ class SendTenderNotificationJob implements ShouldQueue
                 return sprintf(
                     "Budget %.2f %s matches your 'less than %.2f %s' preference",
                     $convertedTenderBudget,
-                    $budgetRange->currency,
+                    $budgetRangeCurrency,
                     $budgetRange->max_budget,
-                    $budgetRange->currency
+                    $budgetRangeCurrency
                 );
 
             case 'greater':
                 return sprintf(
                     "Budget %.2f %s matches your 'greater than %.2f %s' preference",
                     $convertedTenderBudget,
-                    $budgetRange->currency,
+                    $budgetRangeCurrency,
                     $budgetRange->min_budget,
-                    $budgetRange->currency
+                    $budgetRangeCurrency
                 );
 
             case 'range':
@@ -188,10 +214,10 @@ class SendTenderNotificationJob implements ShouldQueue
                 return sprintf(
                     "Budget %.2f %s matches your range %.2f - %.2f %s",
                     $convertedTenderBudget,
-                    $budgetRange->currency,
+                    $budgetRangeCurrency,
                     $budgetRange->min_budget,
                     $budgetRange->max_budget,
-                    $budgetRange->currency
+                    $budgetRangeCurrency
                 );
 
             default:
