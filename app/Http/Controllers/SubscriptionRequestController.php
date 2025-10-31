@@ -100,8 +100,17 @@ class SubscriptionRequestController extends Controller
             // Notify admin about the upgrade request
             try {
                 $adminEmail = env('ADMIN_EMAIL');
+                $request->load(['user','subscription']);
+                
                 if ($adminEmail) {
-                    Mail::to($adminEmail)->send(new UpgradeRequestAdminMail($request->load(['user','subscription'])));
+                    // Use ADMIN_EMAIL from env if set
+                    Mail::to($adminEmail)->send(new UpgradeRequestAdminMail($request));
+                } else {
+                    // Fallback: send to all admin users from database
+                    $adminUsers = User::where('role', 'admin')->get();
+                    foreach ($adminUsers as $admin) {
+                        Mail::to($admin->email)->send(new UpgradeRequestAdminMail($request));
+                    }
                 }
             } catch (\Throwable $e) {
                 \Log::error('Failed to send upgrade request admin email: ' . $e->getMessage());
@@ -203,6 +212,25 @@ class SubscriptionRequestController extends Controller
                 'user_id' => $user->id,
                 'subscription_id' => $subscription->id
             ]);
+
+            // Notify admin about the upgrade request
+            try {
+                $adminEmail = env('ADMIN_EMAIL');
+                $request->load(['user','subscription']);
+                
+                if ($adminEmail) {
+                    // Use ADMIN_EMAIL from env if set
+                    Mail::to($adminEmail)->send(new UpgradeRequestAdminMail($request));
+                } else {
+                    // Fallback: send to all admin users from database
+                    $adminUsers = User::where('role', 'admin')->get();
+                    foreach ($adminUsers as $admin) {
+                        Mail::to($admin->email)->send(new UpgradeRequestAdminMail($request));
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send upgrade request admin email: ' . $e->getMessage());
+            }
 
             return response()->json([
                 'success' => true,

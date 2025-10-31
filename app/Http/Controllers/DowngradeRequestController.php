@@ -63,10 +63,18 @@ class DowngradeRequestController extends Controller
         // Notify admin about the downgrade request
         try {
             $adminEmail = env('ADMIN_EMAIL');
+            $downgradeRequest->setRelation('currentSubscription', $activeSubscription->subscription);
+            $downgradeRequest->setRelation('user', $user);
+            
             if ($adminEmail) {
-                $downgradeRequest->setRelation('currentSubscription', $activeSubscription->subscription);
-                $downgradeRequest->setRelation('user', $user);
+                // Use ADMIN_EMAIL from env if set
                 Mail::to($adminEmail)->send(new DowngradeRequestAdminMail($downgradeRequest));
+            } else {
+                // Fallback: send to all admin users from database
+                $adminUsers = \App\Models\User::where('role', 'admin')->get();
+                foreach ($adminUsers as $admin) {
+                    Mail::to($admin->email)->send(new DowngradeRequestAdminMail($downgradeRequest));
+                }
             }
         } catch (\Throwable $e) {
             \Log::error('Failed to send downgrade request admin email: ' . $e->getMessage());
