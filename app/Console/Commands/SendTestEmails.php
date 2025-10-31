@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SubscriptionExpiringIn7DaysMail;
 use App\Mail\SubscriptionExpiringIn3DaysMail;
+use App\Mail\SubscriptionExpiredMail;
 use App\Mail\UpgradeRequestAdminMail;
 use App\Mail\DowngradeRequestAdminMail;
 use App\Mail\SubscriptionApprovedMail;
@@ -18,7 +20,7 @@ use Carbon\Carbon;
 
 class SendTestEmails extends Command
 {
-    protected $signature = 'emails:test {type : expiry3|upgrade_request|downgrade_request|approved|rejected} {--to=}';
+    protected $signature = 'emails:test {type : expiry7|expiry3|expired|upgrade_request|downgrade_request|approved|rejected} {--to=}';
 
     protected $description = 'Send test emails for various scenarios to a target address';
 
@@ -29,8 +31,14 @@ class SendTestEmails extends Command
 
         try {
             switch ($type) {
+                case 'expiry7':
+                    $this->sendExpiry7Days($to);
+                    break;
                 case 'expiry3':
                     $this->sendExpiry3Days($to);
+                    break;
+                case 'expired':
+                    $this->sendExpired($to);
                     break;
                 case 'upgrade_request':
                     $this->sendUpgradeRequestAdmin($to);
@@ -45,7 +53,7 @@ class SendTestEmails extends Command
                     $this->sendSubscriptionRejected($to);
                     break;
                 default:
-                    $this->error('Unknown type. Use one of: expiry3|upgrade_request|downgrade_request|approved|rejected');
+                    $this->error('Unknown type. Use one of: expiry7|expiry3|expired|upgrade_request|downgrade_request|approved|rejected');
                     return static::FAILURE;
             }
         } catch (\Throwable $e) {
@@ -74,6 +82,19 @@ class SendTestEmails extends Command
         return $subscription;
     }
 
+    private function sendExpiry7Days(string $to): void
+    {
+        $user = $this->fakeUser();
+        $subscription = $this->fakeSubscription();
+
+        $userSubscription = new UserSubscription();
+        $userSubscription->setRelation('user', $user);
+        $userSubscription->setRelation('subscription', $subscription);
+        $userSubscription->expires_at = Carbon::now()->addDays(7);
+
+        Mail::to($to)->send(new SubscriptionExpiringIn7DaysMail($userSubscription));
+    }
+
     private function sendExpiry3Days(string $to): void
     {
         $user = $this->fakeUser();
@@ -85,6 +106,19 @@ class SendTestEmails extends Command
         $userSubscription->expires_at = Carbon::now()->addDays(3);
 
         Mail::to($to)->send(new SubscriptionExpiringIn3DaysMail($userSubscription));
+    }
+
+    private function sendExpired(string $to): void
+    {
+        $user = $this->fakeUser();
+        $subscription = $this->fakeSubscription();
+
+        $userSubscription = new UserSubscription();
+        $userSubscription->setRelation('user', $user);
+        $userSubscription->setRelation('subscription', $subscription);
+        $userSubscription->expires_at = Carbon::now()->subDay(); // Expired yesterday
+
+        Mail::to($to)->send(new SubscriptionExpiredMail($userSubscription));
     }
 
     private function sendUpgradeRequestAdmin(string $to): void

@@ -20,6 +20,10 @@
 <p><strong>Requested At:</strong> {{ optional($request->requested_at)->format('F j, Y g:i A') }}</p>
 
 <p>Please review this request in the admin panel.</p>
+
+<div class="button-center">
+    <a href="{{ route('admin.downgrade-requests.index') }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 4px; display: inline-block;">View Request</a>
+</div>
 @endsection
 
 

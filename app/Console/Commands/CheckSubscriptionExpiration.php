@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\UserSubscription;
 use App\Models\User;
+use App\Mail\SubscriptionExpiringIn7DaysMail;
 use App\Mail\SubscriptionExpiringIn3DaysMail;
 use App\Mail\SubscriptionExpiringIn1DayMail;
 use App\Mail\SubscriptionExpiredMail;
@@ -35,11 +36,15 @@ class CheckSubscriptionExpiration extends Command
         $this->info('Checking subscription expirations...');
 
         $today = Carbon::today();
+        $sevenDaysFromNow = Carbon::today()->addDays(7);
         $threeDaysFromNow = Carbon::today()->addDays(3);
         $oneDayFromNow = Carbon::today()->addDays(1);
 
         // Display all active subscriptions with days remaining
         $this->displaySubscriptionStatus();
+
+        // Check subscriptions expiring in 7 days
+        $this->checkExpiringIn7Days($sevenDaysFromNow);
 
         // Check subscriptions expiring in 3 days
         $this->checkExpiringIn3Days($threeDaysFromNow);
@@ -123,6 +128,28 @@ class CheckSubscriptionExpiration extends Command
         $this->line("Expiring in 7 days or less: " . $expiringSoon);
         $this->line("Expired: " . $expiredCount);
         $this->line(str_repeat('-', 100) . "\n");
+    }
+
+    /**
+     * Check subscriptions expiring in 7 days
+     */
+    private function checkExpiringIn7Days($sevenDaysFromNow)
+    {
+        $expiringIn7Days = UserSubscription::where('is_active', true)
+            ->whereDate('expires_at', $sevenDaysFromNow)
+            ->with(['user', 'subscription'])
+            ->get();
+
+        foreach ($expiringIn7Days as $userSubscription) {
+            try {
+                Mail::to($userSubscription->user->email)
+                    ->send(new SubscriptionExpiringIn7DaysMail($userSubscription));
+                
+                $this->info("Sent 'expiring in 7 days' email to: {$userSubscription->user->email}");
+            } catch (\Exception $e) {
+                $this->error("Failed to send email to {$userSubscription->user->email}: " . $e->getMessage());
+            }
+        }
     }
 
     /**

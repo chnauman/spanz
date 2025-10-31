@@ -25,7 +25,7 @@
 <p>Don't worry - you can reactivate your subscription at any time to restore all your premium features and data.</p>
 
 <div class="button-center">
-    <a href="{{ url('/subscriptions') }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none;">Reactivate Subscription</a>
+    <a href="{{ url('/?modal=subscription') }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 4px; display: inline-block;">View Subscription Plans</a>
 </div>
 
 <p>We miss you already! Renew now to get back all the features you love.</p>

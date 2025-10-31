@@ -819,6 +819,17 @@
     clearStaleLocalStorage();
     checkSubscriptionStatus();
     checkDowngradeRequestStatus();
+    
+    // Check if subscription modal should be opened from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('modal') === 'subscription') {
+      // Small delay to ensure modal is rendered
+      setTimeout(function() {
+        if (typeof openSubscriptionModal === 'function') {
+          openSubscriptionModal();
+        }
+      }, 300);
+    }
   });
 
   function clearStaleLocalStorage() {
