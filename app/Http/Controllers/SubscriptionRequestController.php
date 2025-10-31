@@ -6,6 +6,8 @@ use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UpgradeRequestAdminMail;
 
 class SubscriptionRequestController extends Controller
 {
@@ -94,6 +96,16 @@ class SubscriptionRequestController extends Controller
 
             // Log the subscription request
             \Log::info('Subscription request created for user: ' . $user->email . ', subscription: ' . $subscription->name);
+
+            // Notify admin about the upgrade request
+            try {
+                $adminEmail = env('ADMIN_EMAIL');
+                if ($adminEmail) {
+                    Mail::to($adminEmail)->send(new UpgradeRequestAdminMail($request->load(['user','subscription'])));
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send upgrade request admin email: ' . $e->getMessage());
+            }
 
             if (request()->ajax()) {
                 \Log::info('Returning JSON response for subscription request');

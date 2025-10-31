@@ -6,6 +6,8 @@ use App\Models\DowngradeRequest;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DowngradeRequestAdminMail;
 
 class DowngradeRequestController extends Controller
 {
@@ -57,6 +59,18 @@ class DowngradeRequestController extends Controller
             'reason' => $request->reason,
             'requested_at' => now(),
         ]);
+
+        // Notify admin about the downgrade request
+        try {
+            $adminEmail = env('ADMIN_EMAIL');
+            if ($adminEmail) {
+                $downgradeRequest->setRelation('currentSubscription', $activeSubscription->subscription);
+                $downgradeRequest->setRelation('user', $user);
+                Mail::to($adminEmail)->send(new DowngradeRequestAdminMail($downgradeRequest));
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send downgrade request admin email: ' . $e->getMessage());
+        }
 
         if ($request->ajax()) {
             return response()->json([

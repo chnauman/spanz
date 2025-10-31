@@ -99,6 +99,14 @@ class SubscriptionController extends Controller
     {
         $request->approve(auth()->id());
 
+        // Notify user about approval
+        try {
+            $request->load(['user','subscription']);
+            \Mail::to($request->user->email)->send(new \App\Mail\SubscriptionApprovedMail($request));
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send subscription approved email: ' . $e->getMessage());
+        }
+
         \Log::info('Subscription request approved: ' . $request->id);
 
         return redirect()->back()
@@ -108,6 +116,14 @@ class SubscriptionController extends Controller
     public function declineRequest(Request $httpRequest, SubscriptionRequest $request)
     {
         $request->decline(auth()->id(), $httpRequest->input('admin_notes'));
+
+        // Notify user about rejection
+        try {
+            $request->load(['user','subscription']);
+            \Mail::to($request->user->email)->send(new \App\Mail\SubscriptionRejectedMail($request));
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send subscription rejected email: ' . $e->getMessage());
+        }
 
         \Log::info('Subscription request declined: ' . $request->id);
 

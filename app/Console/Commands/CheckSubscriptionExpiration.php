@@ -38,6 +38,9 @@ class CheckSubscriptionExpiration extends Command
         $threeDaysFromNow = Carbon::today()->addDays(3);
         $oneDayFromNow = Carbon::today()->addDays(1);
 
+        // Display all active subscriptions with days remaining
+        $this->displaySubscriptionStatus();
+
         // Check subscriptions expiring in 3 days
         $this->checkExpiringIn3Days($threeDaysFromNow);
         
@@ -48,6 +51,78 @@ class CheckSubscriptionExpiration extends Command
         $this->checkExpiredToday($today);
 
         $this->info('Subscription expiration check completed.');
+    }
+
+    /**
+     * Display subscription status with days remaining
+     */
+    private function displaySubscriptionStatus()
+    {
+        $subscriptions = UserSubscription::where('is_active', true)
+            ->with(['user', 'subscription'])
+            ->orderBy('expires_at', 'asc')
+            ->get();
+
+        if ($subscriptions->isEmpty()) {
+            $this->warn('No active subscriptions found.');
+            return;
+        }
+
+        $this->info("\nActive Subscriptions Status:");
+        $this->line(str_repeat('-', 100));
+
+        $headers = ['User', 'Email', 'Subscription', 'Days Remaining', 'Expires At'];
+        $rows = [];
+
+        foreach ($subscriptions as $userSubscription) {
+            $user = $userSubscription->user;
+            $subscription = $userSubscription->subscription;
+            
+            $expiresAt = $userSubscription->expires_at;
+            $now = Carbon::now();
+            
+            if ($expiresAt) {
+                $daysRemaining = $now->diffInDays($expiresAt, false);
+                
+                if ($daysRemaining < 0) {
+                    $daysRemaining = abs($daysRemaining);
+                    $daysRemainingDisplay = '-' . $daysRemaining . ' (Expired)';
+                } else {
+                    $daysRemainingDisplay = $daysRemaining;
+                }
+                
+                $expiresAtFormatted = $expiresAt->format('Y-m-d H:i:s');
+            } else {
+                $daysRemainingDisplay = 'N/A';
+                $expiresAtFormatted = 'N/A';
+            }
+
+            $rows[] = [
+                $user->name ?? 'N/A',
+                $user->email ?? 'N/A',
+                $subscription->name ?? 'N/A',
+                $daysRemainingDisplay,
+                $expiresAtFormatted,
+            ];
+        }
+
+        $this->table($headers, $rows);
+
+        // Summary
+        $activeCount = $subscriptions->filter(fn($s) => $s->expires_at && $s->expires_at > $now)->count();
+        $expiringSoon = $subscriptions->filter(function($s) {
+            if (!$s->expires_at) return false;
+            $days = Carbon::now()->diffInDays($s->expires_at, false);
+            return $days >= 0 && $days <= 7;
+        })->count();
+        $expiredCount = $subscriptions->filter(fn($s) => $s->expires_at && $s->expires_at < $now)->count();
+
+        $this->info("\nSummary:");
+        $this->line("Total active subscriptions: " . $subscriptions->count());
+        $this->line("Active (not expired): " . $activeCount);
+        $this->line("Expiring in 7 days or less: " . $expiringSoon);
+        $this->line("Expired: " . $expiredCount);
+        $this->line(str_repeat('-', 100) . "\n");
     }
 
     /**
