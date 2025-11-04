@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Mail\TenderNotificationMail;
 use App\Models\Tender;
 use App\Models\User;
 use App\Models\UserInterest;
@@ -13,7 +12,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 class SendTenderNotificationJob implements ShouldQueue
@@ -52,39 +50,9 @@ class SendTenderNotificationJob implements ShouldQueue
             // Get all users with interests that match this tender
             $matchingUsers = $this->getMatchingUsers();
 
-            $sentCount = 0;
-            $failedCount = 0;
-
-            foreach ($matchingUsers as $userData) {
-                $user = $userData['user'];
-                $matchReason = $userData['reason'];
-
-                // Skip the tender creator
-                if ($user->id === $this->tender->user_id) {
-                    continue;
-                }
-
-                try {
-                    // Send email notification (TenderNotificationMail implements ShouldQueue, so it will be queued)
-                    Mail::to($user->email)->send(new TenderNotificationMail($this->tender, $user, $matchReason));
-                    $sentCount++;
-                } catch (\Exception $e) {
-                    $failedCount++;
-                    Log::error('Failed to queue tender notification email', [
-                        'tender_id' => $this->tender->id,
-                        'user_id' => $user->id,
-                        'user_email' => $user->email,
-                        'error' => $e->getMessage()
-                    ]);
-                    // Continue processing other users even if one fails
-                }
-            }
-
             Log::info('Tender notification job completed', [
                 'tender_id' => $this->tender->id,
-                'total_matching_users' => count($matchingUsers),
-                'emails_queued' => $sentCount,
-                'failed' => $failedCount
+                'total_matching_users' => count($matchingUsers)
             ]);
 
         } catch (\Exception $e) {
