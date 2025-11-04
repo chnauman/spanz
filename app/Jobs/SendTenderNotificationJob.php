@@ -14,12 +14,23 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SendTenderNotificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tender;
+
+    /**
+     * The number of times the job may be attempted.
+     */
+    public $tries = 3;
+
+    /**
+     * The maximum number of seconds the job can run.
+     */
+    public $timeout = 300; // 5 minutes for processing multiple users
 
     /**
      * Create a new job instance.
@@ -34,24 +45,67 @@ class SendTenderNotificationJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // Reload the tender with category relationship (in case it was serialized)
-        $this->tender->load('category');
-        
-        // Get all users with interests that match this tender
-        $matchingUsers = $this->getMatchingUsers();
+        try {
+            // Reload the tender with category relationship (in case it was serialized)
+            $this->tender->load('category');
+            
+            // Get all users with interests that match this tender
+            $matchingUsers = $this->getMatchingUsers();
 
-        foreach ($matchingUsers as $userData) {
-            $user = $userData['user'];
-            $matchReason = $userData['reason'];
+            $sentCount = 0;
+            $failedCount = 0;
 
-            // Skip the tender creator
-            if ($user->id === $this->tender->user_id) {
-                continue;
+            foreach ($matchingUsers as $userData) {
+                $user = $userData['user'];
+                $matchReason = $userData['reason'];
+
+                // Skip the tender creator
+                if ($user->id === $this->tender->user_id) {
+                    continue;
+                }
+
+                try {
+                    // Send email notification (TenderNotificationMail implements ShouldQueue, so it will be queued)
+                    Mail::to($user->email)->send(new TenderNotificationMail($this->tender, $user, $matchReason));
+                    $sentCount++;
+                } catch (\Exception $e) {
+                    $failedCount++;
+                    Log::error('Failed to queue tender notification email', [
+                        'tender_id' => $this->tender->id,
+                        'user_id' => $user->id,
+                        'user_email' => $user->email,
+                        'error' => $e->getMessage()
+                    ]);
+                    // Continue processing other users even if one fails
+                }
             }
 
-            // Send email notification
-            Mail::to($user->email)->send(new TenderNotificationMail($this->tender, $user, $matchReason));
+            Log::info('Tender notification job completed', [
+                'tender_id' => $this->tender->id,
+                'total_matching_users' => count($matchingUsers),
+                'emails_queued' => $sentCount,
+                'failed' => $failedCount
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Tender notification job failed', [
+                'tender_id' => $this->tender->id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e; // Re-throw to trigger retry mechanism
         }
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(\Throwable $exception): void
+    {
+        Log::error('Tender notification job permanently failed', [
+            'tender_id' => $this->tender->id ?? null,
+            'error' => $exception->getMessage()
+        ]);
     }
 
     /**

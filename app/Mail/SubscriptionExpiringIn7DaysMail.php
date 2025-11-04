@@ -60,3 +60,4 @@ class SubscriptionExpiringIn7DaysMail extends Mailable
     }
 }
 
+

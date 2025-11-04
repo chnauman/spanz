@@ -17,6 +17,26 @@
             </div>
 
             <div class="mt-6">
+                @if($user->isSubSupplier() && isset($creditsOwner) && $creditsOwner->id !== $user->id)
+                <!-- Shared Credits Notice for Sub Suppliers -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">Shared Credit Pool</h3>
+                            <p class="mt-1 text-sm text-yellow-700">
+                                You are viewing shared credits from your parent supplier <strong>{{ $creditsOwner->name }}</strong>. 
+                                All team members can use these credits, and the history shows who used credits for which tender.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Credit Balance Summary -->
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Credit Balance</h2>
@@ -46,7 +66,6 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -64,10 +83,9 @@
                                             {{ $credit->amount > 0 ? '+' : '' }}{{ number_format($credit->amount) }}
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-900">
-                                            {{ $credit->description ?? 'Credit transaction' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ number_format($credit->balance_after) }}
+                                            <div class="max-w-md">
+                                                {{ $credit->description ?? 'Credit transaction' }}
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach

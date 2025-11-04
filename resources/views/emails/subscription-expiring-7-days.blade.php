@@ -29,3 +29,4 @@
 <p style="margin-top: 24px;">Thank you for being a valued member!</p>
 @endsection
 
+

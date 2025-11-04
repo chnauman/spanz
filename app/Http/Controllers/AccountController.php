@@ -52,14 +52,24 @@ class AccountController extends Controller
 
     /**
      * Show the user credits page
+     * Accessible to all authenticated users (buyers, suppliers, and sub suppliers)
+     * Sub suppliers see their parent supplier's credits (shared credit pool)
      */
     public function credits()
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $totalCredits = $user->getTotalCredits() ?? 0;
-        $creditHistory = $user->credits()->orderBy('created_at', 'desc')->get();
+        
+        // If user is a sub supplier, show parent supplier's credits and history
+        // Otherwise, show the user's own credits
+        $creditsOwner = $user;
+        if ($user->isSubSupplier() && $user->parentSupplier) {
+            $creditsOwner = $user->parentSupplier;
+        }
+        
+        $totalCredits = $creditsOwner->getTotalCredits() ?? 0;
+        $creditHistory = $creditsOwner->credits()->orderBy('created_at', 'desc')->get();
 
-        return view('account.credits', compact('user', 'totalCredits', 'creditHistory'));
+        return view('account.credits', compact('user', 'totalCredits', 'creditHistory', 'creditsOwner'));
     }
 }

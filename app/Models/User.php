@@ -176,8 +176,14 @@ class User extends Authenticatable
     }
 
     // Get total credits for user
+    // If user is a sub supplier, return parent supplier's credits (shared pool)
     public function getTotalCredits()
     {
+        // If user is a sub supplier, return parent supplier's credits
+        if ($this->isSubSupplier() && $this->parentSupplier) {
+            return $this->parentSupplier->credits()->sum('amount');
+        }
+        
         return $this->credits()->sum('amount');
     }
 
@@ -327,16 +333,29 @@ class User extends Authenticatable
             return true;
         }
 
-        // Check if user has enough credits
+        // Check if user has enough credits (will check parent if sub supplier)
         if ($this->getTotalCredits() < $creditCostPerView) {
             return false;
         }
 
-        // Deduct credits
-        $this->credits()->create([
+        // Determine who owns the credits (parent supplier for sub suppliers, or user themselves)
+        $creditsOwner = $this;
+        if ($this->isSubSupplier() && $this->parentSupplier) {
+            $creditsOwner = $this->parentSupplier;
+        }
+
+        // Build description with user name and tender title
+        $tenderTitle = $tender ? $tender->title : 'Tender #' . $tenderId;
+        $userName = $this->name;
+        $description = $this->isSubSupplier() 
+            ? "Credits used by {$userName} (Sub Supplier) to view tender: {$tenderTitle}"
+            : "Credits used by {$userName} to view tender: {$tenderTitle}";
+
+        // Deduct credits from the owner (parent supplier for sub suppliers, or user themselves)
+        $creditsOwner->credits()->create([
             'amount' => -$creditCostPerView,
             'type' => 'used',
-            'description' => 'Credits used for viewing tender details'
+            'description' => $description
         ]);
 
         // Record the tender view
