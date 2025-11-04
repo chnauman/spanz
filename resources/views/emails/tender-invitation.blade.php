@@ -13,7 +13,6 @@
 <div class="content-box">
     <h2 style="margin-top: 0;">{{ $tender->title }}</h2>
     <p><strong>Category:</strong> {{ $tender->category->name }}</p>
-    <p><strong>Posted by:</strong> {{ $tender->user->name }}</p>
     @if($tender->budget)
     <p><strong>Budget:</strong> {{ $tender->currency }} {{ number_format($tender->budget, 2) }}</p>
     @endif
