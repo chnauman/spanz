@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TenderInvitationMail;
 use App\Jobs\SendTenderInvitationJob;
-use App\Jobs\SendTenderNotificationJob;
 
 class TenderController extends Controller
 {
@@ -208,11 +207,8 @@ class TenderController extends Controller
             // Send invitations to users with matching interests
             $this->sendTenderInvitations($tender);
 
-            // Send notifications to users with matching interests (including budget)
-            SendTenderNotificationJob::dispatch($tender);
-
             return redirect()->route('tenders.my-tenders')
-                ->with('success', 'Tender posted successfully! Notifications have been sent to interested users.');
+                ->with('success', 'Tender posted successfully! Invitations have been sent to interested users.');
 
         // } catch (\Exception $e) {
         //     // Log the error for debugging
