@@ -163,20 +163,26 @@
 
             @forelse($products as $product)
             <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-                    <a href="{{ route('products.show', $product) }}" class="text-[#092C48] font-semibold text-lg sm:text-xl hover:text-blue-600">{{ $product->title }}</a>
-                    <div class="flex gap-4 sm:gap-6 items-center">
-                        @if($product->featured)
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
-                        @endif
+                <div class="flex flex-col lg:flex-row gap-4 mb-4">
+                    <div class="w-full lg:w-48 flex-shrink-0">
+                        <img src="{{ $product->image ? asset('storage/' . $product->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22300%22 height=%22200%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2214%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E' }}" 
+                             alt="{{ $product->title }}" 
+                             class="w-full h-48 lg:h-full object-cover rounded-lg border border-gray-200" 
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23ddd%22 width=%22300%22 height=%22200%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2214%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';" />
                     </div>
-                </div>
-                <div class="flex items-center gap-2 my-3">
-                    <img src="{{ asset('spanz-img/factory.svg') }}" alt="Category" class="w-4 sm:w-5">
-                    <span class="text-[#092C48] font-semibold text-sm sm:text-base">{{ optional($product->category)->name ?? 'Uncategorized' }}</span>
-                </div>
-                <div class="flex flex-col lg:flex-row gap-4">
-                    <div class="flex-1 lg:w-[75%]">
+                    <div class="flex-1">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-3">
+                            <a href="{{ route('products.show', $product) }}" class="text-[#092C48] font-semibold text-lg sm:text-xl hover:text-blue-600">{{ $product->title }}</a>
+                            <div class="flex gap-4 sm:gap-6 items-center">
+                                @if($product->featured)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 my-3">
+                            <img src="{{ asset('spanz-img/factory.svg') }}" alt="Category" class="w-4 sm:w-5">
+                            <span class="text-[#092C48] font-semibold text-sm sm:text-base">{{ optional($product->category)->name ?? 'Uncategorized' }}</span>
+                        </div>
                         <div>
                             <p class="text-[#092C48] text-sm sm:text-base leading-relaxed">{{ Str::limit(strip_tags($product->description), 200, '...') }}</p>
                         </div>

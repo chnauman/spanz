@@ -193,26 +193,26 @@
                 <span class="text-sm sm:text-base">Category: {{ optional($product->category)->name ?? 'Uncategorized' }}</span>
             </div>
 
-            <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0">
-                <h3 class="text-base sm:text-lg font-semibold">Product Details</h3>
-                <div class="flex flex-col sm:items-end space-y-3 sm:space-y-4">
-                    @if(!is_null($product->price))
-                    <div class="flex items-center text-[#6C6C6C] space-x-2">
-                        <span class="text-sm sm:text-base">Price:</span>
-                        <span class="text-sm sm:text-base font-semibold">{{ $product->currency }} {{ number_format($product->price, 2) }}</span>
-                    </div>
-                    @endif
-                    @if($product->featured)
-                    <div class="flex items-center text-green-700 space-x-2">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
-                    </div>
-                    @endif
-                </div>
-            </div>
-
+            <!-- Main Content Layout: Left Details, Right Image -->
             <div class="flex flex-col lg:flex-row lg:gap-8 mt-6 sm:mt-8">
-                <div class="flex-1">
-                    <div class="mt-8">
+                <!-- Left side: Product Details -->
+                <div class="flex-1 lg:w-2/3">
+                    <h3 class="text-base sm:text-lg font-semibold mb-4">Product Details</h3>
+                    <div class="mb-6 space-y-3">
+                        @if(!is_null($product->price))
+                        <div class="flex items-center text-[#6C6C6C] space-x-2">
+                            <span class="text-sm sm:text-base">Price:</span>
+                            <span class="text-sm sm:text-base font-semibold">{{ $product->currency }} {{ number_format($product->price, 2) }}</span>
+                        </div>
+                        @endif
+                        @if($product->featured)
+                        <div class="flex items-center text-green-700 space-x-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
+                        </div>
+                        @endif
+                    </div>
+
+                    <div class="mt-4">
                         <h3 class="font-semibold mb-3">Description:</h3>
                         <div class="text-sm sm:text-base leading-relaxed">{!! nl2br(e($product->description)) !!}</div>
                     </div>
@@ -225,6 +225,18 @@
                         </div>
                     </div>
                     @endif
+                </div>
+
+                <!-- Right side: Product Image -->
+                <div class="lg:w-1/3 flex-shrink-0 mt-6 lg:mt-0">
+                    <div class="sticky top-4">
+                        <div class="w-full max-w-xs mx-auto lg:mx-0">
+                            <img src="{{ $product->image ? asset('storage/' . $product->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22128%22 height=%2296%22%3E%3Crect fill=%22%23ddd%22 width=%22128%22 height=%2296%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2211%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E' }}" 
+                                 alt="{{ $product->title }}" 
+                                 class="w-full h-auto max-h-24 sm:max-h-32 object-contain rounded-lg border-2 border-gray-200 shadow-sm" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22128%22 height=%2296%22%3E%3Crect fill=%22%23ddd%22 width=%22128%22 height=%2296%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2211%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';" />
+                        </div>
+                    </div>
                 </div>
             </div>
 

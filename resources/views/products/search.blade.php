@@ -411,20 +411,21 @@
 
             @forelse($products as $product)
             <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-                    <a href="{{ route('products.show', $product) }}" class="text-[#092C48] font-semibold text-lg sm:text-xl hover:text-blue-600">{{ $product->title }}</a>
-                    <div class="flex gap-4 sm:gap-6">
-                        @if($product->featured)
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 my-3">
-                    <img src="{{ asset('spanz-img/factory.svg') }}" alt="Category" class="w-4 sm:w-5">
-                    <span class="text-[#092C48] font-semibold text-sm sm:text-base">{{ optional($product->category)->name ?? 'Uncategorized' }}</span>
-                </div>
                 <div class="flex flex-col lg:flex-row gap-4">
-                    <div class="flex-1 lg:w-[75%]">
+                    <!-- Left side: Content -->
+                    <div class="flex-1">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <a href="{{ route('products.show', $product) }}" class="text-[#092C48] font-semibold text-lg sm:text-xl hover:text-blue-600">{{ $product->title }}</a>
+                                @if($product->featured)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Featured</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 my-3">
+                            <img src="{{ asset('spanz-img/factory.svg') }}" alt="Category" class="w-10 sm:w-5">
+                            <span class="text-[#092C48] font-semibold text-sm sm:text-base">{{ optional($product->category)->name ?? 'Uncategorized' }}</span>
+                        </div>
                         <div class="flex items-center mb-2 gap-2">
                             <span class="text-[#092C48] font-semibold text-xs sm:text-sm lg:text-base">
                                 Posted {{ $product->created_at->diffForHumans() }}
@@ -435,6 +436,15 @@
                                 {{ Str::limit(strip_tags($product->description), 200) }}
                             </p>
                         </div>
+                    </div>
+                    <!-- Right side: Image (small size) -->
+                    <div class="lg:w-24 xl:w-28 flex-shrink-0">
+                        <a href="{{ route('products.show', $product) }}" class="block">
+                            <img src="{{ $product->image ? asset('storage/' . $product->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22112%22 height=%2284%22%3E%3Crect fill=%22%23ddd%22 width=%22112%22 height=%2284%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2210%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E' }}" 
+                                 alt="{{ $product->title }}" 
+                                 class="w-50 h-50 sm:w-60 sm:h-60 lg:w-72 lg:h-72 object-cover rounded-lg border border-gray-200 hover:opacity-90 transition-opacity" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22112%22 height=%2284%22%3E%3Crect fill=%22%23ddd%22 width=%22112%22 height=%2284%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2210%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';" />
+                        </a>
                     </div>
                 </div>
                 <div class="flex justify-end items-end mt-4 gap-3">
