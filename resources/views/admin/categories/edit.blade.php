@@ -10,7 +10,7 @@
 
             <!-- Back Button -->
             <div class="mt-4 sm:mt-6">
-                <a href="{{ route('admin.categories.index') }}" 
+                <a href="{{ route('admin.categories.index', ['page' => $page ?? request('page', 1)]) }}" 
                    class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                     ← Back to Categories
                 </a>
@@ -22,6 +22,7 @@
             <form action="{{ route('admin.categories.update', $category) }}" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="page" value="{{ $page ?? request('page', 1) }}">
                 
                 <!-- Category Name -->
                 <div class="mb-6">
@@ -108,9 +109,9 @@
                 <!-- Form Actions -->
                 <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
                     <button type="button" 
-                            onclick="window.location.href='{{ route('admin.categories.index') }}'"
-                            class="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                        Cancel
+                            onclick="window.location.href='{{ route('admin.categories.index', ['page' => $page ?? request('page', 1)]) }}'"
+                            class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                            Cancel
                     </button>
                     <button type="submit" 
                             class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
@@ -120,18 +121,7 @@
             </form>
         </div>
 
-        <!-- Help Section -->
-        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 class="text-sm font-medium text-blue-800 mb-2">📋 Category Guidelines</h4>
-            <ul class="text-sm text-blue-700 space-y-1">
-                <li>• Use clear, descriptive names for categories</li>
-                <li>• Main categories don't have a parent category</li>
-                <li>• Subcategories must have a parent category</li>
-                <li>• Inactive categories won't appear in product listings</li>
-                <li>• Cannot set a category as its own parent</li>
-            </ul>
-            </div>
-        </div>
+      
     </div>
 </div>
 @endsection

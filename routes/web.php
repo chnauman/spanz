@@ -176,9 +176,7 @@ Route::get('/pages/product', function () {
 Route::get('/pages/home', function () {
     return view('pages.home');
 });
-Route::get('/pages/dashboard', function () {
-    return view('pages.dashboard');
-});
+
 
 // Test routes to demonstrate role-based access control
 Route::get('/test/admin-only', function () {

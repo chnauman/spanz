@@ -108,7 +108,7 @@
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <h1 class="text-xl sm:text-2xl font-bold">Downgrade Requests</h1>
-                <a href="{{ route('admin.downgrade-requests.index') }}" class="bg-[#0D6AED] text-white px-4 py-2 rounded text-sm hover:bg-[#0B5AC7] transition-colors">
+                <a href="{{ route('dashboard') }}" class="bg-[#0D6AED] text-white px-4 py-2 rounded text-sm hover:bg-[#0B5AC7] transition-colors">
                     Back to Dashboard
                 </a>
             </div>
@@ -127,21 +127,21 @@
 
             <!-- Filter Tabs -->
             <div class="mt-6 border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8">
+                <nav class="-mb-px flex space-x-12">
                     <a href="{{ route('admin.downgrade-requests.index') }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ !request('status') ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ !request('status') ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
                         All Requests ({{ \App\Models\DowngradeRequest::count() }})
                     </a>
                     <a href="{{ route('admin.downgrade-requests.index', ['status' => 'pending']) }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'pending' ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ request('status') == 'pending' ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
                         Pending ({{ \App\Models\DowngradeRequest::where('status', 'pending')->count() }})
                     </a>
                     <a href="{{ route('admin.downgrade-requests.index', ['status' => 'approved']) }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'approved' ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ request('status') == 'approved' ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
                         Approved ({{ \App\Models\DowngradeRequest::where('status', 'approved')->count() }})
                     </a>
                     <a href="{{ route('admin.downgrade-requests.index', ['status' => 'declined']) }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'declined' ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ request('status') == 'declined' ? 'border-[#0D6AED] text-[#0D6AED]' : 'border-transparent text-gray-500 hover:text-[#0D6AED] hover:border-[#0D6AED]' }}">
                         Declined ({{ \App\Models\DowngradeRequest::where('status', 'declined')->count() }})
                     </a>
                 </nav>
@@ -258,7 +258,7 @@
                         <h3 class="mt-3 text-sm font-medium text-gray-900">No downgrade requests</h3>
                         <p class="mt-1 text-xs text-gray-500">No requests found for the selected filter.</p>
                         <div class="mt-4">
-                            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>

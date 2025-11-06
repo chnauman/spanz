@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard - SPANZ')</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         /* Ensure sidebar is always visible on desktop screens */
         @media (min-width: 1280px) {

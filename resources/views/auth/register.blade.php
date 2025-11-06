@@ -12,7 +12,9 @@
         <div class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 xl:py-20">
             <div class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8">
                 <div class="text-center mb-4 sm:mb-6">
-                    <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2">SPANZ</h1>
+                    <a href="{{ route('home') }}" class="block">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
+                    </a>
                     <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Join SPANZ</h2>
                     <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">Enter your business email and choose a password.</span>
                 </div>

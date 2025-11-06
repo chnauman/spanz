@@ -120,21 +120,21 @@
 
             <!-- Filter Tabs -->
             <div class="mt-6 border-b border-gray-200">
-                <nav class="-mb-px flex space-x-8">
+                <nav class="-mb-px flex space-x-12">
                     <a href="{{ route('admin.subscription-requests') }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ !request('status') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ !request('status') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         All Requests ({{ \App\Models\SubscriptionRequest::count() }})
                     </a>
                     <a href="{{ route('admin.subscription-requests', ['status' => 'pending']) }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ request('status') == 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         Pending ({{ \App\Models\SubscriptionRequest::where('status', 'pending')->count() }})
                     </a>
                     <a href="{{ route('admin.subscription-requests', ['status' => 'approved']) }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'approved' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ request('status') == 'approved' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         Approved ({{ \App\Models\SubscriptionRequest::where('status', 'approved')->count() }})
                     </a>
                     <a href="{{ route('admin.subscription-requests', ['status' => 'declined']) }}"
-                       class="py-2 px-1 border-b-2 font-medium text-sm {{ request('status') == 'declined' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                       class="py-2 px-3 border-b-2 font-medium text-sm {{ request('status') == 'declined' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         Declined ({{ \App\Models\SubscriptionRequest::where('status', 'declined')->count() }})
                     </a>
                 </nav>

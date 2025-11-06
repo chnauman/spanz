@@ -20,7 +20,7 @@
                 }
             }
         @endphp
-        <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="" class="w-16 h-16 rounded-full object-cover" id="profileImage">
+        <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="" class="w-16 h-16 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity duration-200" id="profileImage" onclick="openProfileImageModal()">
         <span class="text-white" id="profileName">{{ Auth::user()->name ?? 'Admin User' }}</span>
         <!-- edit svg -->
         <svg onclick="openEditModal()" width="15px" height="15px" viewBox="0 0 24 24" fill="none"
@@ -428,7 +428,41 @@
     <hr class="border-[#657a9871]" />
 </div>
 
+<!-- Profile Image Popup Modal -->
+<div id="profileImageModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-75 transition-opacity duration-300" onclick="closeProfileImageModal()">
+    <div class="relative max-w-4xl max-h-[90vh] p-4" onclick="event.stopPropagation()">
+        <!-- Close Button -->
+        <button onclick="closeProfileImageModal()" class="absolute -top-3 -right-3 bg-white rounded-full p-1.5 hover:bg-gray-200 transition-colors duration-200 shadow-lg z-[10000] flex items-center justify-center" style="z-index: 10000;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <!-- Profile Image -->
+        <img id="profileImageModalImg" src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="Profile Picture" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain">
+    </div>
+</div>
+
 <script>
+// Helper function to open a dropdown
+function openDropdown(dropdownId, arrowId) {
+    const dropdown = document.getElementById(dropdownId);
+    const arrow = document.getElementById(arrowId);
+    if (dropdown && arrow) {
+        dropdown.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
+// Helper function to close a dropdown
+function closeDropdown(dropdownId, arrowId) {
+    const dropdown = document.getElementById(dropdownId);
+    const arrow = document.getElementById(arrowId);
+    if (dropdown && arrow) {
+        dropdown.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
 // Dropdown functionality
 function toggleDropdown() {
     const dropdown = document.getElementById('buyerDropdown');
@@ -546,6 +580,143 @@ function toggleAccountSettingsDropdown() {
         arrow.style.transform = 'rotate(0deg)';
     }
 }
+
+// Prevent dropdown from closing when clicking on submenu links
+document.addEventListener('DOMContentLoaded', function() {
+    // Get current URL path
+    const currentPath = window.location.pathname;
+    
+    // Define route patterns for each dropdown
+    const routePatterns = {
+        'buyerDropdown': [
+            '/tenders/create',
+            '/my-tenders',
+            '/tenders/search',
+            '/tenders/'
+        ],
+        'supplierForBuyerDropdown': [
+            '/pricing'
+        ],
+        'supplierDropdown': [
+            '/user/interests',
+            '/viewed-tenders',
+            '/saved-tenders',
+            '/suppliers/invite',
+            '/suppliers/sub-suppliers'
+        ],
+        'usersDropdown': [
+            '/admin/users'
+        ],
+        'categoriesDropdown': [
+            '/admin/categories'
+        ],
+        'productsDropdown': [
+            '/admin/products',
+            '/admin/purchase-requests'
+        ],
+        'subscriptionsDropdown': [
+            '/admin/subscriptions',
+            '/admin/subscription-requests',
+            '/admin/downgrade-requests'
+        ],
+        'accountSettingsDropdown': [
+            '/account/profile',
+            '/account/plan',
+            '/account/credits'
+        ]
+    };
+    
+    // Open dropdowns based on current URL
+    Object.keys(routePatterns).forEach(dropdownId => {
+        const patterns = routePatterns[dropdownId];
+        const shouldOpen = patterns.some(pattern => {
+            // For patterns ending with '/', check if path starts with it
+            if (pattern.endsWith('/')) {
+                return currentPath.startsWith(pattern);
+            }
+            // For exact patterns, check if path starts with it (to handle paths like /tenders/create/123)
+            return currentPath.startsWith(pattern);
+        });
+        
+        if (shouldOpen) {
+            let arrowId = '';
+            switch(dropdownId) {
+                case 'buyerDropdown':
+                    arrowId = 'dropdownArrow';
+                    break;
+                case 'supplierForBuyerDropdown':
+                    arrowId = 'supplierForBuyerDropdownArrow';
+                    break;
+                case 'supplierDropdown':
+                    arrowId = 'supplierDropdownArrow';
+                    break;
+                case 'usersDropdown':
+                    arrowId = 'usersDropdownArrow';
+                    break;
+                case 'categoriesDropdown':
+                    arrowId = 'categoriesDropdownArrow';
+                    break;
+                case 'productsDropdown':
+                    arrowId = 'productsDropdownArrow';
+                    break;
+                case 'subscriptionsDropdown':
+                    arrowId = 'subscriptionsDropdownArrow';
+                    break;
+                case 'accountSettingsDropdown':
+                    arrowId = 'accountSettingsDropdownArrow';
+                    break;
+            }
+            openDropdown(dropdownId, arrowId);
+        }
+    });
+    
+    // Prevent dropdown from closing when clicking on submenu links
+    const dropdownMenus = document.querySelectorAll('[id$="Dropdown"]');
+    dropdownMenus.forEach(menu => {
+        const links = menu.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Don't prevent navigation, just ensure dropdown stays open
+                // The dropdown will be reopened on page load based on URL
+                e.stopPropagation();
+            });
+        });
+    });
+});
+
+// Profile image popup modal functionality
+function openProfileImageModal() {
+    const modal = document.getElementById('profileImageModal');
+    const profileImage = document.getElementById('profileImage');
+    const modalImage = document.getElementById('profileImageModalImg');
+    
+    if (modal && profileImage && modalImage) {
+        // Set the modal image source to match the profile image
+        modalImage.src = profileImage.src;
+        // Show the modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeProfileImageModal() {
+    const modal = document.getElementById('profileImageModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        // Restore body scroll
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeProfileImageModal();
+    }
+});
 
 // Profile modal functionality
 function openEditModal() {

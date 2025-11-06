@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('parent')->paginate(10);
+        $categories = Category::with('parent')->orderBy('name')->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -54,12 +54,13 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Category $category)
+    public function edit(Category $category, Request $request)
     {
         $parentCategories = Category::whereNull('parent_category_id')
             ->where('id', '!=', $category->id)
             ->get();
-        return view('admin.categories.edit', compact('category', 'parentCategories'));
+        $page = $request->get('page', 1);
+        return view('admin.categories.edit', compact('category', 'parentCategories', 'page'));
     }
 
     /**
@@ -75,7 +76,8 @@ class CategoryController extends Controller
 
         $category->update($request->all());
 
-        return redirect()->route('admin.categories.index')
+        $page = $request->get('page', 1);
+        return redirect()->route('admin.categories.index', ['page' => $page])
             ->with('success', 'Category updated successfully.');
     }
 

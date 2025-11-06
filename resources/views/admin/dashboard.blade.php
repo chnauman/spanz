@@ -5,7 +5,7 @@
     <div class="w-full">
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
-                <h1 class="text-xl sm:text-2xl font-bold">Admin Dashboard</h1>
+                <h1 class="text-xl sm:text-2xl font-bold">Dashboard</h1>
             </div>
 
             <!-- Dashboard Content -->
@@ -23,7 +23,7 @@
                     </div>
                 @endif
 
-            @if(!$user->companyDetails)
+            @if(!$user->isAdmin() && !$user->companyDetail)
                 <!-- Company Profile Completion Alert -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <div class="flex items-center justify-between">
@@ -36,124 +36,291 @@
                         </a>
                     </div>
                 </div>
-                @endif
+            @endif
 
                 @if($user->isAdmin())
                     <!-- Admin Dashboard -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-blue-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Total Users</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $total_users ?? 0 }}</p>
-                                </div>
-                            </div>
+                      <!-- Quick Actions -->
+                      <div class="bg-white rounded-lg shadow mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
                         </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-yellow-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Pending Approvals</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $pending_approvals ?? 0 }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-green-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Active Tenders</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $active_tenders ?? 0 }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-purple-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Total Tenders</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $total_tenders ?? 0 }}</p>
-                                </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <a href="{{ route('admin.users.index') }}" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
+                                    Manage Users
+                                </a>
+                                <a href="{{ route('admin.products.index') }}" style="background-color:rgb(25, 119, 99);" class=" text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
+                                    Manage Products
+                                </a>
+                                <a href="{{ route('admin.subscription-requests') }}" style="background-color:rgb(206, 186, 7);" class=" text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
+                                    Subscription Requests
+                                </a>
+                               
+                                <a href="{{ route('admin.downgrade-requests.index') }}" style="background-color:rgb(163, 33, 16);" class=" text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
+                                    Downgrade Requests
+                                </a>
                             </div>
                         </div>
                     </div>
+
+                    <!-- User Analytics Section -->
+                    @if(isset($chart_months))
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                            <!-- User Growth Chart -->
+                            <div class="bg-white rounded-lg shadow">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">User Growth (Last 6 Months)</h3>
+                                </div>
+                                <div class="p-6">
+                                    <canvas id="userGrowthChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                  
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                            <!-- User Distribution Chart -->
+                            <div class="bg-white rounded-lg shadow">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">User Distribution by Role</h3>
+                                </div>
+                                <div class="p-6">
+                                    <canvas id="userDistributionChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="bg-white rounded-lg shadow mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">User Analytics</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <a href="{{ route('admin.users.index', ['role' => 'buyer']) }}" class="bg-blue-50 rounded-lg p-4 hover:bg-blue-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Buyers</p>
+                                    <p class="text-2xl font-bold text-blue-600 mt-1 group-hover:text-blue-700 transition-colors">{{ $total_buyers ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('admin.users.index', ['role' => 'supplier']) }}" class="bg-green-50 rounded-lg p-4 hover:bg-green-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Suppliers</p>
+                                    <p class="text-2xl font-bold text-green-600 mt-1 group-hover:text-green-700 transition-colors">{{ $total_suppliers ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('admin.users.index', ['role' => 'sub_supplier']) }}" class="bg-purple-50 rounded-lg p-4 hover:bg-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Sub Suppliers</p>
+                                    <p class="text-2xl font-bold text-purple-600 mt-1 group-hover:text-purple-700 transition-colors">{{ $total_sub_suppliers ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('admin.users.index') }}" class="bg-yellow-50 rounded-lg p-4 hover:bg-yellow-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">New Users (This Month)</p>
+                                    <p class="text-2xl font-bold text-yellow-600 mt-1 group-hover:text-yellow-700 transition-colors">{{ $new_users_this_month ?? 0 }}</p>
+                                    @if(isset($new_users_last_month) && $new_users_last_month > 0)
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        @php
+                                            $growth = (($new_users_this_month - $new_users_last_month) / $new_users_last_month) * 100;
+                                        @endphp
+                                        @if($growth > 0)
+                                            <span class="text-green-600">↑ {{ number_format($growth, 1) }}%</span>
+                                        @elseif($growth < 0)
+                                            <span class="text-red-600">↓ {{ number_format(abs($growth), 1) }}%</span>
+                                        @else
+                                            <span class="text-gray-600">→ 0%</span>
+                                        @endif
+                                        vs last month
+                                    </p>
+                                    @endif
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @if(isset($chart_months))
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        
+
+                            <!-- Tender Growth Chart -->
+                            <div class="bg-white rounded-lg shadow">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Tender Growth (Last 6 Months)</h3>
+                                </div>
+                                <div class="p-6">
+                                    <canvas id="tenderGrowthChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                   
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    
+                        <!-- Tender Status Chart -->
+                        <div class="bg-white rounded-lg shadow">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Tender Status Distribution</h3>
+                            </div>
+                            <div class="p-6">
+                                <canvas id="tenderStatusChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    <!-- Tender Analytics Section -->
+                    <div class="bg-white rounded-lg shadow mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Tender Analytics</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                                <a href="{{ route('tenders.search') }}" class="bg-green-50 rounded-lg p-4 hover:bg-green-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Active Tenders</p>
+                                    <p class="text-2xl font-bold text-green-600 mt-1 group-hover:text-green-700 transition-colors">{{ $active_tenders ?? 0 }}</p>
+                                </a>
+                               
+                                <a href="{{ route('tenders.search') }}" class="bg-red-50 rounded-lg p-4 hover:bg-red-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Expired Tenders</p>
+                                    <p class="text-2xl font-bold text-red-600 mt-1 group-hover:text-red-700 transition-colors">{{ $expired_tenders ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('tenders.search') }}" class="bg-blue-50 rounded-lg p-4 hover:bg-blue-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Total Tenders</p>
+                                    <p class="text-2xl font-bold text-blue-600 mt-1 group-hover:text-blue-700 transition-colors">{{ $total_tenders ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('tenders.search') }}" class="bg-orange-50 rounded-lg p-4 hover:bg-orange-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Tenders This Month</p>
+                                    <p class="text-2xl font-bold text-orange-600 mt-1 group-hover:text-orange-700 transition-colors">{{ $tenders_this_month ?? 0 }}</p>
+                                    @if(isset($tenders_last_month) && $tenders_last_month > 0)
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        @php
+                                            $tender_growth = (($tenders_this_month - $tenders_last_month) / $tenders_last_month) * 100;
+                                        @endphp
+                                        @if($tender_growth > 0)
+                                            <span class="text-green-600">↑ {{ number_format($tender_growth, 1) }}%</span>
+                                        @elseif($tender_growth < 0)
+                                            <span class="text-red-600">↓ {{ number_format(abs($tender_growth), 1) }}%</span>
+                                        @else
+                                            <span class="text-gray-600">→ 0%</span>
+                                        @endif
+                                        vs last month
+                                    </p>
+                                    @endif
+                                </a>
+                            </div>
+  
+                        </div>
+                    </div>
+                    <!-- Charts Section -->
+                    @if(isset($chart_months))
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    
+                            <!-- Subscription Growth Chart -->
+                            <div class="bg-white rounded-lg shadow">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Subscription Growth (Last 6 Months)</h3>
+                                </div>
+                                <div class="p-6">
+                                    <canvas id="subscriptionGrowthChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    <!-- Subscription Analytics Section -->
+                    <div class="bg-white rounded-lg shadow mb-8">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Subscription Analytics</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <a href="{{ route('admin.subscriptions.index') }}" class="bg-green-50 rounded-lg p-4 hover:bg-green-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Active Subscriptions</p>
+                                    <p class="text-2xl font-bold text-green-600 mt-1 group-hover:text-green-700 transition-colors">{{ $total_subscriptions ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('admin.subscriptions.index') }}" class="bg-blue-50 rounded-lg p-4 hover:bg-blue-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Subscription Plans</p>
+                                    <p class="text-2xl font-bold text-blue-600 mt-1 group-hover:text-blue-700 transition-colors">{{ $total_subscription_plans ?? 0 }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $active_subscription_plans ?? 0 }} active plans</p>
+                                </a>
+                                <a href="{{ route('admin.subscription-requests') }}" class="bg-yellow-50 rounded-lg p-4 hover:bg-yellow-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Pending Requests</p>
+                                    <p class="text-2xl font-bold text-yellow-600 mt-1 group-hover:text-yellow-700 transition-colors">{{ $pending_subscription_requests ?? 0 }}</p>
+                                </a>
+                                <a href="{{ route('admin.downgrade-requests.index') }}" class="bg-red-50 rounded-lg p-4 hover:bg-red-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                                    <p class="text-sm font-medium text-gray-600">Downgrade Requests</p>
+                                    <p class="text-2xl font-bold text-red-600 mt-1 group-hover:text-red-700 transition-colors">{{ $pending_downgrade_requests ?? 0 }}</p>
+                                </a>
+                            </div>
+                            @if(isset($expiring_subscriptions) && $expiring_subscriptions > 0)
+                            <div class="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium text-orange-800">
+                                        {{ $expiring_subscriptions }} subscription(s) expiring in the next 30 days
+                                    </p>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                   
                 @else
                     <!-- User Dashboard -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <a href="{{ route('tenders.my-tenders') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div class="flex items-center">
-                                <div class="p-2 bg-blue-100 rounded-lg">
+                                <div class="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                     </svg>
                                 </div>
                                 <div class="ml-4">
                                     <p class="text-sm font-medium text-gray-600">My Tenders</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $my_tenders ?? 0 }}</p>
+                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{{ $my_tenders ?? 0 }}</p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
 
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <a href="{{ route('account.plan') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div class="flex items-center">
-                                <div class="p-2 bg-green-100 rounded-lg">
+                                <div class="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
                                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                     </svg>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Invitations</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $my_invitations ?? 0 }}</p>
+                                    <p class="text-sm font-medium text-gray-600">My Plan</p>
+                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                                        @if(isset($active_subscription) && $active_subscription)
+                                            {{ $active_subscription->subscription->name ?? 'Active' }}
+                                        @else
+                                            No Plan
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
 
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <a href="{{ route('account.profile') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div class="flex items-center">
-                                <div class="p-2 bg-yellow-100 rounded-lg">
+                                <div class="p-2 bg-yellow-100 rounded-lg group-hover:bg-yellow-200 transition-colors">
                                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Recent Tenders</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $recent_tenders->count() ?? 0 }}</p>
+                                    <p class="text-sm font-medium text-gray-600">Profile</p>
+                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-yellow-600 transition-colors">View</p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
 
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <a href="{{ route('user.interests') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
                             <div class="flex items-center">
-                                <div class="p-2 bg-purple-100 rounded-lg">
+                                <div class="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                     </svg>
                                 </div>
                                 <div class="ml-4">
                                     <p class="text-sm font-medium text-gray-600">Interests Set</p>
-                                <p class="text-2xl font-semibold text-gray-900">{{ $user_interests_count ?? 0 }}</p>
+                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">{{ $user_interests_count ?? 0 }}</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             @endif
@@ -194,7 +361,7 @@
                         </div>
                     @else
                         <div class="text-center py-12">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             <h3 class="mt-2 text-sm font-medium text-gray-900">No recent activity</h3>
@@ -211,4 +378,235 @@
         </div>
         </div>
     </div>
+
+@if($user->isAdmin() && isset($chart_months))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart data from PHP
+    const months = @json($chart_months);
+    const userCounts = @json($chart_user_counts);
+    const tenderCounts = @json($chart_tender_counts);
+    const subscriptionCounts = @json($chart_subscription_counts);
+    
+    const totalBuyers = {{ $total_buyers ?? 0 }};
+    const totalSuppliers = {{ $total_suppliers ?? 0 }};
+    const totalSubSuppliers = {{ $total_sub_suppliers ?? 0 }};
+    
+    const activeTenders = {{ $active_tenders ?? 0 }};
+    const closedTenders = {{ $closed_tenders ?? 0 }};
+    const expiredTenders = {{ $expired_tenders ?? 0 }};
+    
+    const totalCreditsAllocated = {{ $total_credits_allocated ?? 0 }};
+    const totalCreditsUsed = {{ $total_credits_used ?? 0 }};
+    const totalCreditsRemaining = {{ $total_credits_remaining ?? 0 }};
+
+    // Chart.js default configuration
+    Chart.defaults.responsive = true;
+    Chart.defaults.maintainAspectRatio = false;
+
+    // User Growth Chart (Line Chart)
+    const userGrowthCtx = document.getElementById('userGrowthChart');
+    if (userGrowthCtx) {
+        new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'New Users',
+                    data: userCounts,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Tender Growth Chart (Line Chart)
+    const tenderGrowthCtx = document.getElementById('tenderGrowthChart');
+    if (tenderGrowthCtx) {
+        new Chart(tenderGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'New Tenders',
+                    data: tenderCounts,
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // User Distribution Chart (Doughnut Chart)
+    const userDistributionCtx = document.getElementById('userDistributionChart');
+    if (userDistributionCtx) {
+        new Chart(userDistributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Buyers', 'Suppliers', 'Sub Suppliers'],
+                datasets: [{
+                    data: [totalBuyers, totalSuppliers, totalSubSuppliers],
+                    backgroundColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(34, 197, 94)',
+                        'rgb(168, 85, 247)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Tender Status Chart (Doughnut Chart)
+    const tenderStatusCtx = document.getElementById('tenderStatusChart');
+    if (tenderStatusCtx) {
+        new Chart(tenderStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active', 'Closed', 'Expired'],
+                datasets: [{
+                    data: [activeTenders, closedTenders, expiredTenders],
+                    backgroundColor: [
+                        'rgb(34, 197, 94)',
+                        'rgb(107, 114, 128)',
+                        'rgb(239, 68, 68)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Credit Usage Chart (Doughnut Chart)
+    const creditUsageCtx = document.getElementById('creditUsageChart');
+    if (creditUsageCtx) {
+        new Chart(creditUsageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Used', 'Remaining'],
+                datasets: [{
+                    data: [totalCreditsUsed, totalCreditsRemaining],
+                    backgroundColor: [
+                        'rgb(239, 68, 68)',
+                        'rgb(59, 130, 246)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Subscription Growth Chart (Line Chart)
+    const subscriptionGrowthCtx = document.getElementById('subscriptionGrowthChart');
+    if (subscriptionGrowthCtx) {
+        new Chart(subscriptionGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Active Subscriptions',
+                    data: subscriptionCounts,
+                    borderColor: 'rgb(168, 85, 247)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+@endif
 @endsection

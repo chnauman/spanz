@@ -22,18 +22,6 @@
             <!-- Content Container -->
             <div class="mt-6">
 
-        <!-- Success/Error Messages -->
-        @if(session('success'))
-        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
-            {{ session('success') }}
-        </div>
-        @endif
-
-        @if(session('error'))
-        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-            {{ session('error') }}
-        </div>
-        @endif
 
         <!-- Categories Table -->
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
@@ -116,18 +104,19 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
                                     </a>
-                                    <a href="{{ route('admin.categories.edit', $category) }}" 
+                                    <a href="{{ route('admin.categories.edit', $category) }}?page={{ request('page', 1) }}" 
                                        class="text-indigo-600 hover:text-indigo-900 p-2 rounded-md hover:bg-indigo-50 transition-colors" 
                                        title="Edit">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                     </a>
-                                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline" 
-                                          onsubmit="return confirm('Are you sure you want to delete this category?')">
+                                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline delete-category-form" 
+                                          id="delete-form-{{ $category->id }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
+                                        <button type="button" 
+                                                onclick="confirmDeleteCategory({{ $category->id }}, {{ json_encode($category->name) }})"
                                                 class="text-red-600 hover:text-red-900 p-2 rounded-md hover:bg-red-50 transition-colors" 
                                                 title="Delete">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,4 +162,58 @@
         </div>
     </div>
 </div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmDeleteCategory(categoryId, categoryName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete category "' + categoryName + '". This action cannot be undone!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the category.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Submit the form
+            const form = document.getElementById('delete-form-' + categoryId);
+            form.submit();
+        }
+    });
+}
+
+@if(session('success'))
+Swal.fire({
+    title: 'Success!',
+    text: '{{ session('success') }}',
+    icon: 'success',
+    confirmButtonText: 'OK'
+});
+@endif
+
+@if(session('error'))
+Swal.fire({
+    title: 'Error!',
+    text: '{{ session('error') }}',
+    icon: 'error',
+    confirmButtonText: 'OK'
+});
+@endif
+</script>
 @endsection

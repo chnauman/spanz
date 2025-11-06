@@ -15,10 +15,11 @@
                         Edit
                     </a>
                     <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline" 
-                          onsubmit="return confirm('Are you sure you want to delete this category?')">
+                          id="delete-category-form">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" 
+                        <button type="button" 
+                                onclick="confirmDeleteCategory({{ json_encode($category->name) }})"
                                 class="inline-flex items-center px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -50,11 +51,7 @@
                             <div>
                                 <dt class="text-sm font-medium text-gray-500">Category Name</dt>
                                 <dd class="mt-1 text-sm text-gray-900 flex items-center">
-                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-[#0D6AED] flex items-center justify-center mr-3">
-                                        <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                        </svg>
-                                    </div>
+                                    
                                     <span class="text-lg font-semibold">{{ $category->name }}</span>
                                 </dd>
                             </div>
@@ -179,4 +176,58 @@
         </div>
     </div>
 </div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmDeleteCategory(categoryName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete category "' + categoryName + '". This action cannot be undone!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete the category.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Submit the form
+            const form = document.getElementById('delete-category-form');
+            form.submit();
+        }
+    });
+}
+
+@if(session('success'))
+Swal.fire({
+    title: 'Success!',
+    text: '{{ session('success') }}',
+    icon: 'success',
+    confirmButtonText: 'OK'
+});
+@endif
+
+@if(session('error'))
+Swal.fire({
+    title: 'Error!',
+    text: '{{ session('error') }}',
+    icon: 'error',
+    confirmButtonText: 'OK'
+});
+@endif
+</script>
 @endsection
