@@ -46,8 +46,37 @@ class EmailVerificationController extends Controller
             return redirect()->route('dashboard')->with('info', 'Your email is already verified.');
         }
 
+        // Clean and normalize OTP input (remove spaces, ensure it's exactly 6 digits)
+        $otp = trim($request->otp);
+        $otp = preg_replace('/\D/', '', $otp); // Remove any non-digit characters
+        
+        // Check if OTP is exactly 6 digits
+        if (strlen($otp) !== 6) {
+            \Log::warning('OTP length invalid', [
+                'user_id' => $user->id,
+                'otp_received' => $otp,
+                'otp_length' => strlen($otp)
+            ]);
+            return back()->withErrors(['otp' => 'OTP must be exactly 6 digits.'])->withInput();
+        }
+        
+        // Get all OTPs for this user for debugging
+        $allOtps = EmailVerificationOtp::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get(['otp', 'is_used', 'expires_at', 'created_at']);
+        
+        // Log for debugging
+        \Log::info('OTP Verification Attempt', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'otp_received' => $otp,
+            'otp_length' => strlen($otp),
+            'recent_otps' => $allOtps->toArray()
+        ]);
+
         // Verify OTP
-        $isValid = EmailVerificationOtp::verifyOtp($user->id, $request->otp);
+        $isValid = EmailVerificationOtp::verifyOtp($user->id, $otp);
 
         if ($isValid) {
             // Mark email as verified
@@ -58,14 +87,24 @@ class EmailVerificationController extends Controller
             // Refresh the user model from database to get the updated email_verified_at
             $user->refresh();
             
-            // Regenerate session to ensure fresh user data is loaded
-            $request->session()->regenerate();
-            
             // Re-authenticate the user to update the session with fresh data
+            // This will automatically update the session with the refreshed user data
             Auth::login($user);
+
+            \Log::info('Email verified successfully', [
+                'user_id' => $user->id,
+                'email_verified_at' => $user->email_verified_at,
+                'auth_user_verified' => Auth::user()->email_verified_at
+            ]);
 
             return redirect()->route('dashboard')->with('success', 'Email verified successfully! Welcome to Spanz.');
         }
+
+        // Log failed verification attempt
+        \Log::warning('OTP verification failed', [
+            'user_id' => $user->id,
+            'otp_attempted' => $otp
+        ]);
 
         return back()->withErrors(['otp' => 'Invalid or expired OTP. Please try again or request a new one.'])->withInput();
     }

@@ -53,6 +53,10 @@ class EmailVerificationOtp extends Model
      */
     public static function verifyOtp($userId, $otp)
     {
+        // Normalize OTP (ensure it's a string and trim whitespace)
+        $otp = trim((string) $otp);
+        
+        // Find matching OTP record
         $otpRecord = self::where('user_id', $userId)
             ->where('otp', $otp)
             ->where('is_used', false)
@@ -60,6 +64,7 @@ class EmailVerificationOtp extends Model
             ->first();
 
         if ($otpRecord) {
+            // Mark OTP as used
             $otpRecord->update(['is_used' => true]);
             return true;
         }
