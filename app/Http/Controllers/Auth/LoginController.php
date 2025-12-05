@@ -33,6 +33,12 @@ class LoginController extends Controller
                 ]);
             }
 
+            // Check if email is verified
+            if (!auth()->user()->email_verified_at) {
+                return redirect()->route('email.verify.show')
+                    ->with('info', 'Please verify your email address to continue.');
+            }
+
             // Check for redirect parameter
             $redirectTo = $request->get('redirect', '/dashboard');
             return redirect($redirectTo);

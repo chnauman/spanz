@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SupplierInvitation;
+use App\Models\EmailVerificationOtp;
 
 class RegisterController extends Controller
 {
@@ -62,6 +63,7 @@ class RegisterController extends Controller
             'role' => $role,
             'is_approved' => $isApproved,
             'parent_supplier_id' => $parentSupplierId,
+            'email_verified_at' => null, // Email not verified yet
         ]);
 
         // Mark invitation as used if it was a sub-supplier registration
@@ -69,12 +71,21 @@ class RegisterController extends Controller
             $invitation->markAsUsed();
         }
 
+        // Generate and send OTP
+        $otpRecord = EmailVerificationOtp::createOtp($user->id);
+
+        // Send email verification notification (same pattern as password reset)
+        try {
+            $user->notify(new \App\Notifications\EmailVerificationNotification($otpRecord->otp));
+        } catch (\Exception $e) {
+            // Log error but continue with registration
+            \Log::error('Failed to send email verification OTP: ' . $e->getMessage());
+        }
+
+        // Login the user
         auth()->login($user);
 
-        $message = $role === 'sub_supplier'
-            ? 'Account created successfully. You are now a sub-supplier.'
-            : 'Account created successfully.';
-
-        return redirect('/dashboard')->with('success', $message);
+        // Redirect to email verification page
+        return redirect()->route('email.verify.show')->with('success', 'Registration successful! Please verify your email address with the OTP sent to your inbox.');
     }
 }

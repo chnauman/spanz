@@ -3,12 +3,31 @@
 @section('title', 'Post a Tender - SPANZ')
 
 @section('content')
+            <!-- Include Company Registration Modal -->
+            @include('components.company-registration-modal')
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
                 <div class="border border-gray-300 p-3 sm:p-4 lg:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                         <h1 class="text-xl sm:text-2xl font-bold">Submit your Purchasing Request (RFX)</h1>
                     </div>
-        <form action="{{ route('tenders.store') }}" method="post" class="space-y-4 sm:space-y-6" enctype="multipart/form-data">
+        
+        @if(!$hasCompany)
+            <!-- Show message when company is not registered -->
+            <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Company Registration Required</h3>
+                <p class="text-gray-600 mb-6">Please complete your company profile to post tenders on SPANZ.</p>
+                <a href="{{ route('company.register') }}" class="inline-block bg-[#0D6AED] text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Complete Company Profile
+                </a>
+            </div>
+        @else
+        <form action="{{ route('tenders.store') }}" method="post" class="space-y-4 sm:space-y-6" enctype="multipart/form-data" onsubmit="return validatePercentageTotal()">
             @csrf
             
             @if(session('error'))
@@ -136,22 +155,27 @@
                     </div>
                     <!-- product type -->
                     <div class="mt-2 sm:mt-4 lg:mt-6 required flex items-end">
-                        <select name="categories[0][product_type]" required
-                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
-                            <option value="">Select product type</option>
-                            <option value="100" {{ old('categories.0.product_type') == '100' ? 'selected' : '' }}>100% of total budget</option>
-                            <option value="90" {{ old('categories.0.product_type') == '90' ? 'selected' : '' }}>90% of total budget</option>
-                            <option value="80" {{ old('categories.0.product_type') == '80' ? 'selected' : '' }}>80% of total budget</option>
-                            <option value="70" {{ old('categories.0.product_type') == '70' ? 'selected' : '' }}>70% of total budget</option>
-                            <option value="60" {{ old('categories.0.product_type') == '60' ? 'selected' : '' }}>60% of total budget</option>
-                            <option value="50" {{ old('categories.0.product_type') == '50' ? 'selected' : '' }}>50% of total budget</option>
-                            <option value="40" {{ old('categories.0.product_type') == '40' ? 'selected' : '' }}>40% of total budget</option>
-                            <option value="30" {{ old('categories.0.product_type') == '30' ? 'selected' : '' }}>30% of total budget</option>
-                            <option value="20" {{ old('categories.0.product_type') == '20' ? 'selected' : '' }}>20% of total budget</option>
-                            <option value="10" {{ old('categories.0.product_type') == '10' ? 'selected' : '' }}>10% of total budget</option>
-                            <option value="5" {{ old('categories.0.product_type') == '5' ? 'selected' : '' }}>Less than 10%</option>
-                        </select>
-                        <button type="button" onclick="addCategoryRow()" class="ml-3 p-2 text-gray-500 hover:text-blue-500 transition-colors flex-shrink-0" title="Add another category">
+                        <div class="flex-1">
+                            <select name="categories[0][product_type]" required
+                                class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                                data-row="0"
+                                onchange="updatePercentageOptions()">
+                                <option value="">Select product type</option>
+                                <option value="100" {{ old('categories.0.product_type') == '100' ? 'selected' : '' }}>100% of total budget</option>
+                                <option value="90" {{ old('categories.0.product_type') == '90' ? 'selected' : '' }}>90% of total budget</option>
+                                <option value="80" {{ old('categories.0.product_type') == '80' ? 'selected' : '' }}>80% of total budget</option>
+                                <option value="70" {{ old('categories.0.product_type') == '70' ? 'selected' : '' }}>70% of total budget</option>
+                                <option value="60" {{ old('categories.0.product_type') == '60' ? 'selected' : '' }}>60% of total budget</option>
+                                <option value="50" {{ old('categories.0.product_type') == '50' ? 'selected' : '' }}>50% of total budget</option>
+                                <option value="40" {{ old('categories.0.product_type') == '40' ? 'selected' : '' }}>40% of total budget</option>
+                                <option value="30" {{ old('categories.0.product_type') == '30' ? 'selected' : '' }}>30% of total budget</option>
+                                <option value="20" {{ old('categories.0.product_type') == '20' ? 'selected' : '' }}>20% of total budget</option>
+                                <option value="10" {{ old('categories.0.product_type') == '10' ? 'selected' : '' }}>10% of total budget</option>
+                                <option value="5" {{ old('categories.0.product_type') == '5' ? 'selected' : '' }}>Less than 10%</option>
+                            </select>
+                            <div class="percentage-remaining text-xs text-gray-500 mt-1" data-row="0"></div>
+                        </div>
+                        <button type="button" id="addCategoryRowBtnFirst" onclick="addCategoryRow()" class="ml-3 p-2 text-gray-500 hover:text-blue-500 transition-colors flex-shrink-0" title="Add another category">
                             <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -161,9 +185,10 @@
                             </div>
             </div>
             
-            <div>
-                <button type="button" onclick="addCategoryRow()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm sm:text-base">+ Add Another Line</button>
-                        </div>
+            <div class="mt-4">
+                <button type="button" id="addCategoryRowBtn" onclick="addCategoryRow()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm sm:text-base">+ Add Another Line</button>
+                <div id="percentageSummary" class="mt-2 text-sm text-gray-600"></div>
+            </div>
                         
                         <!-- Additional fields for contact information -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -246,6 +271,7 @@
                         </div>
                         
                     </form>
+        @endif
                 </div>
             </div>
         </div>
@@ -253,8 +279,152 @@
 
 @push('scripts')
 <script>
+// Show company registration modal if company is not registered
+document.addEventListener('DOMContentLoaded', function() {
+    @if(!$hasCompany)
+        // Show modal automatically when page loads
+        setTimeout(function() {
+            if (typeof openCompanyRegistrationModal === 'function') {
+                openCompanyRegistrationModal();
+            }
+        }, 500);
+    @endif
+});
+
 // Dynamic category row functionality
 let categoryRowCount = 0;
+
+// Calculate total percentage used
+function getTotalPercentage() {
+    let total = 0;
+    document.querySelectorAll('.product-type-select').forEach(select => {
+        const value = parseInt(select.value) || 0;
+        total += value;
+    });
+    return total;
+}
+
+// Get remaining percentage
+function getRemainingPercentage() {
+    return 100 - getTotalPercentage();
+}
+
+// Update percentage options for all rows based on remaining percentage
+function updatePercentageOptions() {
+    const totalUsed = getTotalPercentage();
+    const remaining = getRemainingPercentage();
+    
+    // Update all percentage dropdowns
+    document.querySelectorAll('.product-type-select').forEach(select => {
+        const currentValue = parseInt(select.value) || 0;
+        const rowIndex = select.getAttribute('data-row');
+        const options = select.querySelectorAll('option');
+        
+        // Store current selection
+        let selectedValue = currentValue;
+        
+        // Update options based on remaining percentage (excluding current row)
+        const otherRowsTotal = totalUsed - currentValue;
+        const availableForThisRow = 100 - otherRowsTotal;
+        
+        options.forEach(option => {
+            if (option.value === '') return; // Skip empty option
+            
+            const optionValue = parseInt(option.value);
+            
+            // Enable/disable options based on available percentage
+            if (optionValue <= availableForThisRow) {
+                option.disabled = false;
+            } else {
+                option.disabled = true;
+                // If current selection exceeds available, clear it
+                if (selectedValue === optionValue) {
+                    selectedValue = '';
+                }
+            }
+        });
+        
+        // If current selection is invalid, clear it
+        if (selectedValue > availableForThisRow && selectedValue > 0) {
+            select.value = '';
+            selectedValue = 0;
+        }
+        
+        // Update remaining percentage display
+        const remainingDisplay = document.querySelector(`.percentage-remaining[data-row="${rowIndex}"]`);
+        if (remainingDisplay) {
+            const rowRemaining = availableForThisRow - (selectedValue || 0);
+            if (rowRemaining >= 0) {
+                remainingDisplay.textContent = `${rowRemaining}% remaining`;
+                remainingDisplay.className = 'percentage-remaining text-xs text-gray-500 mt-1';
+            } else {
+                remainingDisplay.textContent = 'Exceeds limit';
+                remainingDisplay.className = 'percentage-remaining text-xs text-red-500 mt-1';
+            }
+        }
+    });
+    
+    // Update summary
+    updatePercentageSummary();
+    
+    // Update add button state
+    updateAddButtonState();
+}
+
+// Update percentage summary
+function updatePercentageSummary() {
+    const totalUsed = getTotalPercentage();
+    const remaining = getRemainingPercentage();
+    const summaryEl = document.getElementById('percentageSummary');
+    
+    if (summaryEl) {
+        if (totalUsed === 0) {
+            summaryEl.textContent = 'Total: 0% | Remaining: 100%';
+            summaryEl.className = 'mt-2 text-sm text-gray-600';
+        } else if (totalUsed === 100) {
+            summaryEl.textContent = 'Total: 100% | Complete ✓';
+            summaryEl.className = 'mt-2 text-sm text-green-600 font-semibold';
+        } else if (totalUsed > 100) {
+            summaryEl.textContent = `Total: ${totalUsed}% | Exceeds 100% by ${totalUsed - 100}%`;
+            summaryEl.className = 'mt-2 text-sm text-red-600 font-semibold';
+        } else {
+            summaryEl.textContent = `Total: ${totalUsed}% | Remaining: ${remaining}%`;
+            summaryEl.className = 'mt-2 text-sm text-gray-600';
+        }
+    }
+}
+
+// Update add button state
+function updateAddButtonState() {
+    const addBtn = document.getElementById('addCategoryRowBtn');
+    const addBtnFirst = document.getElementById('addCategoryRowBtnFirst');
+    const remaining = getRemainingPercentage();
+    
+    const updateButton = (btn) => {
+        if (btn) {
+            if (remaining <= 0) {
+                btn.disabled = true;
+                if (btn.id === 'addCategoryRowBtn') {
+                    btn.className = 'px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed text-sm sm:text-base';
+                } else {
+                    btn.className = 'ml-3 p-2 text-gray-300 cursor-not-allowed flex-shrink-0';
+                }
+                btn.title = 'Cannot add more lines - 100% reached';
+            } else {
+                btn.disabled = false;
+                if (btn.id === 'addCategoryRowBtn') {
+                    btn.className = 'px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm sm:text-base';
+                } else {
+                    btn.className = 'ml-3 p-2 text-gray-500 hover:text-blue-500 transition-colors flex-shrink-0';
+                }
+                btn.title = 'Add another category';
+            }
+        }
+    };
+    
+    updateButton(addBtn);
+    updateButton(addBtnFirst);
+}
 
 // Initialize with old input if available
 document.addEventListener('DOMContentLoaded', function() {
@@ -282,14 +452,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+    
+    // Initialize percentage options and summary after a short delay to ensure DOM is ready
+    setTimeout(function() {
+        updatePercentageOptions();
+    }, 100);
 });
 
+// Validate percentage total on form submit
+function validatePercentageTotal() {
+    const total = getTotalPercentage();
+    
+    if (total > 100) {
+        alert(`Error: Total percentage is ${total}%, which exceeds 100%. Please adjust your selections.`);
+        return false;
+    }
+    
+    if (total < 100) {
+        const confirmSubmit = confirm(`Total percentage is ${total}%. You have ${100 - total}% remaining. Do you want to submit anyway?`);
+        return confirmSubmit;
+    }
+    
+    return true;
+}
+
 function addCategoryRow() {
+    const remaining = getRemainingPercentage();
+    
+    // Prevent adding if 100% is reached
+    if (remaining <= 0) {
+        alert('Cannot add more lines. Total percentage has reached 100%.');
+        return;
+    }
+    
     categoryRowCount++;
     const categoryRows = document.getElementById('categoryRows');
     const newRow = document.createElement('div');
     newRow.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 category-row';
     newRow.setAttribute('data-row', categoryRowCount);
+    
+    // Get available percentage options based on remaining
+    const availableOptions = getAvailablePercentageOptions(remaining);
     
     newRow.innerHTML = `
         <!-- main category -->
@@ -318,21 +521,16 @@ function addCategoryRow() {
         </div>
         <!-- product type -->
         <div class="mt-2 sm:mt-4 lg:mt-6 required flex items-end">
-            <select name="categories[${categoryRowCount}][product_type]" required
-                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
-                <option value="">Select product type</option>
-                <option value="100">100% of total budget</option>
-                <option value="90">90% of total budget</option>
-                <option value="80">80% of total budget</option>
-                <option value="70">70% of total budget</option>
-                <option value="60">60% of total budget</option>
-                <option value="50">50% of total budget</option>
-                <option value="40">40% of total budget</option>
-                <option value="30">30% of total budget</option>
-                <option value="20">20% of total budget</option>
-                <option value="10">10% of total budget</option>
-                <option value="5">Less than 10%</option>
-            </select>
+            <div class="flex-1">
+                <select name="categories[${categoryRowCount}][product_type]" required
+                    class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    data-row="${categoryRowCount}"
+                    onchange="updatePercentageOptions()">
+                    <option value="">Select product type</option>
+                    ${availableOptions}
+                </select>
+                <div class="percentage-remaining text-xs text-gray-500 mt-1" data-row="${categoryRowCount}">${remaining}% remaining</div>
+            </div>
             <button type="button" onclick="removeCategoryRow(this)" class="ml-3 p-2 text-gray-500 hover:text-red-500 transition-colors flex-shrink-0" title="Remove category">
                 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -346,11 +544,35 @@ function addCategoryRow() {
     `;
     
     categoryRows.appendChild(newRow);
+    
+    // Update all percentage options after adding new row
+    updatePercentageOptions();
+}
+
+// Get available percentage options HTML based on remaining percentage
+function getAvailablePercentageOptions(remaining) {
+    const percentages = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5];
+    let options = '';
+    
+    percentages.forEach(percent => {
+        if (percent <= remaining) {
+            const label = percent === 5 ? 'Less than 10%' : `${percent}% of total budget`;
+            options += `<option value="${percent}">${label}</option>`;
+        } else {
+            const label = percent === 5 ? 'Less than 10%' : `${percent}% of total budget`;
+            options += `<option value="${percent}" disabled>${label}</option>`;
+        }
+    });
+    
+    return options;
 }
 
 function removeCategoryRow(button) {
     const row = button.closest('.category-row');
     row.remove();
+    
+    // Recalculate percentages after removal
+    updatePercentageOptions();
 }
 
 // File handling functionality

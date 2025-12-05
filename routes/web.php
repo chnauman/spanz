@@ -27,6 +27,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+// Email verification routes
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'show'])->name('email.verify.show');
+    Route::post('/email/verify', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])->name('email.verify');
+    Route::post('/email/resend', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'resend'])->name('email.resend');
+});
+
 // Password reset routes
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -34,16 +41,16 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showRese
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Protected routes
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth', 'email.verified']);
 
 // Company Registration Routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'email.verified'])->group(function () {
     Route::get('/company/register', [CompanyRegistrationController::class, 'show'])->name('company.register');
     Route::post('/company/register', [CompanyRegistrationController::class, 'store'])->name('company.register.store');
 });
 
 // User Interest Routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'email.verified'])->group(function () {
     Route::get('/user/interests', [UserInterestController::class, 'show'])->name('user.interests');
     Route::post('/user/interests', [UserInterestController::class, 'store'])->name('user.interests.store');
     Route::post('/user/interests/skip', [UserInterestController::class, 'skip'])->name('user.interests.skip');
@@ -58,7 +65,7 @@ Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index'
 Route::get('/tenders/search', [TenderController::class, 'search'])->name('tenders.search');
 Route::get('/tenders/{tender}/detail', [TenderController::class, 'detail'])->name('tenders.detail');
 // Tender creation and management routes (all authenticated users except admin)
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'email.verified'])->group(function () {
     Route::get('/tenders/create', [TenderController::class, 'create'])->name('tenders.create');
     Route::post('/tenders', [TenderController::class, 'store'])->name('tenders.store');
     Route::get('/my-tenders', [TenderController::class, 'myTenders'])->name('tenders.my-tenders');
@@ -67,7 +74,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // General authenticated user routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'email.verified'])->group(function () {
     Route::get('/tenders/{tender}', [TenderController::class, 'detail'])->name('tenders.show');
     Route::get('/saved-tenders', [TenderController::class, 'savedTenders'])->name('tenders.saved');
 
@@ -101,7 +108,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Supplier-specific routes (only suppliers can manage sub-suppliers)
-Route::middleware(['auth', 'role:supplier'])->group(function () {
+Route::middleware(['auth', 'email.verified', 'role:supplier'])->group(function () {
     Route::get('/suppliers/invite', [\App\Http\Controllers\SupplierController::class, 'showInviteForm'])->name('suppliers.invite');
     Route::post('/suppliers/invite', [\App\Http\Controllers\SupplierController::class, 'sendInvitation'])->name('suppliers.invite.send');
     Route::get('/suppliers/sub-suppliers', [\App\Http\Controllers\SupplierController::class, 'subSuppliers'])->name('suppliers.sub-suppliers');
@@ -114,7 +121,7 @@ Route::middleware(['auth', 'role:supplier'])->group(function () {
 });
 
 // Supplier and Sub-supplier routes
-Route::middleware(['auth', 'role:supplier,sub_supplier'])->group(function () {
+Route::middleware(['auth', 'email.verified', 'role:supplier,sub_supplier'])->group(function () {
     Route::get('/invitations', [\App\Http\Controllers\SubSupplierInvitationController::class, 'index'])->name('invitations.index');
     Route::post('/invitations/{invitation}/accept', [\App\Http\Controllers\SubSupplierInvitationController::class, 'accept'])->name('invitations.accept');
     Route::post('/invitations/{invitation}/decline', [\App\Http\Controllers\SubSupplierInvitationController::class, 'decline'])->name('invitations.decline');
@@ -122,7 +129,7 @@ Route::middleware(['auth', 'role:supplier,sub_supplier'])->group(function () {
 });
 
 // Admin Category Management Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'email.verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('products', AdminProductController::class)->scoped([
         'product' => 'id'
@@ -150,19 +157,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 // Profile update (name and photo)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'email.verified'])->group(function () {
     Route::post('/profile/update', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Account Settings Routes
-Route::middleware(['auth'])->prefix('account')->name('account.')->group(function () {
+Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.')->group(function () {
     Route::get('/profile', [\App\Http\Controllers\AccountController::class, 'profile'])->name('profile');
     Route::get('/plan', [\App\Http\Controllers\AccountController::class, 'plan'])->name('plan');
     Route::get('/credits', [\App\Http\Controllers\AccountController::class, 'credits'])->name('credits');
 });
 
 // Downgrade Request Routes
-Route::middleware(['auth'])->prefix('downgrade-requests')->name('downgrade-requests.')->group(function () {
+Route::middleware(['auth', 'email.verified'])->prefix('downgrade-requests')->name('downgrade-requests.')->group(function () {
     Route::get('/create', [\App\Http\Controllers\DowngradeRequestController::class, 'create'])->name('create');
     Route::post('/store', [\App\Http\Controllers\DowngradeRequestController::class, 'store'])->name('store');
     Route::get('/my-requests', [\App\Http\Controllers\DowngradeRequestController::class, 'myRequests'])->name('my-requests');
@@ -204,7 +211,7 @@ Route::get('/products/{product}', [PublicProductController::class, 'show'])->nam
 Route::post('/purchase-requests', [\App\Http\Controllers\PurchaseRequestController::class, 'store'])->name('purchase-requests.store');
 
 // Admin Purchase Request Management Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'email.verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('purchase-requests', [\App\Http\Controllers\PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
     Route::get('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'show'])->name('purchase-requests.show');
     Route::put('purchase-requests/{purchaseRequest}', [\App\Http\Controllers\PurchaseRequestController::class, 'update'])->name('purchase-requests.update');

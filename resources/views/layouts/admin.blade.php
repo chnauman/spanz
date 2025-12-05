@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @auth
+        <meta name="user-has-company" content="{{ auth()->user()->companyDetail ? '1' : '0' }}">
+    @endauth
     <title>@yield('title', 'Admin Dashboard - SPANZ')</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -145,6 +148,85 @@
     </div>
 
     @stack('scripts')
+
+    <!-- Include Company Registration Modal for authenticated non-admin users -->
+    @auth
+        @if(!auth()->user()->isAdmin())
+            @include('components.company-registration-modal')
+        @endif
+    @endauth
+
+    <!-- JavaScript to intercept Post Tender links -->
+    @auth
+        @if(!auth()->user()->isAdmin() && !auth()->user()->companyDetail)
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to check and intercept Post Tender links
+            function interceptPostTenderLinks() {
+                // Intercept all "Post Tender" links - multiple selectors to catch all variations
+                const selectors = [
+                    'a[href*="tenders.create"]',
+                    'a[href*="tenders/create"]',
+                    'a[href*="/tenders/create"]',
+                    'a[href="{{ route("tenders.create") }}"]'
+                ];
+                
+                let postTenderLinks = [];
+                selectors.forEach(function(selector) {
+                    const links = document.querySelectorAll(selector);
+                    links.forEach(function(link) {
+                        // Avoid duplicate listeners
+                        if (!link.dataset.companyCheckAdded) {
+                            postTenderLinks.push(link);
+                            link.dataset.companyCheckAdded = 'true';
+                        }
+                    });
+                });
+                
+                postTenderLinks.forEach(function(link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Check if user has company registered
+                        const hasCompany = document.querySelector('meta[name="user-has-company"]');
+                        
+                        if (hasCompany && hasCompany.getAttribute('content') === '0') {
+                            // Show company registration modal
+                            if (typeof openCompanyRegistrationModal === 'function') {
+                                openCompanyRegistrationModal();
+                            } else {
+                                // If modal function not available, redirect to registration page
+                                window.location.href = '{{ route("company.register") }}';
+                            }
+                        } else {
+                            // User has company, proceed normally
+                            window.location.href = this.href;
+                        }
+                        return false;
+                    });
+                });
+            }
+            
+            // Run on page load
+            interceptPostTenderLinks();
+            
+            // Also run after a short delay to catch dynamically loaded links
+            setTimeout(interceptPostTenderLinks, 500);
+            
+            // Use MutationObserver to catch dynamically added links
+            const observer = new MutationObserver(function(mutations) {
+                interceptPostTenderLinks();
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+        </script>
+        @endif
+    @endauth
 
     <!-- Force hide mobile header on desktop screens -->
     <script>

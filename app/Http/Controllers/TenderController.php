@@ -125,8 +125,12 @@ class TenderController extends Controller
             abort(403, 'Admin users cannot create tenders.');
         }
 
+        // Check if user has company details registered
+        $user = auth()->user();
+        $hasCompany = $user->companyDetail ? true : false;
+
         $categories = Category::where('is_active', true)->get();
-        return view('tenders.create', compact('categories'));
+        return view('tenders.create', compact('categories', 'hasCompany'));
     }
 
     public function store(Request $request)
