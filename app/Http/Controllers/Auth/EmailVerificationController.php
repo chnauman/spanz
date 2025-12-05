@@ -113,7 +113,7 @@ class EmailVerificationController extends Controller
             \Log::info('Email verified successfully', [
                 'user_id' => $user->id,
                 'email_verified_at' => $user->email_verified_at,
-                'email_verified_at_formatted' => $user->email_verified_at->format('Y-m-d H:i:s'),
+                'email_verified_at_type' => gettype($user->email_verified_at),
                 'auth_user_verified' => Auth::user()->email_verified_at,
                 'session_id' => $request->session()->getId()
             ]);
