@@ -77,6 +77,55 @@
                         </div>
                         @endif
                     </div>
+
+                    <!-- Notification Settings Section -->
+                    <div class="mt-8 pt-8 border-t border-white-300">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Notification Settings</h2>
+                        <p class="text-sm text-gray-600 mb-4">Choose how often you want to receive email updates about new tenders matching your interests.</p>
+                        
+                        <form method="POST" action="{{ route('account.update-notifications') }}" id="notificationForm">
+                            @csrf
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="notification_frequency" value="none" 
+                                           {{ $user->notification_frequency === 'none' || !$user->notification_frequency ? 'checked' : '' }}
+                                           class="w-4 h-4 text-[#0D6AED] focus:ring-[#0D6AED] border-gray-300">
+                                    <span class="text-gray-700 font-medium">None - Don't send me email notifications</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="notification_frequency" value="daily" 
+                                           {{ $user->notification_frequency === 'daily' ? 'checked' : '' }}
+                                           class="w-4 h-4 text-[#0D6AED] focus:ring-[#0D6AED] border-gray-300">
+                                    <span class="text-gray-700 font-medium">Daily - Send me a daily summary</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="notification_frequency" value="weekly" 
+                                           {{ $user->notification_frequency === 'weekly' ? 'checked' : '' }}
+                                           class="w-4 h-4 text-[#0D6AED] focus:ring-[#0D6AED] border-gray-300">
+                                    <span class="text-gray-700 font-medium">Weekly - Send me a weekly summary</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="notification_frequency" value="monthly" 
+                                           {{ $user->notification_frequency === 'monthly' ? 'checked' : '' }}
+                                           class="w-4 h-4 text-[#0D6AED] focus:ring-[#0D6AED] border-gray-300">
+                                    <span class="text-gray-700 font-medium">Monthly - Send me a monthly summary</span>
+                                </label>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <button type="submit" 
+                                        class="px-6 py-2 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200 font-medium">
+                                    Save Notification Settings
+                                </button>
+                            </div>
+                        </form>
+                        
+                        @if(session('notification_success'))
+                            <div class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                                {{ session('notification_success') }}
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

@@ -29,6 +29,7 @@ class User extends Authenticatable
         'is_buyer',
         'is_supplier',
         'interests_set',
+        'notification_frequency',
     ];
 
     /**

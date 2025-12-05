@@ -24,12 +24,18 @@ class DashboardController extends Controller
             $data['needs_company_profile'] = true;
         }
 
-        // Add recent tenders for all users
-        $data['recent_tenders'] = \App\Models\Tender::where('status', 'active')
-            ->where('deadline', '>', now())
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+        // Add recent tenders - filtered by user interests for non-admin users
+        if ($user->isAdmin()) {
+            // For admin, show all recent tenders
+            $data['recent_tenders'] = \App\Models\Tender::where('status', 'active')
+                ->where('deadline', '>', now())
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+        } else {
+            // For non-admin users, show only tenders matching their interests
+            $data['recent_tenders'] = $this->getMatchingTendersForUser($user);
+        }
 
         // Add role-specific data
         if ($user->isAdmin()) {
@@ -130,5 +136,100 @@ class DashboardController extends Controller
         }
 
         return view('admin.dashboard', $data);
+    }
+
+    /**
+     * Get matching tenders for a user based on interests and budget ranges
+     */
+    private function getMatchingTendersForUser($user)
+    {
+        // If user hasn't set interests, return empty collection
+        if (!$user->interests_set || $user->interests()->count() == 0) {
+            return collect([]);
+        }
+
+        // Get user's interest category IDs
+        $categoryIds = $user->interests()->pluck('category_id')->toArray();
+
+        if (empty($categoryIds)) {
+            return collect([]);
+        }
+
+        // Get tenders matching user's categories
+        $tenders = \App\Models\Tender::whereIn('category_id', $categoryIds)
+            ->where('status', 'active')
+            ->where('deadline', '>', now())
+            ->where('user_id', '!=', $user->id) // Exclude tenders created by the user
+            ->with('category')
+            ->orderBy('created_at', 'desc')
+            ->limit(20) // Get more to filter by budget
+            ->get();
+
+        // Filter by budget ranges if user has budget preferences
+        $budgetRanges = $user->budgetRanges;
+        
+        if ($budgetRanges->count() > 0) {
+            $tenders = $tenders->filter(function ($tender) use ($budgetRanges) {
+                // Find budget range for this tender's category
+                $budgetRange = $budgetRanges->firstWhere('category_id', $tender->category_id);
+                
+                if (!$budgetRange) {
+                    // No budget range for this category, include the tender
+                    return true;
+                }
+
+                // If tender has no budget, include it
+                if (!$tender->budget || $tender->budget == 0) {
+                    return true;
+                }
+
+                // Check if tender budget matches user's budget range
+                return $this->matchesBudgetRange($tender, $budgetRange);
+            });
+        }
+
+        // Return top 5 most recent matching tenders
+        return $tenders->take(5);
+    }
+
+    /**
+     * Check if tender budget matches user's budget range
+     */
+    private function matchesBudgetRange($tender, $budgetRange)
+    {
+        // Convert tender budget to same currency if needed (simplified - assumes same currency for now)
+        $tenderBudget = $tender->budget;
+        
+        // If currencies don't match, we could convert here, but for simplicity, we'll just check if same currency
+        if ($tender->currency !== $budgetRange->currency) {
+            // For now, if currencies don't match, include the tender
+            // In production, you might want to add currency conversion
+            return true;
+        }
+
+        switch ($budgetRange->budget_type) {
+            case 'less':
+                // User wants tenders with budget less than max_budget
+                if ($budgetRange->max_budget) {
+                    return $tenderBudget <= $budgetRange->max_budget;
+                }
+                return true;
+
+            case 'greater':
+                // User wants tenders with budget greater than min_budget
+                if ($budgetRange->min_budget) {
+                    return $tenderBudget >= $budgetRange->min_budget;
+                }
+                return true;
+
+            case 'range':
+                // User wants tenders within a budget range
+                $matchesMin = !$budgetRange->min_budget || $tenderBudget >= $budgetRange->min_budget;
+                $matchesMax = !$budgetRange->max_budget || $tenderBudget <= $budgetRange->max_budget;
+                return $matchesMin && $matchesMax;
+
+            default:
+                return true;
+        }
     }
 }

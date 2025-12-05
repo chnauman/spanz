@@ -164,6 +164,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
 // Account Settings Routes
 Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.')->group(function () {
     Route::get('/profile', [\App\Http\Controllers\AccountController::class, 'profile'])->name('profile');
+    Route::post('/notifications', [\App\Http\Controllers\AccountController::class, 'updateNotifications'])->name('update-notifications');
     Route::get('/plan', [\App\Http\Controllers\AccountController::class, 'plan'])->name('plan');
     Route::get('/credits', [\App\Http\Controllers\AccountController::class, 'credits'])->name('credits');
 });

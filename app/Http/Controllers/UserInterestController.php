@@ -12,11 +12,24 @@ class UserInterestController extends Controller
 {
     public function show()
     {
+        // Get parent categories (null parent_category_id) with their subcategories
+        // Parent categories sorted alphabetically, subcategories in their original order (not sorted)
+        $parentCategories = Category::where('is_active', true)
+            ->whereNull('parent_category_id')
+            ->with(['subcategories' => function($query) {
+                $query->where('is_active', true); // No orderBy - keep original order
+            }])
+            ->orderBy('name') // Only sort parent categories alphabetically
+            ->get();
+        
+        // Get all categories (flat list) for backward compatibility and search
         $categories = Category::where('is_active', true)->get();
+        
         $user = Auth::user();
         $existingInterests = $user->interests()->with('category')->get();
         $budgetRanges = $user->budgetRanges()->with('category')->get();
-        return view('user.enhanced-interests', compact('categories', 'existingInterests', 'budgetRanges'));
+        
+        return view('user.enhanced-interests', compact('parentCategories', 'categories', 'existingInterests', 'budgetRanges'));
     }
 
     public function store(Request $request)

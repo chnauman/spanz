@@ -116,47 +116,100 @@
                                         <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Budget</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($categories as $category)
-                                    @php
-                                        $isSelected = false;
-                                        $existingInterest = $existingInterests->where('category_id', $category->id)->first();
-                                        $categoryBudgetRanges = $budgetRanges->where('category_id', $category->id);
-                                        if ($existingInterest) {
-                                            $isSelected = true;
-                                        }
-                                    @endphp
-                                    <tr class="category-row hover:bg-blue-50 cursor-pointer transition-all duration-200 {{ $isSelected ? 'bg-blue-50 border-l-4 border-[#092C48]' : '' }}"
-                                        data-category-name="{{ strtolower($category->name) }}"
-                                        data-category-description="{{ strtolower($category->description ?? '') }}"
-                                        onclick="toggleCategory({{ $category->id }}, '{{ $category->name }}', null, null, 'USD')">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-semibold text-gray-900">{{ $category->name }}</div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-600">{{ $category->description ?? 'No description available' }}</div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-wrap gap-2" id="budget-tags-{{ $category->id }}">
-                                                @if($categoryBudgetRanges->count() > 0)
-                                                    @foreach($categoryBudgetRanges as $budgetRange)
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {{ $budgetRange->budget_type_color }} group">
-                                                        {{ $budgetRange->formatted_budget_range }}
-                                                        <button type="button" 
-                                                                onclick="event.stopPropagation(); deleteBudgetTag({{ $budgetRange->id }}, {{ $category->id }})"
-                                                                class="ml-2 text-red-500 hover:text-red-700 focus:outline-none cursor-pointer transition-all duration-200"
-                                                                title="Delete this budget"
-                                                                style="min-width: 24px; min-height: 24px; display: inline-flex; align-items: center; justify-content: center;">
-                                                            <span style="font-size: 16px; font-weight: bold;">×</span>
-                                                        </button>
-                                            </span>
-                                                    @endforeach
-                                            @else
-                                                    <span class="text-gray-400 text-xs">No budgets set</span>
-                                            @endif
-                                            </div>
-                                        </td>
-                                    </tr>
+                                <tbody class="bg-white divide-y divide-gray-200" id="categories-table-body">
+                                    @foreach($parentCategories as $parentCategory)
+                                        @php
+                                            $parentIsSelected = false;
+                                            $parentExistingInterest = $existingInterests->where('category_id', $parentCategory->id)->first();
+                                            $parentBudgetRanges = $budgetRanges->where('category_id', $parentCategory->id);
+                                            if ($parentExistingInterest) {
+                                                $parentIsSelected = true;
+                                            }
+                                        @endphp
+                                        <!-- Parent Category Row -->
+                                        <tr class="category-row parent-category-row hover:bg-blue-50 cursor-pointer transition-all duration-200 {{ $parentIsSelected ? 'bg-blue-50 border-l-4 border-[#092C48]' : '' }}"
+                                            data-category-id="{{ $parentCategory->id }}"
+                                            data-category-name="{{ strtolower($parentCategory->name) }}"
+                                            data-category-description="{{ strtolower($parentCategory->description ?? '') }}"
+                                            data-is-parent="true"
+                                            onclick="toggleCategory({{ $parentCategory->id }}, '{{ addslashes($parentCategory->name) }}', null, null, 'USD')">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-bold text-gray-900">{{ $parentCategory->name }}</div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-600">{{ $parentCategory->description ?? 'No description available' }}</div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="flex flex-wrap gap-2" id="budget-tags-{{ $parentCategory->id }}">
+                                                    @if($parentBudgetRanges->count() > 0)
+                                                        @foreach($parentBudgetRanges as $budgetRange)
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {{ $budgetRange->budget_type_color }} group">
+                                                            {{ $budgetRange->formatted_budget_range }}
+                                                            <button type="button" 
+                                                                    onclick="event.stopPropagation(); deleteBudgetTag({{ $budgetRange->id }}, {{ $parentCategory->id }})"
+                                                                    class="ml-2 text-red-500 hover:text-red-700 focus:outline-none cursor-pointer transition-all duration-200"
+                                                                    title="Delete this budget"
+                                                                    style="min-width: 24px; min-height: 24px; display: inline-flex; align-items: center; justify-content: center;">
+                                                                <span style="font-size: 16px; font-weight: bold;">×</span>
+                                                            </button>
+                                                </span>
+                                                        @endforeach
+                                                @else
+                                                        <span class="text-gray-400 text-xs">No budgets set</span>
+                                                @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <!-- Subcategories Rows -->
+                                        @if($parentCategory->subcategories && $parentCategory->subcategories->count() > 0)
+                                            @foreach($parentCategory->subcategories as $subCategory)
+                                                @php
+                                                    $subIsSelected = false;
+                                                    $subExistingInterest = $existingInterests->where('category_id', $subCategory->id)->first();
+                                                    $subBudgetRanges = $budgetRanges->where('category_id', $subCategory->id);
+                                                    if ($subExistingInterest) {
+                                                        $subIsSelected = true;
+                                                    }
+                                                @endphp
+                                                <tr class="category-row subcategory-row hover:bg-blue-50 cursor-pointer transition-all duration-200 {{ $subIsSelected ? 'bg-blue-50 border-l-4 border-[#092C48]' : '' }}"
+                                                    data-category-id="{{ $subCategory->id }}"
+                                                    data-parent-id="{{ $parentCategory->id }}"
+                                                    data-category-name="{{ strtolower($subCategory->name) }}"
+                                                    data-category-description="{{ strtolower($subCategory->description ?? '') }}"
+                                                    data-is-parent="false"
+                                                    onclick="toggleCategory({{ $subCategory->id }}, '{{ addslashes($subCategory->name) }}', null, null, 'USD')">
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <div class="text-sm font-normal text-gray-700 pl-8">
+                                                            {{ $subCategory->name }}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="text-sm text-gray-600">{{ $subCategory->description ?? 'No description available' }}</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="flex flex-wrap gap-2" id="budget-tags-{{ $subCategory->id }}">
+                                                            @if($subBudgetRanges->count() > 0)
+                                                                @foreach($subBudgetRanges as $budgetRange)
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {{ $budgetRange->budget_type_color }} group">
+                                                                    {{ $budgetRange->formatted_budget_range }}
+                                                                    <button type="button" 
+                                                                            onclick="event.stopPropagation(); deleteBudgetTag({{ $budgetRange->id }}, {{ $subCategory->id }})"
+                                                                            class="ml-2 text-red-500 hover:text-red-700 focus:outline-none cursor-pointer transition-all duration-200"
+                                                                            title="Delete this budget"
+                                                                            style="min-width: 24px; min-height: 24px; display: inline-flex; align-items: center; justify-content: center;">
+                                                                        <span style="font-size: 16px; font-weight: bold;">×</span>
+                                                                    </button>
+                                                        </span>
+                                                                @endforeach
+                                                        @else
+                                                                <span class="text-gray-400 text-xs">No budgets set</span>
+                                                        @endif
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>
@@ -635,6 +688,27 @@
     .category-row, #summary-table-body tr {
         transition: all 0.3s ease-in-out;
     }
+    
+    /* Parent category styling */
+    .parent-category-row td:first-child div {
+        font-weight: 700;
+        color: #1a202c;
+    }
+    
+    /* Subcategory styling */
+    .subcategory-row td:first-child div {
+        font-weight: 400;
+        color: #4a5568;
+    }
+    
+    /* Ensure proper indentation for subcategories */
+    .subcategory-row {
+        background-color: #f9fafb;
+    }
+    
+    .subcategory-row:hover {
+        background-color: #e5e7eb !important;
+    }
 </style>
 
 <script>
@@ -749,14 +823,11 @@ function toggleCategory(categoryId, categoryName, minBudget, maxBudget, currency
 }
 
 function markCategoryAsSelected(categoryId) {
-    // Find the category row and mark it as selected
-    const categoryRows = document.querySelectorAll('.category-row');
-    categoryRows.forEach(row => {
-        const onclickAttr = row.getAttribute('onclick');
-        if (onclickAttr && onclickAttr.includes(`toggleCategory(${categoryId}`)) {
-            row.classList.add('bg-blue-50', 'border-l-4', 'border-[#092C48]', 'selected');
-        }
-    });
+    // Find the category row and mark it as selected using data attribute
+    const categoryRow = document.querySelector(`.category-row[data-category-id="${categoryId}"]`);
+    if (categoryRow) {
+        categoryRow.classList.add('bg-blue-50', 'border-l-4', 'border-[#092C48]', 'selected');
+    }
 }
 
 function updateSelectionCounter() {
@@ -766,23 +837,50 @@ function updateSelectionCounter() {
     counter.textContent = selectedRows.length;
 }
 
-// Initialize categories with sorting and pagination
+// Initialize categories with parent/subcategory structure preserved
 function initializeCategories() {
     // Get all category rows
     const categoryRows = document.querySelectorAll('.category-row');
     allCategories = Array.from(categoryRows);
     
-    // Sort categories alphabetically (case-insensitive)
-    allCategories.sort((a, b) => {
-        const nameA = a.querySelector('td:first-child div').textContent.toLowerCase();
-        const nameB = b.querySelector('td:first-child div').textContent.toLowerCase();
-        return nameA.localeCompare(nameB);
-    });
-    
-    // Apply sorting to DOM
-    const tbody = document.querySelector('tbody');
-    tbody.innerHTML = '';
-    allCategories.forEach(row => tbody.appendChild(row));
+    // Sort only parent categories alphabetically, keeping subcategories with their parents
+    const tbody = document.getElementById('categories-table-body');
+    if (tbody) {
+        // Group by parent categories
+        const parentGroups = [];
+        const parentRows = Array.from(categoryRows).filter(row => row.getAttribute('data-is-parent') === 'true');
+        
+        // Sort parent rows alphabetically
+        parentRows.sort((a, b) => {
+            const nameA = a.querySelector('td:first-child div').textContent.trim().toLowerCase();
+            const nameB = b.querySelector('td:first-child div').textContent.trim().toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+        
+        // For each parent, collect it and its subcategories
+        parentRows.forEach(parentRow => {
+            const parentId = parentRow.getAttribute('data-category-id');
+            const group = [parentRow];
+            
+            // Find all subcategories for this parent
+            const subcategories = Array.from(categoryRows).filter(row => 
+                row.getAttribute('data-parent-id') === parentId
+            );
+            
+            // Add subcategories in their original order (not sorted)
+            group.push(...subcategories);
+            parentGroups.push(group);
+        });
+        
+        // Rebuild tbody with sorted groups
+        tbody.innerHTML = '';
+        parentGroups.forEach(group => {
+            group.forEach(row => tbody.appendChild(row));
+        });
+        
+        // Update allCategories array to match new order
+        allCategories = Array.from(tbody.querySelectorAll('.category-row'));
+    }
     
     // Initialize filtered categories as all categories
     filteredCategories = [...allCategories];
@@ -882,7 +980,7 @@ function addEllipsis() {
     pageNumbersContainer.appendChild(ellipsis);
 }
 
-// Show categories for current page
+// Show categories for current page, preserving parent/subcategory grouping
 function showCurrentPageCategories() {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
@@ -892,9 +990,71 @@ function showCurrentPageCategories() {
         row.style.display = 'none';
     });
     
-    // Show only categories for current page
-    filteredCategories.slice(startIndex, endIndex).forEach(row => {
+    // Build a grouped list maintaining parent-subcategory relationships
+    const groupedRows = [];
+    const processedParents = new Set();
+    const processedSubcategories = new Set();
+    
+    // First pass: Process parent categories and their subcategories
+    filteredCategories.forEach(row => {
+        const isParent = row.getAttribute('data-is-parent') === 'true';
+        const categoryId = row.getAttribute('data-category-id');
+        
+        if (isParent && !processedParents.has(categoryId)) {
+            processedParents.add(categoryId);
+            groupedRows.push(row);
+            
+            // Add all subcategories of this parent that are in filteredCategories
+            filteredCategories.forEach(subRow => {
+                if (subRow.getAttribute('data-parent-id') === categoryId) {
+                    processedSubcategories.add(subRow.getAttribute('data-category-id'));
+                    groupedRows.push(subRow);
+                }
+            });
+        }
+    });
+    
+    // Second pass: Add subcategories whose parents weren't in filtered results
+    filteredCategories.forEach(row => {
+        const isParent = row.getAttribute('data-is-parent') === 'true';
+        const categoryId = row.getAttribute('data-category-id');
+        const parentId = row.getAttribute('data-parent-id');
+        
+        if (!isParent && !processedSubcategories.has(categoryId)) {
+            // Find parent in allCategories (not just filtered)
+            const parentRow = Array.from(allCategories).find(r => 
+                r.getAttribute('data-category-id') === parentId && 
+                r.getAttribute('data-is-parent') === 'true'
+            );
+            
+            if (parentRow && !processedParents.has(parentId)) {
+                processedParents.add(parentId);
+                groupedRows.push(parentRow);
+            }
+            processedSubcategories.add(categoryId);
+            groupedRows.push(row);
+        }
+    });
+    
+    // Show categories for current page
+    const pageRows = groupedRows.slice(startIndex, endIndex);
+    pageRows.forEach(row => {
         row.style.display = 'table-row';
+    });
+    
+    // Also show subcategories of visible parents (to keep them together)
+    pageRows.forEach(row => {
+        const isParent = row.getAttribute('data-is-parent') === 'true';
+        const categoryId = row.getAttribute('data-category-id');
+        
+        if (isParent) {
+            // Show all subcategories of this parent from filteredCategories
+            filteredCategories.forEach(subRow => {
+                if (subRow.getAttribute('data-parent-id') === categoryId) {
+                    subRow.style.display = 'table-row';
+                }
+            });
+        }
     });
 }
 
@@ -1054,7 +1214,7 @@ function showCurrentSummaryPageCategories() {
     });
 }
 
-// Enhanced search functionality for categories tab
+// Enhanced search functionality for categories tab with parent/subcategory support
 function filterCategories() {
     const searchTerm = document.getElementById('categorySearch').value.toLowerCase().trim();
     
@@ -1070,11 +1230,42 @@ function filterCategories() {
         if (searchTerm === '') {
             filteredCategories = [...allCategories];
         } else {
-            filteredCategories = allCategories.filter(row => {
+            const matchingRows = new Set();
+            
+            // First, find all matching rows (parent or subcategory)
+            allCategories.forEach(row => {
                 const categoryName = row.getAttribute('data-category-name');
                 const categoryDescription = row.getAttribute('data-category-description');
-                return categoryName.includes(searchTerm) || categoryDescription.includes(searchTerm);
+                const isParent = row.getAttribute('data-is-parent') === 'true';
+                const categoryId = row.getAttribute('data-category-id');
+                const parentId = row.getAttribute('data-parent-id');
+                
+                if (categoryName.includes(searchTerm) || categoryDescription.includes(searchTerm)) {
+                    matchingRows.add(row);
+                    
+                    // If this is a subcategory that matches, also include its parent
+                    if (!isParent && parentId) {
+                        const parentRow = Array.from(allCategories).find(r => 
+                            r.getAttribute('data-category-id') === parentId && 
+                            r.getAttribute('data-is-parent') === 'true'
+                        );
+                        if (parentRow) {
+                            matchingRows.add(parentRow);
+                        }
+                    }
+                    
+                    // If this is a parent that matches, include all its subcategories
+                    if (isParent) {
+                        allCategories.forEach(subRow => {
+                            if (subRow.getAttribute('data-parent-id') === categoryId) {
+                                matchingRows.add(subRow);
+                            }
+                        });
+                    }
+                }
             });
+            
+            filteredCategories = Array.from(matchingRows);
         }
         
         // Reset to page 1 when searching
@@ -1699,13 +1890,13 @@ function populateSummaryTab() {
     // Get selected categories by checking rows with selected class
     const selectedRows = document.querySelectorAll('.category-row.selected');
     selectedRows.forEach(row => {
-        const categoryName = row.querySelector('td:first-child div').textContent;
+        // Get category name
+        let categoryName = row.querySelector('td:first-child div').textContent.trim();
         const categoryDescription = row.querySelector('td:nth-child(2) div').textContent;
         
-        // Extract category ID from onclick attribute
-        const onclickAttr = row.getAttribute('onclick');
-        const categoryIdMatch = onclickAttr.match(/toggleCategory\((\d+)/);
-        const categoryId = categoryIdMatch ? categoryIdMatch[1] : null;
+        // Get category ID from data attribute (more reliable)
+        const categoryId = row.getAttribute('data-category-id');
+        const isParent = row.getAttribute('data-is-parent') === 'true';
 
         // Get budget tags for this category
         const budgetTagsContainer = row.querySelector(`#budget-tags-${categoryId}`);
@@ -1720,12 +1911,13 @@ function populateSummaryTab() {
         }
 
         if (categoryId) {
-        selectedCategories.push({
-            id: categoryId,
-            name: categoryName,
-            description: categoryDescription,
-            budgetTags: budgetTagsHtml || '<span class="text-gray-400 text-xs">No budgets set</span>'
-        });
+            selectedCategories.push({
+                id: categoryId,
+                name: categoryName,
+                description: categoryDescription,
+                budgetTags: budgetTagsHtml || '<span class="text-gray-400 text-xs">No budgets set</span>',
+                isParent: isParent
+            });
         }
     });
 
@@ -1745,9 +1937,13 @@ function populateSummaryTab() {
         const row = document.createElement('tr');
         row.className = 'hover:bg-gray-50';
 
+        // Use bold for parent categories, normal for subcategories
+        const nameStyle = category.isParent ? 'font-bold' : 'font-normal pl-8';
+        const nameContent = category.name;
+
         row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-semibold text-gray-900">${category.name}</div>
+                <div class="text-sm ${nameStyle} text-gray-900">${nameContent}</div>
             </td>
             <td class="px-6 py-4">
                 <div class="text-sm text-gray-600">${category.description}</div>

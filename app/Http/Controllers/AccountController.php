@@ -72,4 +72,22 @@ class AccountController extends Controller
 
         return view('account.credits', compact('user', 'totalCredits', 'creditHistory', 'creditsOwner'));
     }
+
+    /**
+     * Update notification frequency settings
+     */
+    public function updateNotifications(Request $request)
+    {
+        $request->validate([
+            'notification_frequency' => 'required|in:none,daily,weekly,monthly',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'notification_frequency' => $request->notification_frequency,
+        ]);
+
+        return redirect()->route('account.profile')
+            ->with('notification_success', 'Notification settings updated successfully!');
+    }
 }
