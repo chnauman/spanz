@@ -20,6 +20,9 @@ class EnsureEmailIsVerified
         }
 
         $user = auth()->user();
+        
+        // Refresh user from database to ensure we have the latest email_verified_at value
+        $user->refresh();
 
         // Allow access if email is verified
         if ($user->email_verified_at) {
