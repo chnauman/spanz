@@ -55,6 +55,10 @@ class EmailVerificationController extends Controller
                 'email_verified_at' => now(),
             ]);
 
+            // Refresh the authenticated user instance to reflect the changes
+            $user->refresh();
+            Auth::setUser($user);
+
             return redirect()->route('dashboard')->with('success', 'Email verified successfully! Welcome to Spanz.');
         }
 
