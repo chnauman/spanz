@@ -79,22 +79,43 @@ class EmailVerificationController extends Controller
         $isValid = EmailVerificationOtp::verifyOtp($user->id, $otp);
 
         if ($isValid) {
-            // Mark email as verified
-            $user->update([
-                'email_verified_at' => now(),
+            // Mark email as verified - use now() to set current timestamp
+            $verifiedAt = now();
+            $updated = $user->update([
+                'email_verified_at' => $verifiedAt,
             ]);
+
+            if (!$updated) {
+                \Log::error('Failed to update email_verified_at', [
+                    'user_id' => $user->id,
+                ]);
+                return back()->withErrors(['otp' => 'Failed to verify email. Please try again.'])->withInput();
+            }
 
             // Refresh the user model from database to get the updated email_verified_at
             $user->refresh();
             
-            // Re-authenticate the user to update the session with fresh data
-            // This will automatically update the session with the refreshed user data
-            Auth::login($user);
+            // Verify the update was successful
+            if (!$user->email_verified_at) {
+                \Log::error('email_verified_at is still null after update', [
+                    'user_id' => $user->id,
+                ]);
+                return back()->withErrors(['otp' => 'Failed to verify email. Please try again.'])->withInput();
+            }
+            
+            // Re-authenticate the user to update the session
+            // This ensures the session has the latest user data
+            Auth::login($user, false);
+            
+            // Force session to save immediately
+            $request->session()->save();
 
             \Log::info('Email verified successfully', [
                 'user_id' => $user->id,
                 'email_verified_at' => $user->email_verified_at,
-                'auth_user_verified' => Auth::user()->email_verified_at
+                'email_verified_at_formatted' => $user->email_verified_at->format('Y-m-d H:i:s'),
+                'auth_user_verified' => Auth::user()->email_verified_at,
+                'session_id' => $request->session()->getId()
             ]);
 
             return redirect()->route('dashboard')->with('success', 'Email verified successfully! Welcome to Spanz.');

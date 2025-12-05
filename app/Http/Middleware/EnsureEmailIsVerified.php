@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
 
 class EnsureEmailIsVerified
 {
@@ -19,10 +20,13 @@ class EnsureEmailIsVerified
             return redirect()->route('login');
         }
 
-        $user = auth()->user();
+        // Get fresh user instance from database to ensure we have the latest email_verified_at value
+        $user = User::find(auth()->id());
         
-        // Refresh user from database to ensure we have the latest email_verified_at value
-        $user->refresh();
+        if (!$user) {
+            auth()->logout();
+            return redirect()->route('login');
+        }
 
         // Allow access if email is verified
         if ($user->email_verified_at) {
