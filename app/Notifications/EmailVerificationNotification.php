@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use App\Mail\EmailVerificationMail;
 
@@ -36,7 +35,7 @@ class EmailVerificationNotification extends Notification
      */
     public function toMail(object $notifiable)
     {
-        return new EmailVerificationMail($this->otp, $notifiable->name);
+        return new EmailVerificationMail($this->otp, $notifiable->name, $notifiable->email);
     }
 }
 

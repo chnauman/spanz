@@ -82,6 +82,13 @@ class EmailVerificationController extends Controller
             
             return back()->with('success', 'A new OTP has been sent to your email address.');
         } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Failed to send OTP email: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'exception' => $e
+            ]);
+            
             return back()->withErrors(['error' => 'Failed to send OTP. Please try again later.']);
         }
     }

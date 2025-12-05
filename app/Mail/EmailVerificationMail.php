@@ -14,14 +14,16 @@ class EmailVerificationMail extends Mailable
 
     public $otp;
     public $userName;
+    public $email;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($otp, $userName = null)
+    public function __construct($otp, $userName = null, $email = null)
     {
         $this->otp = $otp;
         $this->userName = $userName;
+        $this->email = $email;
     }
 
     /**
@@ -31,6 +33,7 @@ class EmailVerificationMail extends Mailable
     {
         return new Envelope(
             subject: 'Verify Your Email - Spanz',
+            to: $this->email ? [$this->email] : [],
         );
     }
 
