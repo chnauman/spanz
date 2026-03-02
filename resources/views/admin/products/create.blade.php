@@ -79,7 +79,7 @@
             </div>
 
             <div>
-                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Primary Image (Main)</label>
                 <input type="file" id="image" name="image" accept="image/*" class="w-full border rounded px-3 py-2" onchange="previewImage(this)" />
                 @error('image')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
                 <p class="text-xs text-gray-500 mt-1">Allowed: JPG, PNG, GIF, WEBP. Max size: 5MB</p>
@@ -90,6 +90,22 @@
                     </div>
                     <div class="mt-2">
                         <button type="button" onclick="removePreview()" class="text-sm text-red-600 hover:text-red-800 underline">Remove Image</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="gallery_images" class="block text-sm font-medium text-gray-700 mb-2">Gallery Images (Optional)</label>
+                <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                       class="w-full border rounded px-3 py-2" onchange="previewGallery(this)" />
+                @error('gallery_images')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
+                @error('gallery_images.*')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
+                <p class="text-xs text-gray-500 mt-1">You can select multiple images. Max: 12 images, 5MB each.</p>
+                <div id="gallery-preview" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Gallery Preview:</p>
+                    <div id="gallery-preview-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                    <div class="mt-2">
+                        <button type="button" onclick="removeGalleryPreview()" class="text-sm text-red-600 hover:text-red-800 underline">Remove Gallery Selection</button>
                     </div>
                 </div>
             </div>
@@ -151,6 +167,56 @@ function removePreview() {
     const input = document.getElementById('image');
     const preview = document.getElementById('image-preview');
     input.value = '';
+    preview.classList.add('hidden');
+}
+
+function previewGallery(input) {
+    const preview = document.getElementById('gallery-preview');
+    const grid = document.getElementById('gallery-preview-grid');
+    grid.innerHTML = '';
+
+    if (!input.files || input.files.length === 0) {
+        preview.classList.add('hidden');
+        return;
+    }
+
+    const files = Array.from(input.files).slice(0, 12);
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    for (const file of files) {
+        if (!validTypes.includes(file.type)) {
+            alert('Gallery: please select valid image files (JPG, PNG, GIF, WEBP)');
+            input.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Gallery: each image must be less than 5MB');
+            input.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+    }
+
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const wrap = document.createElement('div');
+            wrap.className = 'border rounded bg-gray-50 p-2';
+            wrap.innerHTML = `<img src="${e.target.result}" alt="Gallery preview" class="w-full h-24 object-cover rounded" />`;
+            grid.appendChild(wrap);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    preview.classList.remove('hidden');
+}
+
+function removeGalleryPreview() {
+    const input = document.getElementById('gallery_images');
+    const preview = document.getElementById('gallery-preview');
+    const grid = document.getElementById('gallery-preview-grid');
+    input.value = '';
+    grid.innerHTML = '';
     preview.classList.add('hidden');
 }
 </script>

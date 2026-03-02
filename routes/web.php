@@ -14,6 +14,7 @@ use App\Http\Controllers\CompanyRegistrationController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\ProductController as PublicProductController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\TenderViewPricingController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -24,8 +25,20 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+// Multi-step registration routes
+Route::get('/register', [\App\Http\Controllers\MultiStepRegistrationController::class, 'showStep1'])->name('register'); // Main registration route (backward compatible)
+Route::get('/register/step1', [\App\Http\Controllers\MultiStepRegistrationController::class, 'showStep1'])->name('register.step1'); // Explicit step 1 route
+Route::post('/register/step1', [\App\Http\Controllers\MultiStepRegistrationController::class, 'submitStep1'])->name('register.step1.submit');
+Route::get('/register/step2', [\App\Http\Controllers\MultiStepRegistrationController::class, 'showStep2'])->name('register.step2');
+Route::post('/register/step2', [\App\Http\Controllers\MultiStepRegistrationController::class, 'submitStep2'])->name('register.step2.submit');
+Route::post('/register/step2/resend', [\App\Http\Controllers\MultiStepRegistrationController::class, 'resendOtp'])->name('register.step2.resend');
+Route::get('/register/step3', [\App\Http\Controllers\MultiStepRegistrationController::class, 'showStep3'])->name('register.step3');
+Route::post('/register/step3', [\App\Http\Controllers\MultiStepRegistrationController::class, 'submitStep3'])->name('register.step3.submit');
+Route::get('/register/resume', [\App\Http\Controllers\MultiStepRegistrationController::class, 'resume'])->name('register.resume');
+
+// Keep old register route for backward compatibility (redirects to step 1)
+// Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+// Route::post('/register', [RegisterController::class, 'register']);
 
 // Email verification routes
 Route::middleware('auth')->group(function () {
@@ -130,6 +143,8 @@ Route::middleware(['auth', 'email.verified', 'role:supplier,sub_supplier'])->gro
 
 // Admin Category Management Routes
 Route::middleware(['auth', 'email.verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('categories/{category}/delete-check', [CategoryController::class, 'deleteCheck'])
+        ->name('categories.delete-check');
     Route::resource('categories', CategoryController::class);
     Route::resource('products', AdminProductController::class)->scoped([
         'product' => 'id'
@@ -137,6 +152,10 @@ Route::middleware(['auth', 'email.verified', 'role:admin'])->prefix('admin')->na
 
     // User Management Routes
     Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('users/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('users.create');
+    Route::post('users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+    Route::get('users/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('users.edit');
+    Route::put('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
     Route::get('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
     Route::post('users/{user}/approve', [\App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
     Route::post('users/{user}/reject', [\App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
@@ -154,6 +173,11 @@ Route::middleware(['auth', 'email.verified', 'role:admin'])->prefix('admin')->na
     Route::get('downgrade-requests/{downgradeRequest}', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'show'])->name('downgrade-requests.show');
     Route::post('downgrade-requests/{downgradeRequest}/approve', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'approve'])->name('downgrade-requests.approve');
     Route::post('downgrade-requests/{downgradeRequest}/decline', [\App\Http\Controllers\Admin\DowngradeRequestController::class, 'decline'])->name('downgrade-requests.decline');
+
+    // Tender view pricing management (credits per view by budget range)
+    Route::resource('tender-view-pricing', TenderViewPricingController::class)
+        ->parameters(['tender-view-pricing' => 'rule'])
+        ->except(['show']);
 });
 
 // Profile update (name and photo)

@@ -240,12 +240,12 @@
                             class="w-full px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
 
                         <!-- Hidden inputs to preserve current filters -->
-                        @if(request('category'))
-                            <input type="hidden" name="category" value="{{ request('category') }}">
-                        @endif
-                        @if(request('location'))
-                            <input type="hidden" name="location" value="{{ request('location') }}">
-                        @endif
+                        @foreach((array) request('category', []) as $cat)
+                            <input type="hidden" name="category[]" value="{{ $cat }}">
+                        @endforeach
+                        @foreach((array) request('location', []) as $loc)
+                            <input type="hidden" name="location[]" value="{{ $loc }}">
+                        @endforeach
                         @if(request('company_type'))
                             @foreach((array) request('company_type') as $type)
                                 <input type="hidden" name="company_type[]" value="{{ $type }}">
@@ -319,22 +319,52 @@
                         </svg>
                     </div>
                     <div class="filter-content">
-                        <ul class="space-y-3" id="mobile-categories-list">
+                        <div class="mb-3">
+                            <input id="mobile-category-search" type="search" placeholder="Search categories..."
+                                class="w-full px-3 py-2 rounded-sm border border-gray-300 text-gray-700 focus:outline-none text-sm" />
+                        </div>
+
+                        <ul class="space-y-2" id="mobile-categories-list">
+                            @php($selectedCategories = collect((array) request('category', []))->map(fn($v) => (int) $v)->filter()->all())
                             @foreach($categories as $category)
-                            <li>
-                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}"
-                                   class="text-sm hover:underline hover:text-blue-600 block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
-                                    {{ $category->name }}
-                                </a>
-                            </li>
+                                @php($isParentChecked = in_array((int) $category->id, $selectedCategories, true))
+                                @php($isAnyChildChecked = $category->children->pluck('id')->map(fn($v) => (int) $v)->intersect($selectedCategories)->isNotEmpty())
+                                @php($isExpanded = $isParentChecked || $isAnyChildChecked)
+                                <li class="category-group" data-scope="mobile">
+                                    <div class="flex items-start gap-3">
+                                        <input type="checkbox"
+                                            name="category[]"
+                                            value="{{ $category->id }}"
+                                            id="mobile-cat-{{ $category->id }}"
+                                            class="category-filter category-parent-filter mt-1"
+                                            data-parent-id="{{ $category->id }}"
+                                            {{ $isParentChecked ? 'checked' : '' }}>
+                                        <button type="button"
+                                            class="text-left text-sm text-[#092C48] hover:underline select-none category-toggle category-label {{ $isExpanded ? 'font-semibold' : '' }}"
+                                            aria-controls="mobile-subcats-{{ $category->id }}"
+                                            data-parent-id="{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </button>
+                                    </div>
+
+                                    <div id="mobile-subcats-{{ $category->id }}" class="ml-6 mt-2 space-y-2 subcategory-list {{ $isExpanded ? '' : 'hidden' }} border-l border-gray-200 pl-4" data-parent-id="{{ $category->id }}">
+                                        @foreach($category->children as $child)
+                                            <div class="flex items-start gap-2">
+                                                <span class="mt-1 text-gray-300 select-none leading-none">└</span>
+                                                <input type="checkbox"
+                                                    name="category[]"
+                                                    value="{{ $child->id }}"
+                                                    id="mobile-cat-{{ $child->id }}"
+                                                    class="category-filter category-child-filter mt-1"
+                                                    data-parent-id="{{ $category->id }}"
+                                                    {{ in_array((int) $child->id, $selectedCategories, true) ? 'checked' : '' }}>
+                                                <span class="text-sm text-gray-700 select-none category-label">{{ $child->name }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </li>
                             @endforeach
                         </ul>
-                        @if($hasMoreCategories)
-                        <div class="flex items-center gap-2 pt-4 text-[#092C48] cursor-pointer hover:text-blue-600" id="mobile-show-more-categories">
-                            <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
-                            <span class="text-sm">Show More Categories</span>
-                        </div>
-                        @endif
                     </div>
                     <hr class="my-4 border-t border-gray-300" />
                 </div>
@@ -395,22 +425,52 @@
                         </svg>
                     </div>
                     <div class="filter-content">
-                        <ul class="space-y-1 mt-2" id="desktop-categories-list">
+                        <div class="mt-2">
+                            <input id="desktop-category-search" type="search" placeholder="Search categories..."
+                                class="w-full px-3 py-2 rounded-sm border border-gray-300 text-gray-700 focus:outline-none text-sm" />
+                        </div>
+
+                        <ul class="space-y-2 mt-3" id="desktop-categories-list">
+                            @php($selectedCategories = collect((array) request('category', []))->map(fn($v) => (int) $v)->filter()->all())
                             @foreach($categories as $category)
-                            <li>
-                                <a href="{{ route('tenders.search', array_merge(request()->query(), ['category' => $category->id])) }}"
-                                   class="text-sm sm:text-md hover:underline block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
-                                    {{ $category->name }}
-                                </a>
-                            </li>
+                                @php($isParentChecked = in_array((int) $category->id, $selectedCategories, true))
+                                @php($isAnyChildChecked = $category->children->pluck('id')->map(fn($v) => (int) $v)->intersect($selectedCategories)->isNotEmpty())
+                                @php($isExpanded = $isParentChecked || $isAnyChildChecked)
+                                <li class="category-group" data-scope="desktop">
+                                    <div class="flex items-start gap-3">
+                                        <input type="checkbox"
+                                            name="category[]"
+                                            value="{{ $category->id }}"
+                                            id="desktop-cat-{{ $category->id }}"
+                                            class="category-filter category-parent-filter mt-1"
+                                            data-parent-id="{{ $category->id }}"
+                                            {{ $isParentChecked ? 'checked' : '' }}>
+                                        <button type="button"
+                                            class="text-left text-sm sm:text-md text-[#092C48] hover:underline select-none category-toggle category-label {{ $isExpanded ? 'font-semibold' : '' }}"
+                                            aria-controls="desktop-subcats-{{ $category->id }}"
+                                            data-parent-id="{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </button>
+                                    </div>
+
+                                    <div id="desktop-subcats-{{ $category->id }}" class="ml-6 mt-2 space-y-2 subcategory-list {{ $isExpanded ? '' : 'hidden' }} border-l border-gray-200 pl-4" data-parent-id="{{ $category->id }}">
+                                        @foreach($category->children as $child)
+                                            <div class="flex items-start gap-2">
+                                                <span class="mt-1 text-gray-300 select-none leading-none">└</span>
+                                                <input type="checkbox"
+                                                    name="category[]"
+                                                    value="{{ $child->id }}"
+                                                    id="desktop-cat-{{ $child->id }}"
+                                                    class="category-filter category-child-filter mt-1"
+                                                    data-parent-id="{{ $category->id }}"
+                                                    {{ in_array((int) $child->id, $selectedCategories, true) ? 'checked' : '' }}>
+                                                <span class="text-sm sm:text-md text-gray-700 select-none category-label">{{ $child->name }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </li>
                             @endforeach
                         </ul>
-                        @if($hasMoreCategories)
-                        <div class="flex items-center gap-2 pt-3 text-[#092C48] cursor-pointer hover:text-blue-600" id="desktop-show-more-categories">
-                            <img src="{{ asset('spanz-img/plus.svg') }}" alt="Expand" class="w-4 h-4">
-                            <span class="text-sm">Show More Categories</span>
-                        </div>
-                        @endif
                     </div>
                 </div>
                 <hr class="my-3 border-t border-gray-400 w-[70%]" />
@@ -446,100 +506,9 @@
         </div>
         <!-- Content area for desktop -->
         <div class="w-full lg:col-span-9 p-4 lg:p-6">
-            <div class="text-[#092C48] mb-5">
-                <div class="text-sm sm:text-base mb-2">
-                    <span>Displaying </span>
-                    <span class="font-semibold">1 to {{ $tenders->count() }} </span>
-                    <span>out of </span>
-                    <span class="font-semibold">{{ $tenders->total() }} </span>
-                    <span>tenders </span>
-                    @if(request('search'))
-                        <span class="text-blue-600">for "{{ request('search') }}"</span>
-                    @endif
-                </div>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <p class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-semibold leading-tight">
-                        @if(request('search'))
-                            Search Results for "{{ request('search') }}"
-                        @else
-                            Featured Tenders and Opportunities
-                        @endif
-                    </p>
-                    @if(request('search'))
-                        <a href="{{ route('tenders.search') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-sm text-sm">
-                            Clear Search
-                        </a>
-                    @endif
-                </div>
+            <div id="tenders-results">
+                @include('tenders.partials.search-results', ['tenders' => $tenders])
             </div>
-
-            @forelse($tenders as $tender)
-            <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-                    <a href="{{ route('tenders.detail', $tender->id) }}" class="text-[#092C48] font-semibold text-lg sm:text-xl hover:text-blue-600">{{ $tender->title }}</a>
-                    <div class="flex gap-4 sm:gap-6">
-                        @auth
-                        <div class="flex items-center gap-2 cursor-pointer" onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}">
-                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6ZM8.25 6.75V16.6838L12 14.4615L15.75 16.6838V6.75H8.25Z"
-                                    fill="#080341" />
-                            </svg>
-                            <p class="text-[#092C48] text-sm sm:text-lg" id="save-text-{{ $tender->id }}">Save</p>
-                        </div>
-                        @endauth
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 my-3">
-                    <img src="{{ asset('spanz-img/location.svg') }}" alt="Location" class="w-4 sm:w-5">
-                    <span class="text-[#092C48] font-semibold text-sm sm:text-base">{{ $tender->location ?? 'Location not specified' }}</span>
-                </div>
-                <div class="flex flex-col lg:flex-row gap-4">
-                    <div class="flex-1 lg:w-[75%]">
-                        <div class="flex items-center mb-2 gap-2">
-                            <img src="{{ asset('spanz-img/factory.svg') }}" alt="Category" class="w-4 sm:w-5">
-                            <span class="text-[#092C48] font-semibold text-xs sm:text-sm lg:text-base">
-                                {{ $tender->category->name }} . {{ $tender->budget ? $tender->currency . ' ' . number_format($tender->budget, 0) : 'Budget not specified' }} . Posted {{ $tender->created_at->diffForHumans() }}
-                            </span>
-                        </div>
-                        <div>
-                            <p class="text-[#092C48] text-sm sm:text-base leading-relaxed">
-                                {{ Str::limit($tender->description, 200) }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex justify-end items-end mt-4">
-                    <a href="{{ route('tenders.detail', $tender->id) }}"
-                        class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
-                        View Details
-                    </a>
-                </div>
-            </div>
-            @empty
-            <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6">
-                <div class="text-center py-12">
-                    @if(request('search'))
-                        <h3 class="text-lg font-semibold text-[#092C48] mb-2">No Tenders Found</h3>
-                        <p class="text-gray-600 mb-4">No tenders found for "{{ request('search') }}". Try different keywords or browse all tenders.</p>
-                        <a href="{{ route('tenders.search') }}" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm">
-                            View All Tenders
-                        </a>
-                    @else
-                        <h3 class="text-lg font-semibold text-[#092C48] mb-2">No Tenders Found</h3>
-                        <p class="text-gray-600">There are currently no active tenders available.</p>
-                    @endif
-                </div>
-            </div>
-            @endforelse
-
-            <!-- Pagination -->
-            @if($tenders->hasPages())
-            <div class="mt-6 flex justify-center">
-                {{ $tenders->links() }}
-            </div>
-            @endif
         </div>
     </div>
     <section class="bg-[#092C47] text-white py-10 px-5">
@@ -800,32 +769,186 @@
             });
 
             // Filter functionality
-            function applyFilters() {
+            const resultsContainer = document.getElementById('tenders-results');
+            let abortController = null;
+
+            async function fetchResults(url) {
+                if (!resultsContainer) return;
+
+                if (abortController) abortController.abort();
+                abortController = new AbortController();
+
+                resultsContainer.setAttribute('aria-busy', 'true');
+                resultsContainer.style.opacity = '0.6';
+
+                try {
+                    const res = await fetch(url, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        signal: abortController.signal
+                    });
+                    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+                    const data = await res.json();
+                    if (typeof data.html === 'string') {
+                        resultsContainer.innerHTML = data.html;
+                    }
+                } catch (e) {
+                    if (e?.name !== 'AbortError') console.error(e);
+                } finally {
+                    resultsContainer.removeAttribute('aria-busy');
+                    resultsContainer.style.opacity = '1';
+                }
+            }
+
+            function buildFilterParams({ keepPage = false } = {}) {
                 const currentUrl = new URL(window.location);
                 const params = new URLSearchParams(currentUrl.search);
 
-                // Clear existing filter parameters
-                params.delete('category');
-                params.delete('location');
-                params.delete('company_type');
+                if (!keepPage) params.delete('page');
 
-                // Add selected filters
-                const selectedCategories = document.querySelectorAll('input[name="category"]:checked');
-                selectedCategories.forEach(cb => params.append('category', cb.value));
+                params.delete('category');
+                params.delete('category[]');
+                params.delete('location');
+                params.delete('location[]');
+                params.delete('company_type');
+                params.delete('company_type[]');
+
+                const selectedCategories = document.querySelectorAll('input[name="category[]"]:checked');
+                selectedCategories.forEach(cb => params.append('category[]', cb.value));
 
                 const selectedLocations = document.querySelectorAll('input[name="location[]"]:checked');
-                selectedLocations.forEach(cb => params.append('location', cb.value));
+                selectedLocations.forEach(cb => params.append('location[]', cb.value));
 
                 const selectedCompanyTypes = document.querySelectorAll('input[name="company_type[]"]:checked');
-                selectedCompanyTypes.forEach(cb => params.append('company_type', cb.value));
+                selectedCompanyTypes.forEach(cb => params.append('company_type[]', cb.value));
 
-                // Redirect with new parameters
-                window.location.href = currentUrl.pathname + '?' + params.toString();
+                return params;
             }
 
-            // Add event listeners to filter checkboxes
+            async function applyFiltersAjax() {
+                const currentUrl = new URL(window.location);
+                const params = buildFilterParams({ keepPage: false });
+                const nextUrl = currentUrl.pathname + (params.toString() ? `?${params.toString()}` : '');
+                history.pushState({}, '', nextUrl);
+                await fetchResults(nextUrl);
+            }
+
+            // Add event listeners to filter checkboxes (AJAX)
             document.querySelectorAll('.company-type-filter, .location-filter').forEach(checkbox => {
-                checkbox.addEventListener('change', applyFilters);
+                checkbox.addEventListener('change', applyFiltersAjax);
+            });
+
+            function getParentCheckbox(parentId) {
+                return document.querySelector(`.category-parent-filter[data-parent-id="${parentId}"]`);
+            }
+
+            function setSubcategoryVisibility(parentId, visible) {
+                document.querySelectorAll(`.subcategory-list[data-parent-id="${parentId}"]`).forEach(el => {
+                    el.classList.toggle('hidden', !visible);
+                });
+
+                document.querySelectorAll(`.category-toggle[data-parent-id="${parentId}"]`).forEach(btn => {
+                    btn.classList.toggle('font-semibold', !!visible);
+                });
+            }
+
+            // Clicking category NAME toggles subcategories (no checking)
+            document.querySelectorAll('.category-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const parentId = btn.getAttribute('data-parent-id');
+                    const list = document.querySelector(`.subcategory-list[data-parent-id="${parentId}"]`);
+                    if (!list) return;
+                    const willShow = list.classList.contains('hidden');
+                    setSubcategoryVisibility(parentId, willShow);
+                });
+            });
+
+            // Auto-show subcategories when main is checked
+            document.querySelectorAll('.category-parent-filter').forEach(parentCb => {
+                const parentId = parentCb.getAttribute('data-parent-id');
+                setSubcategoryVisibility(parentId, parentCb.checked);
+
+                parentCb.addEventListener('change', () => {
+                    setSubcategoryVisibility(parentId, parentCb.checked);
+
+                    // If main is unchecked, uncheck its children
+                    if (!parentCb.checked) {
+                        document.querySelectorAll(`.category-child-filter[data-parent-id="${parentId}"]`).forEach(childCb => {
+                            childCb.checked = false;
+                        });
+                    }
+                    applyFiltersAjax();
+                });
+            });
+
+            // If a child is checked (e.g., via search), auto-check and expand its parent
+            document.querySelectorAll('.category-child-filter').forEach(childCb => {
+                childCb.addEventListener('change', () => {
+                    const parentId = childCb.getAttribute('data-parent-id');
+                    const parentCb = getParentCheckbox(parentId);
+
+                    if (childCb.checked && parentCb && !parentCb.checked) {
+                        parentCb.checked = true;
+                        setSubcategoryVisibility(parentId, true);
+                    }
+                    applyFiltersAjax();
+                });
+            });
+
+            function setupCategorySearch(inputId, listId) {
+                const input = document.getElementById(inputId);
+                const list = document.getElementById(listId);
+                if (!input || !list) return;
+
+                const groups = Array.from(list.querySelectorAll('.category-group'));
+
+                function normalize(str) {
+                    return (str || '').toLowerCase().trim();
+                }
+
+                function applyCategorySearch() {
+                    const q = normalize(input.value);
+
+                    groups.forEach(group => {
+                        const labels = Array.from(group.querySelectorAll('.category-label')).map(el => normalize(el.textContent));
+                        const match = q === '' || labels.some(t => t.includes(q));
+                        group.classList.toggle('hidden', !match);
+
+                        // While searching: show subcategories for matched groups (to help discovery),
+                        // but checking a child will still auto-check the parent.
+                        if (q !== '' && match) {
+                            const parentCb = group.querySelector('.category-parent-filter');
+                            const parentId = parentCb?.getAttribute('data-parent-id');
+                            if (parentId) setSubcategoryVisibility(parentId, true);
+                        } else if (q === '') {
+                            const parentCb = group.querySelector('.category-parent-filter');
+                            const parentId = parentCb?.getAttribute('data-parent-id');
+                            if (parentId) setSubcategoryVisibility(parentId, !!parentCb?.checked);
+                        }
+                    });
+                }
+
+                input.addEventListener('input', applyCategorySearch);
+            }
+
+            setupCategorySearch('desktop-category-search', 'desktop-categories-list');
+            setupCategorySearch('mobile-category-search', 'mobile-categories-list');
+
+            // AJAX paginate (intercept clicks)
+            if (resultsContainer) {
+                resultsContainer.addEventListener('click', (e) => {
+                    const a = e.target.closest('a');
+                    if (!a || !a.getAttribute('href')) return;
+                    const href = a.getAttribute('href');
+                    if (!href.includes('page=')) return;
+                    e.preventDefault();
+                    history.pushState({}, '', href);
+                    fetchResults(href);
+                });
+            }
+
+            // Back/forward navigation
+            window.addEventListener('popstate', () => {
+                fetchResults(window.location.href);
             });
 
             // Collapse/Expand functionality
@@ -872,53 +995,36 @@
             document.getElementById('mobile-clear-all')?.addEventListener('click', function(e) {
                 e.preventDefault();
                 // Uncheck all filter checkboxes
-                document.querySelectorAll('#mobile-filter-modal .company-type-filter, #mobile-filter-modal .location-filter').forEach(cb => {
+                document.querySelectorAll('#mobile-filter-modal .company-type-filter, #mobile-filter-modal .location-filter, #mobile-filter-modal .category-filter').forEach(cb => {
                     cb.checked = false;
                 });
                 // Remove filter parameters from URL
                 const currentUrl = new URL(window.location);
                 currentUrl.searchParams.delete('category');
+                currentUrl.searchParams.delete('category[]');
                 currentUrl.searchParams.delete('location');
+                currentUrl.searchParams.delete('location[]');
                 currentUrl.searchParams.delete('company_type');
+                currentUrl.searchParams.delete('company_type[]');
                 window.location.href = currentUrl.toString();
             });
 
             document.getElementById('desktop-clear-all')?.addEventListener('click', function(e) {
                 e.preventDefault();
                 // Uncheck all filter checkboxes
-                document.querySelectorAll('.lg\\:block .company-type-filter, .lg\\:block .location-filter').forEach(cb => {
+                document.querySelectorAll('.lg\\:block .company-type-filter, .lg\\:block .location-filter, .lg\\:block .category-filter').forEach(cb => {
                     cb.checked = false;
                 });
                 // Remove filter parameters from URL
                 const currentUrl = new URL(window.location);
                 currentUrl.searchParams.delete('category');
+                currentUrl.searchParams.delete('category[]');
                 currentUrl.searchParams.delete('location');
+                currentUrl.searchParams.delete('location[]');
                 currentUrl.searchParams.delete('company_type');
+                currentUrl.searchParams.delete('company_type[]');
                 window.location.href = currentUrl.toString();
             });
-
-            // Show More Categories functionality
-            function loadMoreCategories(containerId, showMoreId, isMobile = false) {
-                const container = document.getElementById(containerId);
-                const showMoreBtn = document.getElementById(showMoreId);
-
-                if (showMoreBtn) {
-                    showMoreBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-
-                        // Get current page from URL or default to 1
-                        const currentUrl = new URL(window.location);
-                        const currentPage = parseInt(currentUrl.searchParams.get('category_page') || '1');
-                        const nextPage = currentPage + 1;
-
-                        // Update URL with next page
-                        currentUrl.searchParams.set('category_page', nextPage);
-
-                        // Redirect to load more categories
-                        window.location.href = currentUrl.toString();
-                    });
-                }
-            }
 
             // Show More Locations functionality
             function loadMoreLocations(containerId, showMoreId, isMobile = false) {
@@ -944,8 +1050,6 @@
             }
 
             // Initialize Show More functionality
-            loadMoreCategories('mobile-categories-list', 'mobile-show-more-categories', true);
-            loadMoreCategories('desktop-categories-list', 'desktop-show-more-categories', false);
             loadMoreLocations('mobile-locations-list', 'mobile-show-more-locations', true);
             loadMoreLocations('desktop-locations-list', 'desktop-show-more-locations', false);
         });

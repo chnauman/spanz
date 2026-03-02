@@ -36,6 +36,8 @@ class ProductController extends Controller
             'status' => ['required', 'in:draft,active,archived'],
             'featured' => ['sometimes', 'boolean'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'], // 5MB max
+            'gallery_images' => ['nullable', 'array', 'max:12'],
+            'gallery_images.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'], // 5MB each
         ], [
             'title.required' => 'Product title is required.',
             'status.required' => 'Product status is required.',
@@ -43,6 +45,11 @@ class ProductController extends Controller
             'image.image' => 'The uploaded file must be an image.',
             'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, webp.',
             'image.max' => 'The image may not be greater than 5MB.',
+            'gallery_images.array' => 'Gallery images must be a list of files.',
+            'gallery_images.max' => 'You can upload up to 12 gallery images.',
+            'gallery_images.*.image' => 'Each gallery file must be an image.',
+            'gallery_images.*.mimes' => 'Gallery images must be: jpeg, png, jpg, gif, webp.',
+            'gallery_images.*.max' => 'Each gallery image may not be greater than 5MB.',
         ]);
 
         try {
@@ -58,11 +65,21 @@ class ProductController extends Controller
                 $imagePath = $image->storeAs('products', $imageName, 'public');
             }
 
+            $galleryPaths = [];
+            if ($request->hasFile('gallery_images')) {
+                foreach ((array) $request->file('gallery_images') as $img) {
+                    if (!$img) continue;
+                    $imageName = time() . '_' . Str::random(10) . '.' . $img->getClientOriginalExtension();
+                    $galleryPaths[] = $img->storeAs('products/gallery', $imageName, 'public');
+                }
+            }
+
             $product = Product::create([
                 'title' => $validated['title'],
                 'slug' => $slug,
                 'description' => $validated['description'] ?? null,
                 'image' => $imagePath,
+                'images' => !empty($galleryPaths) ? $galleryPaths : null,
                 'price' => $validated['price'] ?? null,
                 'currency' => $validated['currency'] ?? 'USD',
                 'category_id' => $validated['category_id'] ?? null,
@@ -110,6 +127,11 @@ class ProductController extends Controller
             'featured' => ['sometimes', 'boolean'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'], // 5MB max
             'remove_image' => ['sometimes', 'boolean'],
+            'gallery_images' => ['nullable', 'array', 'max:12'],
+            'gallery_images.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'], // 5MB each
+            'clear_gallery' => ['sometimes', 'boolean'],
+            'remove_gallery_images' => ['nullable', 'array'],
+            'remove_gallery_images.*' => ['string'],
         ]);
 
         if ($product->title !== $validated['title']) {
@@ -141,6 +163,49 @@ class ProductController extends Controller
             $product->image = $imagePath;
         }
 
+        // Handle gallery clear
+        if ($request->boolean('clear_gallery')) {
+            $existing = is_array($product->images) ? $product->images : [];
+            foreach ($existing as $path) {
+                if ($path && Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+            $product->images = null;
+        }
+
+        // Handle per-image removals (only from existing gallery)
+        $toRemove = $request->input('remove_gallery_images', []);
+        if (!empty($toRemove) && !$request->boolean('clear_gallery')) {
+            $existing = is_array($product->images) ? $product->images : [];
+            $existingSet = array_flip($existing);
+
+            foreach ($toRemove as $path) {
+                if (!is_string($path) || $path === '') continue;
+                if (!isset($existingSet[$path])) continue; // only allow removal of existing images
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+                unset($existingSet[$path]);
+            }
+
+            $remaining = array_values(array_keys($existingSet));
+            $product->images = !empty($remaining) ? $remaining : null;
+        }
+
+        // Handle gallery image uploads (append)
+        if ($request->hasFile('gallery_images')) {
+            $existing = is_array($product->images) ? $product->images : [];
+            $newPaths = [];
+            foreach ((array) $request->file('gallery_images') as $img) {
+                if (!$img) continue;
+                $imageName = time() . '_' . Str::random(10) . '.' . $img->getClientOriginalExtension();
+                $newPaths[] = $img->storeAs('products/gallery', $imageName, 'public');
+            }
+            $merged = array_values(array_filter(array_merge($existing, $newPaths)));
+            $product->images = !empty($merged) ? $merged : null;
+        }
+
         $product->fill([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
@@ -165,6 +230,14 @@ class ProductController extends Controller
         // Delete associated image if exists
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
+        }
+
+        // Delete gallery images if exist
+        $gallery = is_array($product->images) ? $product->images : [];
+        foreach ($gallery as $path) {
+            if ($path && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
         
         $product->delete();

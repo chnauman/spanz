@@ -269,7 +269,7 @@ class User extends Authenticatable
     }
 
     // Credit-based access methods
-    public function canViewTenderDetailsWithCredits()
+    public function canViewTenderDetailsWithCredits($tenderId = null)
     {
         $activeSubscription = $this->getActiveSubscription();
 
@@ -282,9 +282,13 @@ class User extends Authenticatable
             return true;
         }
 
-        // Check if user has enough credits
+        // Check if user has enough credits for this tender (if provided), otherwise fall back to subscription default.
         $totalCredits = $this->getTotalCredits();
-        $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
+        $creditCostPerView = $this->getTenderViewCreditCost($tenderId);
+
+        if ($creditCostPerView === null) {
+            return false;
+        }
 
         return $totalCredits >= $creditCostPerView;
     }
@@ -300,6 +304,46 @@ class User extends Authenticatable
         return $activeSubscription->subscription->credit_cost_per_view ?? 1;
     }
 
+    /**
+     * Resolve tender-view credit cost using admin-managed budget pricing rules.
+     * Returns null if tender budget is missing/invalid or pricing is not configured.
+     */
+    public function getTenderViewCreditCost($tenderId = null)
+    {
+        $activeSubscription = $this->getActiveSubscription();
+
+        if (!$activeSubscription) {
+            return 0;
+        }
+
+        // Unlimited plans don't charge per view
+        if ($activeSubscription->subscription->credits_per_month < 0) {
+            return 0;
+        }
+
+        // If no tender provided, fall back to subscription default (used by generic summary endpoints)
+        if (!$tenderId) {
+            return $activeSubscription->subscription->credit_cost_per_view ?? 1;
+        }
+
+        $tender = \App\Models\Tender::find($tenderId);
+        // Owner views are always free
+        if ($tender && $this->id === $tender->user_id) {
+            return 0;
+        }
+
+        if (!$tender || !$tender->budget || (float) $tender->budget <= 0) {
+            return null;
+        }
+
+        $rule = TenderViewPricingRule::matchForBudget((float) $tender->budget);
+        if (!$rule) {
+            return null;
+        }
+
+        return (int) $rule->credits_cost;
+    }
+
     public function deductCreditsForTenderView($tenderId)
     {
         $activeSubscription = $this->getActiveSubscription();
@@ -313,13 +357,11 @@ class User extends Authenticatable
             return true;
         }
 
-        $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
-
         // Check if user is the owner of this tender
         $tender = \App\Models\Tender::find($tenderId);
         if ($tender && $this->id === $tender->user_id) {
             // Owner can view their own tender for free - record view without deducting credits
-            \App\Models\TenderView::recordView($this->id, $tenderId, 0, $creditCostPerView);
+            \App\Models\TenderView::recordView($this->id, $tenderId, 0, 0);
             return true;
         }
 
@@ -328,10 +370,26 @@ class User extends Authenticatable
             return true; // Already viewed, no need to deduct credits again
         }
 
+        // Tender budget is required for pricing
+        if (!$tender || !$tender->budget || (float) $tender->budget <= 0) {
+            return false;
+        }
+
+        $creditCostPerView = $this->getTenderViewCreditCost($tenderId);
+        if ($creditCostPerView === null) {
+            return false;
+        }
+
         // Check if any team member has viewed this tender (team access)
         if ($this->hasTeamMemberViewedTender($tenderId)) {
             // Record the tender view without deducting credits (team access)
             \App\Models\TenderView::recordView($this->id, $tenderId, 0, $creditCostPerView);
+            return true;
+        }
+
+        // If this tender is configured as free to view, just record it.
+        if ((int) $creditCostPerView === 0) {
+            \App\Models\TenderView::recordView($this->id, $tenderId, 0, 0);
             return true;
         }
 
@@ -452,7 +510,7 @@ class User extends Authenticatable
         }
 
         // If no team member has viewed, check individual access
-        return $this->canViewTenderDetailsWithCredits();
+        return $this->canViewTenderDetailsWithCredits($tenderId);
     }
 
     /**
@@ -540,6 +598,23 @@ class User extends Authenticatable
                 'action' => null,
                 'team_access' => true
             ];
+        }
+
+        // Resolve per-tender pricing rule (budget-based) for first-time/team unlock.
+        if ($tenderId) {
+            $resolved = $this->getTenderViewCreditCost($tenderId);
+            if ($resolved === null) {
+                return [
+                    'has_subscription' => true,
+                    'subscription_expired' => false,
+                    'total_credits' => $totalCredits,
+                    'credit_cost_per_view' => 0,
+                    'can_view' => false,
+                    'message' => 'Tender budget is missing or pricing is not configured for this budget.',
+                    'action' => null
+                ];
+            }
+            $creditCostPerView = $resolved;
         }
 
         // Check if user has enough credits

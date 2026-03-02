@@ -35,7 +35,32 @@ class TenderController extends Controller
 
         // Apply category filter
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $selected = $request->input('category');
+            $selectedIds = is_array($selected) ? $selected : [$selected];
+            $selectedIds = collect($selectedIds)
+                ->filter(fn ($v) => $v !== null && $v !== '')
+                ->map(fn ($v) => (int) $v)
+                ->filter(fn ($v) => $v > 0)
+                ->values();
+
+            if ($selectedIds->isNotEmpty()) {
+                // If a main category is selected, include its active children too.
+                $selectedCategories = Category::whereIn('id', $selectedIds->all())
+                    ->with(['children' => function ($q) {
+                        $q->select(['id', 'parent_category_id'])
+                            ->where('is_active', true);
+                    }])
+                    ->get(['id']);
+
+                $childIds = $selectedCategories
+                    ->flatMap(fn ($c) => $c->children->pluck('id'))
+                    ->unique()
+                    ->values();
+
+                $filterIds = $selectedIds->merge($childIds)->unique()->values();
+
+                $query->whereIn('category_id', $filterIds->all());
+            }
         }
 
         // Apply location filter
@@ -76,10 +101,16 @@ class TenderController extends Controller
             });
         }
 
-        $tenders = $query->orderBy('created_at', 'desc')->paginate(12);
+        $tenders = $query->orderBy('created_at', 'desc')
+            ->paginate(12)
+            ->appends($request->query());
 
-        // Get all categories for display (we'll handle pagination in JavaScript)
+        // Get all main categories (with children) for display
         $allCategories = Category::where('is_active', true)
+            ->whereNull('parent_category_id')
+            ->with(['children' => function ($q) {
+                $q->where('is_active', true)->orderBy('name');
+            }])
             ->orderBy('name')
             ->get();
 
@@ -95,12 +126,7 @@ class TenderController extends Controller
             ->values()
             ->toArray();
 
-        // Handle pagination for categories (10 per page)
-        $categoryPage = $request->get('category_page', 1);
-        $categoriesPerPage = 10;
-        $startIndex = ($categoryPage - 1) * $categoriesPerPage;
-        $categories = $allCategories->slice($startIndex, $categoriesPerPage);
-        $hasMoreCategories = $allCategories->count() > ($categoryPage * $categoriesPerPage);
+        $categories = $allCategories;
 
         // Handle pagination for locations (5 per page)
         $locationPage = $request->get('location_page', 1);
@@ -115,7 +141,12 @@ class TenderController extends Controller
             ->orderBy('price', 'asc')
             ->get();
 
-        return view('tenders.search', compact('tenders', 'categories', 'locations', 'hasMoreCategories', 'hasMoreLocations', 'allCategories', 'allLocations', 'subscriptions'));
+        if ($request->ajax() || $request->wantsJson()) {
+            $html = view('tenders.partials.search-results', compact('tenders'))->render();
+            return response()->json(['html' => $html]);
+        }
+
+        return view('tenders.search', compact('tenders', 'categories', 'locations', 'hasMoreLocations', 'allCategories', 'allLocations', 'subscriptions'));
     }
 
     public function create()
@@ -596,18 +627,11 @@ class TenderController extends Controller
 
         $user = Auth::user();
 
-        // Check if user has already viewed this tender
-        $hasViewed = $user->hasViewedTender($tender->id);
-
-        // If user has already viewed this tender, allow access regardless of current credit status
-        if (!$hasViewed) {
-            // User hasn't viewed this tender before, check subscription and credit status
-            $status = $user->getSubscriptionAndCreditStatus();
-
-            // If user can't view, redirect with error message
-            if (!$status['can_view']) {
-                return redirect()->back()->with('error', $status['message']);
-            }
+        // Attachments are part of the paid/unlocked tender details.
+        // Ensure the user/team has unlocked (or unlock now by deducting credits once).
+        if (!$user->deductCreditsForTenderView($tender->id)) {
+            $status = $user->getSubscriptionAndCreditStatus($tender->id);
+            return redirect()->back()->with('error', $status['message'] ?? 'You cannot access this attachment.');
         }
 
         // Get attachments

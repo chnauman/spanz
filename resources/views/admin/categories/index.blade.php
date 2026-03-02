@@ -31,22 +31,22 @@
             
             @if($categories->count() > 0)
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="w-full table-fixed divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/12">
                                 Category
                             </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">
                                 Parent Category
                             </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">
                                 Status
                             </th>
-                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">
                                 Created
                             </th>
-                            <th scope="col" class="relative px-4 sm:px-6 py-3">
+                            <th scope="col" class="relative px-4 sm:px-6 py-3 w-1/12">
                                 <span class="sr-only">Actions</span>
                             </th>
                         </tr>
@@ -54,7 +54,7 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($categories as $category)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 sm:px-6 py-4">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
                                         <div class="h-10 w-10 rounded-full bg-[#0D6AED] flex items-center justify-center">
@@ -63,10 +63,10 @@
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $category->name }}</div>
+                                    <div class="ml-4 min-w-0 flex-1">
+                                        <div class="text-sm font-medium text-gray-900 truncate" title="{{ $category->name }}">{{ $category->name }}</div>
                                         @if($category->description)
-                                        <div class="text-sm text-gray-500 truncate max-w-xs">{{ $category->description }}</div>
+                                        <div class="text-sm text-gray-500 truncate" title="{{ $category->description }}">{{ $category->description }}</div>
                                         @endif
                                     </div>
                                 </div>
@@ -115,8 +115,10 @@
                                           id="delete-form-{{ $category->id }}">
                                         @csrf
                                         @method('DELETE')
+                                        <input type="hidden" name="delete_inactive_tenders" value="0" id="delete-inactive-{{ $category->id }}">
                                         <button type="button" 
-                                                onclick="confirmDeleteCategory({{ $category->id }}, {{ json_encode($category->name) }})"
+                                                data-delete-check-url="{{ route('admin.categories.delete-check', $category) }}"
+                                                onclick="confirmDeleteCategory({{ $category->id }}, {{ json_encode($category->name) }}, this)"
                                                 class="text-red-600 hover:text-red-900 p-2 rounded-md hover:bg-red-50 transition-colors" 
                                                 title="Delete">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,36 +168,99 @@
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-function confirmDeleteCategory(categoryId, categoryName) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You are about to delete category "' + categoryName + '". This action cannot be undone!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true,
-        focusCancel: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Deleting...',
-                text: 'Please wait while we delete the category.',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+async function confirmDeleteCategory(categoryId, categoryName, buttonEl) {
+    const checkUrl = buttonEl?.dataset?.deleteCheckUrl;
+    if (!checkUrl) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Delete check URL is missing. Please refresh and try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
 
-            // Submit the form
-            const form = document.getElementById('delete-form-' + categoryId);
-            form.submit();
+    let check;
+    try {
+        const resp = await fetch(checkUrl, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin',
+        });
+        if (!resp.ok) throw new Error('Failed to check category usage');
+        check = await resp.json();
+    } catch (e) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Could not verify tender status for this category. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    const active = Number(check.active_tenders || 0);
+    const inactive = Number(check.inactive_tenders || 0);
+
+    // If any active tender exists (or mix), do not allow delete.
+    if (active > 0) {
+        const extra = inactive > 0 ? ' (There are also inactive tenders.)' : '';
+        Swal.fire({
+            title: 'Cannot delete',
+            text: 'Category "' + categoryName + '" has ' + active + ' active tender(s)' + extra + ' Remove/close active tenders first.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    // If only inactive tenders exist, ask if user wants to delete those too.
+    if (inactive > 0) {
+        const result = await Swal.fire({
+            title: 'Tender(s) found',
+            text: 'Category "' + categoryName + '" has ' + inactive + ' inactive tender(s). If you continue, the category and these tenders will be deleted.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete category & tenders',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusCancel: true
+        });
+
+        if (!result.isConfirmed) return;
+
+        document.getElementById('delete-inactive-' + categoryId).value = '1';
+    } else {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to delete category "' + categoryName + '". This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusCancel: true
+        });
+        if (!result.isConfirmed) return;
+    }
+
+    Swal.fire({
+        title: 'Deleting...',
+        text: 'Please wait while we delete the category.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
     });
+
+    const form = document.getElementById('delete-form-' + categoryId);
+    form.submit();
 }
 
 @if(session('success'))

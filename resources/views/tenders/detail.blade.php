@@ -282,6 +282,56 @@
                     </div>
                     @endif
 
+                    @php
+                        $subCategoryLabels = [
+                            'electrical' => 'Electrical',
+                            'mechanical' => 'Mechanical',
+                            'engines' => 'Engines',
+                            'avionics' => 'Avionics',
+                            'apus' => 'Auxiliary Power Units (APUs)',
+                            'navigation' => 'Navigation systems',
+                            'communication' => 'Communication systems (radio, satellite)',
+                        ];
+
+                        $rows = is_array($tender->categories) ? $tender->categories : [];
+
+                        $breakdown = collect($rows)->map(function ($row) use ($subCategoryLabels) {
+                            if (!is_array($row)) return null;
+
+                            $rawLabel = $row['sub_category'] ?? $row['work'] ?? $row['type'] ?? null;
+                            $label = null;
+                            if (is_string($rawLabel) && $rawLabel !== '') {
+                                $key = strtolower($rawLabel);
+                                $label = $subCategoryLabels[$key] ?? ucwords(str_replace(['_', '-'], ' ', $rawLabel));
+                            }
+
+                            $pctRaw = $row['product_type'] ?? $row['percentage'] ?? $row['percent'] ?? null;
+                            $pct = null;
+                            if (is_numeric($pctRaw)) {
+                                $pctNum = (int) $pctRaw;
+                                $pct = $pctNum === 5 ? '<10%' : ($pctNum . '%');
+                            } elseif (is_string($pctRaw) && trim($pctRaw) !== '') {
+                                $pct = trim($pctRaw);
+                            }
+
+                            if (!$label && !$pct) return null;
+                            return ['label' => $label ?: 'Work', 'pct' => $pct ?: '—'];
+                        })->filter()->values();
+                    @endphp
+
+                    @if($breakdown->isNotEmpty())
+                        <div class="mt-6 sm:mt-8">
+                            <h3 class="font-semibold mb-3 text-base sm:text-lg">Indicative Budget Break Down:</h3>
+                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm sm:text-base text-gray-700">
+                                @foreach($breakdown as $item)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-800 whitespace-nowrap">
+                                        {{ $item['label'] }} – {{ $item['pct'] }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="mt-6 sm:mt-8">
                         <h3 class="font-semibold mb-3 text-base sm:text-lg">Project Title:</h3>
                         <p class="text-sm sm:text-base">{{ $tender->title }}</p>

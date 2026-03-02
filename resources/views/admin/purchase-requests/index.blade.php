@@ -40,21 +40,21 @@
             <!-- Table Section -->
             <div class="mt-6 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full divide-y divide-gray-200">
+                    <table class="w-full table-fixed divide-y divide-gray-200">
                         <thead class="bg-gradient-to-r from-[#092C48] to-[#1b3963]">
                             <tr>
-                                <th class="w-1/4 px-8 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">User</th>
-                                <th class="w-1/4 px-8 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Product</th>
-                                <th class="w-1/12 px-6 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Quantity</th>
-                                <th class="w-1/12 px-6 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Status</th>
-                                <th class="w-1/6 px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Date</th>
-                                <th class="w-1/4 px-6 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Actions</th>
+                                <th class="w-3/12 px-4 sm:px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">User</th>
+                                <th class="w-3/12 px-4 sm:px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Product</th>
+                                <th class="w-1/12 px-3 sm:px-4 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Qty</th>
+                                <th class="w-1/12 px-3 sm:px-4 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Status</th>
+                                <th class="w-2/12 px-3 sm:px-4 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Date</th>
+                                <th class="w-2/12 px-3 sm:px-4 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($purchaseRequests as $request)
                             <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                <td class="w-1/4 px-8 py-6">
+                                <td class="w-3/12 px-4 sm:px-6 py-6">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-12 w-12">
                                             <div class="h-12 w-12 rounded-full bg-gradient-to-r from-[#092C48] to-[#1b3963] flex items-center justify-center shadow-md">
@@ -76,18 +76,18 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="w-1/4 px-8 py-6">
+                                <td class="w-3/12 px-4 sm:px-6 py-6">
                                     <div class="min-w-0">
                                         <div class="text-sm font-semibold text-gray-900 truncate">{{ $request->product->title }}</div>
                                         <div class="text-sm text-gray-500 truncate">{{ optional($request->product->category)->name ?? 'Uncategorized' }}</div>
                                     </div>
                                 </td>
-                                <td class="w-1/12 px-6 py-6 text-center">
+                                <td class="w-1/12 px-3 sm:px-4 py-6 text-center">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                         {{ $request->quantity }}
                                     </span>
                                 </td>
-                                <td class="w-1/12 px-6 py-6 text-center">
+                                <td class="w-1/12 px-3 sm:px-4 py-6 text-center">
                                     <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
                                         @if($request->status === 'pending') bg-yellow-100 text-yellow-800
                                         @elseif($request->status === 'approved') bg-green-100 text-green-800
@@ -96,10 +96,10 @@
                                         {{ ucfirst($request->status) }}
                                     </span>
                                 </td>
-                                <td class="w-1/6 px-6 py-6 text-sm text-gray-500">
+                                <td class="w-2/12 px-3 sm:px-4 py-6 text-sm text-gray-500 whitespace-nowrap">
                                     {{ $request->created_at->format('M d, Y H:i') }}
                                 </td>
-                                <td class="w-1/4 px-6 py-6">
+                                <td class="w-2/12 px-3 sm:px-4 py-6">
                                     <div class="flex flex-wrap justify-center gap-2">
                                         @if($request->status === 'pending')
                                             <button onclick="updateStatus({{ $request->id }}, 'approved')"

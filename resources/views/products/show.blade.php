@@ -231,10 +231,29 @@
                 <div class="lg:w-1/3 flex-shrink-0 mt-6 lg:mt-0">
                     <div class="sticky top-4">
                         <div class="w-full max-w-xs mx-auto lg:mx-0">
-                            <img src="{{ $product->image ? asset('storage/' . $product->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22128%22 height=%2296%22%3E%3Crect fill=%22%23ddd%22 width=%22128%22 height=%2296%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2211%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E' }}" 
+                            @php($gallery = is_array($product->images) ? $product->images : [])
+                            @php($allImages = array_values(array_filter(array_merge([$product->image], $gallery))))
+
+                            <img id="main-product-image"
+                                 src="{{ $product->image ? asset('storage/' . $product->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2218%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E' }}" 
                                  alt="{{ $product->title }}" 
-                                 class="w-full h-auto max-h-24 sm:max-h-32 object-contain rounded-lg border-2 border-gray-200 shadow-sm" 
-                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22128%22 height=%2296%22%3E%3Crect fill=%22%23ddd%22 width=%22128%22 height=%2296%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2211%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';" />
+                                 class="w-full h-auto max-h-80 object-contain rounded-lg border-2 border-gray-200 shadow-sm bg-white" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2218%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';" />
+
+                            @if(count($allImages) > 1)
+                                <div class="mt-4 grid grid-cols-4 gap-2" id="product-gallery">
+                                    @foreach($allImages as $path)
+                                        <button type="button"
+                                                class="border border-gray-200 rounded hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 p-1 bg-white"
+                                                data-full="{{ asset('storage/' . $path) }}">
+                                            <img src="{{ asset('storage/' . $path) }}"
+                                                 alt="Gallery image"
+                                                 class="w-full h-14 object-cover rounded"
+                                                 onerror="this.src='{{ $product->image_url_with_fallback }}';" />
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -445,6 +464,21 @@
             purchaseModal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
+
+        // Gallery click-to-swap main image
+        document.addEventListener('DOMContentLoaded', function () {
+            const gallery = document.getElementById('product-gallery');
+            const mainImg = document.getElementById('main-product-image');
+            if (!gallery || !mainImg) return;
+
+            gallery.addEventListener('click', function (e) {
+                const btn = e.target.closest('button[data-full]');
+                if (!btn) return;
+                const src = btn.getAttribute('data-full');
+                if (!src) return;
+                mainImg.src = src;
+            });
+        });
     </script>
 
 </body>

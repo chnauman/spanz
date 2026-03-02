@@ -5,7 +5,7 @@
 @section('content')
 <h2>Hello{{ $userName ? ' ' . $userName : '' }}!</h2>
 
-<p>Thank you for signing up with Spanz! To complete your registration, please verify your email address using the OTP code below.</p>
+<p>Thank you for signing up with Spanz! To complete your registration, please verify your email address using the verification code below.</p>
 
 <div class="button-center">
     <div style="background-color: #f7fafc; padding: 24px; border-radius: 8px; border: 2px dashed #0D6AED; display: inline-block; margin: 20px 0;">
@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<p style="color: #718096; font-size: 14px;">This OTP code will expire in 15 minutes.</p>
+<p style="color: #718096; font-size: 14px;">This verification code will expire in 15 minutes.</p>
 
 <p>If you did not create an account with Spanz, please ignore this email.</p>
 

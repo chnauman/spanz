@@ -352,6 +352,10 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Manage Plans
             </a>
+            <a href="{{ route('admin.tender-view-pricing.index') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Tender View Pricing
+            </a>
             <a href="{{ route('admin.subscriptions.create') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Create Plan
@@ -616,6 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ],
         'subscriptionsDropdown': [
             '/admin/subscriptions',
+            '/admin/tender-view-pricing',
             '/admin/subscription-requests',
             '/admin/downgrade-requests'
         ],

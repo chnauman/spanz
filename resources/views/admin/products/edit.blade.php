@@ -68,7 +68,7 @@
             </div>
 
             <div>
-                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Primary Image (Main)</label>
                 
                 @if($product->image)
                     <div class="mb-4">
@@ -104,6 +104,55 @@
                     </div>
                     <div class="mt-2">
                         <button type="button" onclick="removePreview()" class="text-sm text-red-600 hover:text-red-800 underline">Cancel Upload</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Gallery Images (Optional)</label>
+
+                @php($gallery = is_array($product->images) ? $product->images : [])
+                @if(!empty($gallery))
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Current Gallery:</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                            @foreach($gallery as $path)
+                                <div class="border rounded bg-gray-50 p-2 relative group" data-gallery-item>
+                                    <img src="{{ asset('storage/' . $path) }}" alt="Gallery image" class="w-full h-24 object-cover rounded"
+                                         onerror="this.src='{{ $product->image_url_with_fallback }}';" />
+                                    <button type="button"
+                                            class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                                            title="Remove this image"
+                                            aria-label="Remove this image"
+                                            onclick="removeExistingGalleryImage(this, {{ json_encode($path) }})">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div id="removed-gallery-inputs"></div>
+                        <p id="removed-gallery-hint" class="text-xs text-gray-500 mt-2 hidden">Removed images will be deleted when you save.</p>
+                        <label class="inline-flex items-center gap-2 mt-3 text-sm text-gray-700">
+                            <input type="checkbox" name="clear_gallery" value="1">
+                            Clear all gallery images
+                        </label>
+                    </div>
+                @endif
+
+                <label for="gallery_images" class="block text-sm font-medium text-gray-700 mb-2">Add Gallery Images</label>
+                <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                       class="w-full border rounded px-3 py-2" onchange="previewGallery(this)" />
+                @error('gallery_images')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
+                @error('gallery_images.*')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
+                <p class="text-xs text-gray-500 mt-1">You can select multiple images. Max: 12 images, 5MB each.</p>
+                <div id="gallery-preview" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">New Gallery Preview:</p>
+                    <div id="gallery-preview-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                    <div class="mt-2">
+                        <button type="button" onclick="removeGalleryPreview()" class="text-sm text-red-600 hover:text-red-800 underline">Cancel Gallery Upload</button>
                     </div>
                 </div>
             </div>
@@ -187,6 +236,75 @@ function removeCurrentImage() {
             currentImageDiv.style.display = 'none';
         }
     }
+}
+
+function previewGallery(input) {
+    const preview = document.getElementById('gallery-preview');
+    const grid = document.getElementById('gallery-preview-grid');
+    if (!preview || !grid) return;
+    grid.innerHTML = '';
+
+    if (!input.files || input.files.length === 0) {
+        preview.classList.add('hidden');
+        return;
+    }
+
+    const files = Array.from(input.files).slice(0, 12);
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    for (const file of files) {
+        if (!validTypes.includes(file.type)) {
+            alert('Gallery: please select valid image files (JPG, PNG, GIF, WEBP)');
+            input.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Gallery: each image must be less than 5MB');
+            input.value = '';
+            preview.classList.add('hidden');
+            return;
+        }
+    }
+
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const wrap = document.createElement('div');
+            wrap.className = 'border rounded bg-gray-50 p-2';
+            wrap.innerHTML = `<img src="${e.target.result}" alt="Gallery preview" class="w-full h-24 object-cover rounded" />`;
+            grid.appendChild(wrap);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    preview.classList.remove('hidden');
+}
+
+function removeGalleryPreview() {
+    const input = document.getElementById('gallery_images');
+    const preview = document.getElementById('gallery-preview');
+    const grid = document.getElementById('gallery-preview-grid');
+    if (!input || !preview || !grid) return;
+    input.value = '';
+    grid.innerHTML = '';
+    preview.classList.add('hidden');
+}
+
+function removeExistingGalleryImage(btn, path) {
+    const item = btn.closest('[data-gallery-item]');
+    if (item) item.style.display = 'none';
+
+    const inputsWrap = document.getElementById('removed-gallery-inputs');
+    if (inputsWrap) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'remove_gallery_images[]';
+        input.value = path;
+        inputsWrap.appendChild(input);
+    }
+
+    const hint = document.getElementById('removed-gallery-hint');
+    if (hint) hint.classList.remove('hidden');
 }
 </script>
 @endpush
