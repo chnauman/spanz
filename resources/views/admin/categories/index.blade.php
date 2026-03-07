@@ -37,9 +37,6 @@
                         <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                         Collapse All
                     </button>
-                    <button type="button" id="btn-clear-all" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D6AED]" title="Reset view to collapsed state">
-                        Clear All
-                    </button>
                 </div>
                 @endif
             </div>
@@ -324,12 +321,6 @@ Swal.fire({
         });
     });
     document.getElementById('btn-collapse-all') && document.getElementById('btn-collapse-all').addEventListener('click', function() {
-        getChildRows().forEach(function(row) { row.style.display = 'none'; });
-        document.querySelectorAll('.category-toggle').forEach(function(btn) {
-            setToggleIcon(btn, false);
-        });
-    });
-    document.getElementById('btn-clear-all') && document.getElementById('btn-clear-all').addEventListener('click', function() {
         getChildRows().forEach(function(row) { row.style.display = 'none'; });
         document.querySelectorAll('.category-toggle').forEach(function(btn) {
             setToggleIcon(btn, false);
