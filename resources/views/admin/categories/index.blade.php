@@ -25,11 +25,26 @@
 
         <!-- Categories Table -->
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <h3 class="text-lg font-medium text-gray-900">All Categories</h3>
+                @if($categories->isNotEmpty())
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" id="btn-expand-all" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D6AED]">
+                        <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                        Expand All
+                    </button>
+                    <button type="button" id="btn-collapse-all" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D6AED]">
+                        <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                        Collapse All
+                    </button>
+                    <button type="button" id="btn-clear-all" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D6AED]" title="Reset view to collapsed state">
+                        Clear All
+                    </button>
+                </div>
+                @endif
             </div>
             
-            @if($categories->count() > 0)
+            @if($categories->isNotEmpty())
             <div class="overflow-x-auto">
                 <table class="w-full table-fixed divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -53,11 +68,25 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($categories as $category)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 sm:px-6 py-4">
+                        @php
+                            $isParent = is_null($category->parent_category_id);
+                        @endphp
+                        <tr class="hover:bg-gray-50 category-row {{ $isParent ? 'category-parent' : 'category-child' }}"
+                            data-category-id="{{ $category->id }}"
+                            @if(!$isParent) data-parent-id="{{ $category->parent_category_id }}" @endif>
+                            <td class="px-4 sm:px-6 py-4 {{ $isParent ? '' : 'pl-10 sm:pl-12' }}">
                                 <div class="flex items-center">
+                                    @if($isParent)
+                                    <button type="button" class="category-toggle flex-shrink-0 mr-2 p-1 rounded hover:bg-gray-200 text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#0D6AED]" data-parent-id="{{ $category->id }}" title="Expand/Collapse children" aria-label="Toggle children">
+                                        <svg class="category-toggle-icon h-5 w-5 transition-transform" data-expanded="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    @else
+                                    <span class="flex-shrink-0 w-7 inline-block" aria-hidden="true"></span>
+                                    @endif
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        <div class="h-10 w-10 rounded-full bg-[#0D6AED] flex items-center justify-center">
+                                        <div class="h-10 w-10 rounded-full {{ $isParent ? 'bg-[#0D6AED]' : 'bg-gray-400' }} flex items-center justify-center">
                                             <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                             </svg>
@@ -104,7 +133,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
                                     </a>
-                                    <a href="{{ route('admin.categories.edit', $category) }}?page={{ request('page', 1) }}" 
+                                    <a href="{{ route('admin.categories.edit', $category) }}" 
                                        class="text-indigo-600 hover:text-indigo-900 p-2 rounded-md hover:bg-indigo-50 transition-colors" 
                                        title="Edit">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,13 +162,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination -->
-            @if($categories->hasPages())
-            <div class="px-4 sm:px-6 py-3 border-t border-gray-200">
-                {{ $categories->links() }}
-            </div>
-            @endif
 
             @else
             <!-- Empty State -->
@@ -280,5 +302,49 @@ Swal.fire({
     confirmButtonText: 'OK'
 });
 @endif
+
+(function() {
+    function getChildRows() { return document.querySelectorAll('.category-row.category-child[data-parent-id]'); }
+    function setChildrenVisible(parentId, visible) {
+        document.querySelectorAll('.category-row.category-child[data-parent-id="' + parentId + '"]').forEach(function(row) {
+            row.style.display = visible ? '' : 'none';
+        });
+    }
+    function setToggleIcon(btn, expanded) {
+        if (!btn) return;
+        var icon = btn.querySelector('.category-toggle-icon');
+        if (!icon) return;
+        icon.setAttribute('data-expanded', expanded ? 'true' : 'false');
+        icon.style.transform = expanded ? 'rotate(0deg)' : 'rotate(-90deg)';
+    }
+    document.getElementById('btn-expand-all') && document.getElementById('btn-expand-all').addEventListener('click', function() {
+        getChildRows().forEach(function(row) { row.style.display = ''; });
+        document.querySelectorAll('.category-toggle').forEach(function(btn) {
+            setToggleIcon(btn, true);
+        });
+    });
+    document.getElementById('btn-collapse-all') && document.getElementById('btn-collapse-all').addEventListener('click', function() {
+        getChildRows().forEach(function(row) { row.style.display = 'none'; });
+        document.querySelectorAll('.category-toggle').forEach(function(btn) {
+            setToggleIcon(btn, false);
+        });
+    });
+    document.getElementById('btn-clear-all') && document.getElementById('btn-clear-all').addEventListener('click', function() {
+        getChildRows().forEach(function(row) { row.style.display = 'none'; });
+        document.querySelectorAll('.category-toggle').forEach(function(btn) {
+            setToggleIcon(btn, false);
+        });
+    });
+    document.querySelectorAll('.category-toggle').forEach(function(btn) {
+        var parentId = btn.getAttribute('data-parent-id');
+        btn.addEventListener('click', function() {
+            var rows = document.querySelectorAll('.category-row.category-child[data-parent-id="' + parentId + '"]');
+            var expanded = rows.length && rows[0].style.display !== 'none';
+            var newExpanded = !expanded;
+            rows.forEach(function(row) { row.style.display = newExpanded ? '' : 'none'; });
+            setToggleIcon(btn, newExpanded);
+        });
+    });
+})();
 </script>
 @endsection

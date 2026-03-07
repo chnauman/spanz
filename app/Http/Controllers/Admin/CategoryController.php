@@ -12,11 +12,34 @@ class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * Returns categories in parent-first order, then children (by name) for clear hierarchy.
      */
     public function index()
     {
-        $categories = Category::with('parent')->orderBy('name')->paginate(10);
+        $categories = $this->getCategoriesInTreeOrder();
         return view('admin.categories.index', compact('categories'));
+    }
+
+    /**
+     * Build a flat list of categories: each parent followed by its children (sorted by name).
+     */
+    private function getCategoriesInTreeOrder()
+    {
+        $roots = Category::with(['children' => fn ($q) => $q->orderBy('name')])
+            ->whereNull('parent_category_id')
+            ->orderBy('name')
+            ->get();
+
+        $ordered = collect();
+        foreach ($roots as $parent) {
+            $ordered->push($parent);
+            foreach ($parent->children as $child) {
+                $child->setRelation('parent', $parent);
+                $ordered->push($child);
+            }
+        }
+
+        return $ordered;
     }
 
     /**
