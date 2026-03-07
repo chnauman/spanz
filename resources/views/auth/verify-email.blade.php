@@ -10,14 +10,17 @@
     <div class="bg-image w-full min-h-screen bg-cover bg-center bg-no-repeat flex flex-col" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
         <!-- Main Content Area -->
         <div class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 xl:py-20">
-            <div class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8">
+            <div class="bg-white rounded-lg w-96 sm:rounded-xl shadow-xl max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8 relative">
+                <a href="{{ route('home') }}" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100" aria-label="Close">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </a>
                 <div class="text-center mb-4 sm:mb-6">
                     <a href="{{ route('home') }}" class="block">
                         <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
                     </a>
                     <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Verify Your Email</h2>
                     <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
-                        We've sent a 6-digit OTP code to <strong>{{ $user->email }}</strong>
+                        We've sent a 6-digit code to <strong>{{ $user->email }}</strong>
                     </span>
                 </div>
 
@@ -46,7 +49,7 @@
                 <form method="POST" action="{{ route('email.verify') }}" class="space-y-3 sm:space-y-4">
                     @csrf
                     <div>
-                        <label for="otp" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Enter OTP Code</label>
+                        <label for="otp" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Enter code</label>
                         <input type="text" id="otp" name="otp" maxlength="6" pattern="[0-9]{6}" required
                             class="w-full px-3 py-2 sm:py-3 text-center text-2xl sm:text-3xl font-bold tracking-widest border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             placeholder="000000"
@@ -67,7 +70,7 @@
                     <form method="POST" action="{{ route('email.resend') }}" class="inline">
                         @csrf
                         <button type="submit" class="text-blue-600 hover:text-blue-500 font-medium transition-colors text-xs sm:text-sm underline">
-                            Resend OTP
+                            Resend code
                         </button>
                     </form>
                 </div>

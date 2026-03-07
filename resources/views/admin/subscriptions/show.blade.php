@@ -35,7 +35,7 @@
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-gray-600">Price</label>
-                                    <p class="text-lg font-semibold text-gray-900">${{ number_format($subscription->price, 2) }}/month</p>
+                                    <p class="text-lg font-semibold text-gray-900">A${{ number_format($subscription->price, 2) }}/month (AUD)</p>
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-gray-600">Credits per Month</label>

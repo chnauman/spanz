@@ -38,7 +38,7 @@
                     </div>
 
                     <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (USD)</label>
+                        <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (AUD)</label>
                         <input type="number" 
                                id="price" 
                                name="price" 

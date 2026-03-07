@@ -10,7 +10,10 @@
     <div class="bg-image w-full min-h-screen bg-cover bg-center bg-no-repeat flex flex-col" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
         <!-- Main Content Area -->
         <div class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16 xl:py-20">
-            <div class="bg-white rounded-lg w-full max-w-md sm:max-w-lg sm:rounded-xl shadow-xl p-6 sm:p-8">
+            <div class="bg-white rounded-lg w-full max-w-md sm:max-w-lg sm:rounded-xl shadow-xl p-6 sm:p-8 relative">
+                <a href="{{ route('home') }}" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100" aria-label="Close">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </a>
                 <!-- Progress Indicator -->
                 <div class="mb-6">
                     <div class="flex items-center justify-between">

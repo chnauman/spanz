@@ -36,8 +36,8 @@
                         </div>
 
                         <div class="mb-4">
-                            <div class="text-3xl font-bold text-gray-900">${{ number_format($subscription->price, 2) }}</div>
-                            <div class="text-sm text-gray-500">per month</div>
+                            <div class="text-3xl font-bold text-gray-900">A${{ number_format($subscription->price, 2) }}</div>
+                            <div class="text-sm text-gray-500">per month (AUD)</div>
                         </div>
 
                         <div class="mb-4">

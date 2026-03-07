@@ -66,7 +66,7 @@
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-gray-600">Price</label>
-                                    <p class="text-lg font-semibold text-gray-900">${{ number_format($request->subscription->price, 2) }}/month</p>
+                                    <p class="text-lg font-semibold text-gray-900">A${{ number_format($request->subscription->price, 2) }}/month (AUD)</p>
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-gray-600">Credits per Month</label>
@@ -158,8 +158,11 @@
 <!-- Decline Modal -->
 <div id="declineModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex items-center mb-4">
+        <div class="mt-3 relative">
+            <button type="button" onclick="closeDeclineModal()" class="absolute top-0 right-0 text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100" aria-label="Close">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="flex items-center mb-4 pr-8">
                 <span class="text-2xl mr-3">❌</span>
                 <h3 class="text-xl font-bold text-gray-900">Decline Subscription Request</h3>
             </div>

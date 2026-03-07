@@ -168,7 +168,7 @@
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     {{ $request->subscription->name }}
                                                 </span>
-                                                <span class="text-sm text-gray-500">${{ number_format($request->subscription->price, 2) }}/month</span>
+                                                <span class="text-sm text-gray-500">A${{ number_format($request->subscription->price, 2) }}/month (AUD)</span>
                                             </div>
                                             <p class="text-sm text-gray-600 mt-1">
                                                 Requested: {{ $request->requested_at ? $request->requested_at->format('M d, Y H:i') : 'N/A' }}
@@ -270,8 +270,11 @@
 <!-- Decline Modal -->
 <div id="declineModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Decline Subscription Request</h3>
+        <div class="mt-3 relative">
+            <button type="button" onclick="closeDeclineModal()" class="absolute top-0 right-0 text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100" aria-label="Close">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-lg font-medium text-gray-900 mb-4 pr-8">Decline Subscription Request</h3>
             <form id="declineForm" method="POST">
                 @csrf
                 <div class="mb-4">
