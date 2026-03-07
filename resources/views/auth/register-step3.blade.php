@@ -188,8 +188,16 @@
                 <a href="{{ route('home') }}" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100" aria-label="Close">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </a>
-                <!-- Progress Indicator -->
-                <div class="mb-6">
+                <div class="text-center mb-2">
+                    <a href="{{ route('home') }}" class="block">
+                        <h1 class="text-2xl sm:text-3xl py-2 font-bold text-[#0D6AED] mb-1 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
+                    </a>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Choose Your Subscription</h2>
+                    <span class="text-sm text-gray-600">Select a subscription plan to complete your registration</span>
+                </div>
+
+                <!-- Progress Indicator – spaced below header -->
+                <div class="mt-8 mb-6">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col items-center flex-1">
                             <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm mb-2">
@@ -214,14 +222,6 @@
                             <span class="text-xs font-medium text-[#0D6AED] text-center">Subscription</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="text-center mb-6">
-                    <a href="{{ route('home') }}" class="block">
-                        <h1 class="text-2xl sm:text-3xl py-3 font-bold text-[#0D6AED] mb-2 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
-                    </a>
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Step 3: Choose Your Subscription</h2>
-                    <span class="text-sm text-gray-600">Select a subscription plan to complete your registration</span>
                 </div>
 
                 @if ($errors->any())

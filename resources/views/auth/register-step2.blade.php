@@ -14,18 +14,25 @@
                 <a href="{{ route('home') }}" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100" aria-label="Close">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </a>
-                <!-- Progress Indicator -->
-                <div class="mb-6">
+
+                <div class="text-center mb-2">
+                    <a href="{{ route('home') }}" class="block">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl py-2 font-bold text-[#0D6AED] mb-1 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
+                    </a>
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Verify Your Email</h2>
+                    <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
+                        We've sent a 6-digit code to <strong>{{ $progress->email }}</strong>
+                    </span>
+                </div>
+
+                <!-- Progress Indicator – spaced below header -->
+                <div class="mt-8 mb-6">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col items-center flex-1">
-                            <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm mb-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
+                            <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-sm mb-2">1</div>
                             <span class="text-xs font-medium text-gray-500 text-center">Business Info</span>
                         </div>
-                        <div class="flex-1 mx-2 h-0.5 bg-green-500 mt-[-20px]"></div>
+                        <div class="flex-1 mx-2 h-0.5 bg-gray-200 mt-[-20px]"></div>
                         <div class="flex flex-col items-center flex-1">
                             <div class="w-10 h-10 rounded-full bg-[#0D6AED] text-white flex items-center justify-center font-bold text-sm mb-2">2</div>
                             <span class="text-xs font-medium text-[#0D6AED] text-center">Verify Email</span>
@@ -38,16 +45,6 @@
                             <span class="text-xs font-medium text-gray-500 text-center">Subscription</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="text-center mb-4 sm:mb-6">
-                    <a href="{{ route('home') }}" class="block">
-                        <h1 class="text-xl sm:text-2xl md:text-3xl py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
-                    </a>
-                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Step 2: Verify Your Email</h2>
-                    <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
-                        We've sent a 6-digit code to <strong>{{ $progress->email }}</strong>
-                    </span>
                 </div>
 
                 @if ($errors->any())
