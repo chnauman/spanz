@@ -108,9 +108,9 @@
                     </div>
 
                     <div>
-                        <label class="flex items-center text-xs sm:text-sm text-gray-600">
-                            <input type="checkbox" id="check" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-2">
-                            I don't have a website
+                        <label class="inline-flex items-center text-xs sm:text-sm text-gray-600">
+                            <input type="checkbox" id="check" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <span class="ml-2">I don't have a website</span>
                         </label>
                     </div>
 
@@ -237,7 +237,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Company Type</p>
-                        <div class="grid grid-cols-1 gap-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             @php
                                 $companyTypes = [
                                     'OEM Manufacturer',
@@ -279,7 +279,7 @@
 
                     <div>
                         <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Quality Certifications</p>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         @php
                             $certs = ['ISO 9001', 'ISO 27001', 'ISO 42001', 'ISO 14001', 'ISO 50001', 'ISO 26000', 'ISO 45001', 'ISO 22001', 'ISO 17025'];
                         @endphp
@@ -358,13 +358,13 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-center pt-4 border-t border-gray-200 mt-4">
+            <div class="flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-gray-200 mt-6">
                 <a href="{{ route('dashboard') }}"
-                   class="w-full sm:w-auto text-center px-4 sm:px-6 py-2.5 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium">
+                   class="w-full sm:w-auto inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 sm:px-7 py-3 text-sm sm:text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
                     Skip for now
                 </a>
                 <button type="submit"
-                        class="w-full sm:w-auto px-6 py-2.5 bg-[#0D6AED] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+                        class="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-[#0D6AED] px-5 sm:px-8 py-3 text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Save Profile
                 </button>
             </div>
