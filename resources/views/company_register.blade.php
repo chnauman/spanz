@@ -13,8 +13,12 @@
         <div class="bg-white rounded-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto p-4 sm:p-6 md:p-8">
             <div class="text-center mb-4 sm:mb-6">
                 <h1 class="text-2xl sm:text-2xl md:text-3xl py-3 sm:py-5 font-bold text-[#0D6AED] mb-1 sm:mb-2">SPANZ</h1>
-                <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2 sm:mb-2">Complete Your Profile</h2>
-                <span class="text-sm sm:text-sm md:text-base text-gray-600 leading-relaxed block px-2 sm:px-0">Great news, your account has been created! Tell us a little bit more about yourself and your company to ensure you get the most out of our platform.</span>
+                <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2 sm:mb-2">
+                    {{ isset($companyDetail) ? 'Strengthen Your Business Profile' : 'Complete Your Profile' }}
+                </h2>
+                <span class="text-sm sm:text-sm md:text-base text-gray-600 leading-relaxed block px-2 sm:px-0">
+                    {{ isset($companyDetail) ? 'Update or add more details about your company to receive better tender matches.' : 'Great news, your account has been created! Tell us a little bit more about yourself and your company to ensure you get the most out of our platform.' }}
+                </span>
             </div>
 
             @if ($errors->any())

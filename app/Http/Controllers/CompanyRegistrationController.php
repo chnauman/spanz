@@ -11,12 +11,12 @@ class CompanyRegistrationController extends Controller
 {
     public function show()
     {
-        // Check if user already has company details
-        if (Auth::check() && Auth::user()->companyDetail) {
-            return redirect()->route('dashboard')->with('info', 'You already have a company profile.');
-        }
-        
-        return view('company_register');
+        // User must be logged in (route already has auth middleware)
+        $companyDetail = Auth::check() ? Auth::user()->companyDetail : null;
+
+        // Always show the profile form so the user can
+        // create or update their business profile.
+        return view('company_register', compact('companyDetail'));
     }
 
     public function store(Request $request)
@@ -63,14 +63,10 @@ class CompanyRegistrationController extends Controller
             return redirect()->route('login')->with('error', 'Please login to register your company.');
         }
 
-        // Check if user already has company details
-        if (Auth::user()->companyDetail) {
-            return redirect()->route('dashboard')->with('info', 'You already have a company profile.');
-        }
-
-        // Create company details
-        $companyDetail = CompanyDetail::create([
-            'user_id' => Auth::id(),
+        // Create or update company details for this user
+        $companyDetail = CompanyDetail::updateOrCreate(
+            ['user_id' => Auth::id()],
+            [
             'company_name' => $request->company,
             'website' => $request->website ?: null,
             'description' => $request->objective,

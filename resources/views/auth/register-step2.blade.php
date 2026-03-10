@@ -21,10 +21,7 @@
                     </a>
                     <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-0.5 sm:mb-1">Verify Your Email</h2>
                     <p class="text-[11px] sm:text-xs md:text-sm text-gray-500 mb-1">Step 2 of 3</p>
-                    <span class="block text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
-                        Thank you for submitting your business information. We've sent a 6-digit verification code to
-                        <strong>{{ $progress->email }}</strong>. Please enter it below to continue to the subscription step.
-                    </span>
+                   
                 </div>
 
                 <!-- Progress Indicator – spaced below header -->
