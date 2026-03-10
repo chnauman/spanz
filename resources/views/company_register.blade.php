@@ -163,31 +163,66 @@
                     </div>
 
                     <div class="border-t border-gray-200 pt-4 mt-2">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-2">Select Your Business Industries &amp; Categories</h3>
-                    <p class="text-xs sm:text-sm text-gray-500 mb-3">Must select at least 1 main industry and 1 subcategory. Maximum 3 main industries and 6 subcategories for each.</p>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2">Select Your Business Industries &amp; Categories</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 mb-3">
+                            Must select at least 1 main industry and 1 subcategory. Maximum 3 main industries and 6 subcategories for each.
+                        </p>
 
-                    <div class="space-y-3">
-                        @for ($i = 1; $i <= 3; $i++)
+                        <div class="space-y-4">
+                            <!-- Primary Industry -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Select – DDM – Industry {{ $i }}</label>
-                                    <input type="text" name="main_industries[]" placeholder="Industry {{ $i }}"
-                                        class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Primary Industry</label>
+                                    <select id="industry_1" name="main_industries[1]"
+                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                            data-target="subcategories_1">
+                                        <option value="">Select an industry</option>
+                                    </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Select – DDM subcategory</label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        @for ($j = 1; $j <= 6; $j++)
-                                            <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
-                                                <input type="checkbox" name="subcategories[{{ $i }}][]" value="Sub-category {{ $j }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                                <span class="ml-2">Sub-category {{ $j }}</span>
-                                            </label>
-                                        @endfor
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Subcategories</label>
+                                    <div id="subcategories_1" class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
+                                        <!-- checkboxes injected by JS -->
                                     </div>
                                 </div>
                             </div>
-                        @endfor
-                    </div>
+
+                            <!-- Secondary Industry -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Secondary Industry (Optional)</label>
+                                    <select id="industry_2" name="main_industries[2]"
+                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                            data-target="subcategories_2">
+                                        <option value="">Select an industry</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Subcategories</label>
+                                    <div id="subcategories_2" class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
+                                        <!-- checkboxes injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Industry -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Additional Industry (Optional)</label>
+                                    <select id="industry_3" name="main_industries[3]"
+                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                            data-target="subcategories_3">
+                                        <option value="">Select an industry</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Subcategories</label>
+                                    <div id="subcategories_3" class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
+                                        <!-- checkboxes injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 </div>
@@ -355,6 +390,123 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Industry → subcategory dynamic mapping
+    const INDUSTRY_SUBCATEGORIES = {
+        'Technology / IT': [
+            'Software Development',
+            'Mobile App Development',
+            'Web Development',
+            'Cybersecurity',
+            'Cloud Services',
+            'IT Consulting'
+        ],
+        'Retail / E-commerce': [
+            'Online Store',
+            'Marketplace Seller',
+            'Wholesale',
+            'Dropshipping',
+            'Fashion Retail',
+            'Electronics Retail'
+        ],
+        'Marketing & Advertising': [
+            'Digital Marketing',
+            'SEO Services',
+            'Social Media Marketing',
+            'Branding & Design',
+            'Advertising Agency',
+            'Content Marketing'
+        ],
+        'Healthcare': [
+            'Hospitals & Clinics',
+            'Medical Devices',
+            'Pharmaceuticals',
+            'Telemedicine',
+            'Healthcare IT',
+            'Diagnostics'
+        ],
+        'Finance & Banking': [
+            'Retail Banking',
+            'Corporate Banking',
+            'Fintech',
+            'Insurance',
+            'Investment Services',
+            'Accounting & Audit'
+        ],
+        'Manufacturing': [
+            'Industrial Equipment',
+            'Automotive Components',
+            'Electronics Manufacturing',
+            'Contract Manufacturing',
+            'Packaging',
+            'Machinery'
+        ],
+        'Logistics & Transportation': [
+            'Freight Forwarding',
+            'Warehousing',
+            'Last-mile Delivery',
+            'Air Cargo',
+            'Sea Freight',
+            'Road Transport'
+        ]
+    };
+
+    const INDUSTRY_OPTIONS = Object.keys(INDUSTRY_SUBCATEGORIES);
+
+    function populateIndustrySelects() {
+        document.querySelectorAll('.industry-select').forEach(select => {
+            // Avoid duplicating options
+            if (select.dataset.initialized === '1') return;
+            INDUSTRY_OPTIONS.forEach(label => {
+                const opt = document.createElement('option');
+                opt.value = label;
+                opt.textContent = label;
+                select.appendChild(opt);
+            });
+            select.dataset.initialized = '1';
+        });
+    }
+
+    function renderSubcategories(selectEl) {
+        const targetId = selectEl.getAttribute('data-target');
+        const container = document.getElementById(targetId);
+        if (!container) return;
+
+        const industry = selectEl.value;
+        container.innerHTML = '';
+
+        if (!industry || !INDUSTRY_SUBCATEGORIES[industry]) {
+            return;
+        }
+
+        const subs = INDUSTRY_SUBCATEGORIES[industry].slice(0, 6); // max 6
+        subs.forEach((label, index) => {
+            const wrapper = document.createElement('label');
+            wrapper.className = 'inline-flex items-center text-xs sm:text-sm text-gray-700';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = `subcategories[${selectEl.id.split('_')[1]}][]`;
+            checkbox.value = label;
+            checkbox.className = 'h-4 w-4 text-blue-600 border-gray-300 rounded';
+
+            const span = document.createElement('span');
+            span.className = 'ml-2';
+            span.textContent = label;
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(span);
+            container.appendChild(wrapper);
+        });
+    }
+
+    populateIndustrySelects();
+
+    document.querySelectorAll('.industry-select').forEach(select => {
+        select.addEventListener('change', function () {
+            renderSubcategories(this);
+        });
+    });
 });
 </script>
 @endpush
