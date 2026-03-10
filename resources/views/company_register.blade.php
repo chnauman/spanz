@@ -47,6 +47,7 @@
                     <div>
                         <label for="first" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">First Name</label>
                         <input type="text" id="first" name="first" required
+                               value="{{ old('first', $firstName ?? '') }}"
                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('first') border-red-300 @enderror">
                         @error('first')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -55,6 +56,7 @@
                     <div>
                         <label for="last" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Last Name</label>
                         <input type="text" id="last" name="last" required
+                               value="{{ old('last', $lastName ?? '') }}"
                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('last') border-red-300 @enderror">
                         @error('last')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -65,6 +67,7 @@
                     <div>
                         <label for="company" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company Name</label>
                         <input type="text" id="company" name="company" required
+                               value="{{ old('company', $companyDetail->company_name ?? '') }}"
                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('company') border-red-300 @enderror">
                         @error('company')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -75,7 +78,7 @@
                         <select id="comp" name="comp"
                             class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                             <option value="">Select an industry</option>
-                            <option value="aerospace-defense">Aerospace & Defense</option>
+                            <option value="aerospace-defense" {{ old('comp', $companyDetail->comp ?? '') == 'aerospace-defense' ? 'selected' : '' }}>Aerospace & Defense</option>
                             <option value="agriculture">Agriculture & Food</option>
                             <option value="automotive">Automotive</option>
                             <option value="chemicals">Chemicals & Materials</option>
@@ -101,6 +104,7 @@
                     <div>
                         <label for="website" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company Website</label>
                         <input type="text" id="website" name="website"
+                               value="{{ old('website', $companyDetail->website ?? '') }}"
                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('website') border-red-300 @enderror">
                     @error('website')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -141,7 +145,8 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="headquarter_location" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Headquarter / Main Office Location</label>
-                        <input type="text" id="headquarter_location" name="headquarter_location"
+                                <input type="text" id="headquarter_location" name="headquarter_location"
+                                       value="{{ old('headquarter_location', $companyDetail->headquarter_location ?? '') }}"
                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
@@ -149,14 +154,14 @@
                         <select id="employees_range" name="employees_range"
                             class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                             <option value="">Select</option>
-                            <option value="1-10">1 - 10</option>
-                            <option value="11-30">11 - 30</option>
-                            <option value="31-50">31 - 50</option>
-                            <option value="50-100">50 - 100</option>
-                            <option value="100-500">100 - 500</option>
-                            <option value="500-1000">500 - 1000</option>
-                            <option value="1000-5000">1000 - 5000</option>
-                            <option value="5000+">Over 5000</option>
+                            <option value="1-10" {{ old('employees_range', $companyDetail->employees_range ?? '') == '1-10' ? 'selected' : '' }}>1 - 10</option>
+                            <option value="11-30" {{ old('employees_range', $companyDetail->employees_range ?? '') == '11-30' ? 'selected' : '' }}>11 - 30</option>
+                            <option value="31-50" {{ old('employees_range', $companyDetail->employees_range ?? '') == '31-50' ? 'selected' : '' }}>31 - 50</option>
+                            <option value="50-100" {{ old('employees_range', $companyDetail->employees_range ?? '') == '50-100' ? 'selected' : '' }}>50 - 100</option>
+                            <option value="100-500" {{ old('employees_range', $companyDetail->employees_range ?? '') == '100-500' ? 'selected' : '' }}>100 - 500</option>
+                            <option value="500-1000" {{ old('employees_range', $companyDetail->employees_range ?? '') == '500-1000' ? 'selected' : '' }}>500 - 1000</option>
+                            <option value="1000-5000" {{ old('employees_range', $companyDetail->employees_range ?? '') == '1000-5000' ? 'selected' : '' }}>1000 - 5000</option>
+                            <option value="5000+" {{ old('employees_range', $companyDetail->employees_range ?? '') == '5000+' ? 'selected' : '' }}>Over 5000</option>
                         </select>
                     </div>
                         </div>
@@ -251,28 +256,34 @@
                                     'Retailer',
                                 ];
                             @endphp
-                            @foreach ($companyTypes as $type)
-                                <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
-                                    <input type="checkbox" name="company_types[]" value="{{ $type }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <span class="ml-2">{{ $type }}</span>
-                                </label>
-                            @endforeach
+                                @foreach ($companyTypes as $type)
+                                    @php
+                                        $checkedCompanyTypes = old('company_types', $selectedCompanyTypes ?? []);
+                                    @endphp
+                                    <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                        <input type="checkbox" name="company_types[]" value="{{ $type }}"
+                                               class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                               {{ in_array($type, $checkedCompanyTypes) ? 'checked' : '' }}>
+                                        <span class="ml-2">{{ $type }}</span>
+                                    </label>
+                                @endforeach
                         </div>
                     </div>
                     <div>
                         <label for="yearly_revenue_range" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Yearly Revenue</label>
                         <select id="yearly_revenue_range" name="yearly_revenue_range"
                             class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            @php $yr = old('yearly_revenue_range', $companyDetail->yearly_revenue_range ?? ''); @endphp
                             <option value="">Select</option>
-                            <option value="&lt;1M">Less than 1,000,000 AUD</option>
-                            <option value="1M-5M">1,000,000 – 5,000,000 AUD</option>
-                            <option value="5M-10M">5,000,000 – 10,000,000 AUD</option>
-                            <option value="10M-30M">10,000,000 – 30,000,000 AUD</option>
-                            <option value="30M-50M">30,000,000 – 50,000,000 AUD</option>
-                            <option value="50M-100M">50,000,000 – 100,000,000 AUD</option>
-                            <option value="100M-500M">100,000,000 – 500,000,000 AUD</option>
-                            <option value="500M-1B">500,000,000 – 1 Billion AUD</option>
-                            <option value="&gt;1B">Over 1 Billion AUD</option>
+                            <option value="&lt;1M" {{ $yr == '&lt;1M' ? 'selected' : '' }}>Less than 1,000,000 AUD</option>
+                            <option value="1M-5M" {{ $yr == '1M-5M' ? 'selected' : '' }}>1,000,000 – 5,000,000 AUD</option>
+                            <option value="5M-10M" {{ $yr == '5M-10M' ? 'selected' : '' }}>5,000,000 – 10,000,000 AUD</option>
+                            <option value="10M-30M" {{ $yr == '10M-30M' ? 'selected' : '' }}>10,000,000 – 30,000,000 AUD</option>
+                            <option value="30M-50M" {{ $yr == '30M-50M' ? 'selected' : '' }}>30,000,000 – 50,000,000 AUD</option>
+                            <option value="50M-100M" {{ $yr == '50M-100M' ? 'selected' : '' }}>50,000,000 – 100,000,000 AUD</option>
+                            <option value="100M-500M" {{ $yr == '100M-500M' ? 'selected' : '' }}>100,000,000 – 500,000,000 AUD</option>
+                            <option value="500M-1B" {{ $yr == '500M-1B' ? 'selected' : '' }}>500,000,000 – 1 Billion AUD</option>
+                            <option value="&gt;1B" {{ $yr == '&gt;1B' ? 'selected' : '' }}>Over 1 Billion AUD</option>
                         </select>
                     </div>
                     </div>
@@ -280,15 +291,18 @@
                     <div>
                         <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Quality Certifications</p>
                         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                        @php
-                            $certs = ['ISO 9001', 'ISO 27001', 'ISO 42001', 'ISO 14001', 'ISO 50001', 'ISO 26000', 'ISO 45001', 'ISO 22001', 'ISO 17025'];
-                        @endphp
-                        @foreach ($certs as $cert)
-                            <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
-                                <input type="checkbox" name="quality_certifications[]" value="{{ $cert }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                <span class="ml-2">{{ $cert }}</span>
-                            </label>
-                        @endforeach
+                            @php
+                                $certs = ['ISO 9001', 'ISO 27001', 'ISO 42001', 'ISO 14001', 'ISO 50001', 'ISO 26000', 'ISO 45001', 'ISO 22001', 'ISO 17025'];
+                                $checkedCerts = old('quality_certifications', $selectedCertifications ?? []);
+                            @endphp
+                            @foreach ($certs as $cert)
+                                <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                    <input type="checkbox" name="quality_certifications[]" value="{{ $cert }}"
+                                           class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                           {{ in_array($cert, $checkedCerts) ? 'checked' : '' }}>
+                                    <span class="ml-2">{{ $cert }}</span>
+                                </label>
+                            @endforeach
                         </div>
                     </div>
 
@@ -296,12 +310,13 @@
                     <div>
                         <label for="brands_represented" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Brands Represented</label>
                         <textarea id="brands_represented" name="brands_represented" rows="3"
+                            >{{ old('brands_represented', $companyDetail->brands_represented ?? '') }}</textarea>
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
                     <div>
                         <label for="industry_awards" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Industry Awards &amp; Accreditations</label>
                         <textarea id="industry_awards" name="industry_awards" rows="3"
-                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                      class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('industry_awards', $companyDetail->industry_awards ?? '') }}</textarea>
                     </div>
                 </div>
 
@@ -309,20 +324,20 @@
                     <div>
                         <label for="industry_memberships" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Industry Memberships</label>
                         <textarea id="industry_memberships" name="industry_memberships" rows="3"
-                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('industry_memberships', $companyDetail->industry_memberships ?? '') }}</textarea>
                     </div>
                     <div>
                         <label for="unique_value_propositions" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Unique Value Propositions</label>
                         <textarea id="unique_value_propositions" name="unique_value_propositions" rows="3"
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Example – Faster lead times, customised solutions, same day delivery"></textarea>
+                                      placeholder="Example – Faster lead times, customised solutions, same day delivery">{{ old('unique_value_propositions', $companyDetail->unique_value_propositions ?? '') }}</textarea>
                     </div>
                 </div>
 
                 <div>
                     <label for="major_projects" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Major Projects (Present or Past)</label>
                     <textarea id="major_projects" name="major_projects" rows="3"
-                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('major_projects', $companyDetail->major_projects ?? '') }}</textarea>
                 </div>
 
                 <div class="border-t border-gray-200 pt-4 mt-2">
@@ -332,11 +347,14 @@
                             <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Delivery Capabilities</p>
                             @php
                                 $regions = ['Australia', 'MENA', 'Sub-Saharan Africa', 'New Zealand', 'Europe', 'APAC', 'North America', 'Latin America', 'Central Asia'];
+                                $checkedDelivery = old('delivery_capabilities', $selectedDeliveryRegions ?? []);
                             @endphp
                             <div class="grid grid-cols-1 gap-2">
                                 @foreach ($regions as $region)
                                     <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
-                                        <input type="checkbox" name="delivery_capabilities[]" value="{{ $region }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                        <input type="checkbox" name="delivery_capabilities[]" value="{{ $region }}"
+                                               class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                               {{ in_array($region, $checkedDelivery) ? 'checked' : '' }}>
                                         <span class="ml-2">{{ $region }}</span>
                                     </label>
                                 @endforeach
@@ -344,10 +362,15 @@
                         </div>
                         <div>
                             <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Reps &amp; Office Locations</p>
+                            @php
+                                $checkedOffices = old('office_locations', $selectedOfficeRegions ?? []);
+                            @endphp
                             <div class="grid grid-cols-1 gap-2">
                                 @foreach ($regions as $region)
                                     <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
-                                        <input type="checkbox" name="office_locations[]" value="{{ $region }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                        <input type="checkbox" name="office_locations[]" value="{{ $region }}"
+                                               class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                               {{ in_array($region, $checkedOffices) ? 'checked' : '' }}>
                                         <span class="ml-2">{{ $region }}</span>
                                     </label>
                                 @endforeach
@@ -502,7 +525,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     populateIndustrySelects();
 
+    // Pre-select industries and subcategories from saved data
+    const SELECTED_INDUSTRIES = @json($selectedIndustries ?? []);
+    const SELECTED_SUBCATEGORIES = @json($selectedSubcategories ?? []);
+
     document.querySelectorAll('.industry-select').forEach(select => {
+        const index = select.id.split('_')[1]; // 1,2,3
+        const preSelectedIndustry = SELECTED_INDUSTRIES[index] ?? null;
+        if (preSelectedIndustry) {
+            select.value = preSelectedIndustry;
+            renderSubcategories(select);
+
+            const savedSubsForIndustry = SELECTED_SUBCATEGORIES[index] ?? [];
+            if (Array.isArray(savedSubsForIndustry) && savedSubsForIndustry.length) {
+                // After checkboxes rendered, mark them checked
+                const container = document.getElementById(`subcategories_${index}`);
+                if (container) {
+                    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                        if (savedSubsForIndustry.includes(cb.value)) {
+                            cb.checked = true;
+                        }
+                    });
+                }
+            }
+        }
+
         select.addEventListener('change', function () {
             renderSubcategories(this);
         });

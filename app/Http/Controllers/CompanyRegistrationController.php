@@ -12,11 +12,59 @@ class CompanyRegistrationController extends Controller
     public function show()
     {
         // User must be logged in (route already has auth middleware)
-        $companyDetail = Auth::check() ? Auth::user()->companyDetail : null;
+        $user = Auth::user();
+        $companyDetail = $user?->companyDetail;
 
-        // Always show the profile form so the user can
-        // create or update their business profile.
-        return view('company_register', compact('companyDetail'));
+        // Derive first / last name from user's name for convenience
+        $firstName = '';
+        $lastName = '';
+        if ($user && $user->name) {
+            $parts = explode(' ', $user->name, 2);
+            $firstName = $parts[0] ?? '';
+            $lastName = $parts[1] ?? '';
+        }
+
+        // Decode JSON fields into arrays for easier use in the view
+        $selectedIndustries = [];
+        $selectedSubcategories = [];
+        $selectedCompanyTypes = [];
+        $selectedCertifications = [];
+        $selectedDeliveryRegions = [];
+        $selectedOfficeRegions = [];
+
+        if ($companyDetail) {
+            if (!empty($companyDetail->main_industries)) {
+                $selectedIndustries = json_decode($companyDetail->main_industries, true) ?: [];
+            }
+            if (!empty($companyDetail->subcategories_by_industry)) {
+                $selectedSubcategories = json_decode($companyDetail->subcategories_by_industry, true) ?: [];
+            }
+            if (!empty($companyDetail->company_types)) {
+                $selectedCompanyTypes = json_decode($companyDetail->company_types, true) ?: [];
+            }
+            if (!empty($companyDetail->quality_certifications)) {
+                $selectedCertifications = json_decode($companyDetail->quality_certifications, true) ?: [];
+            }
+            if (!empty($companyDetail->delivery_capabilities)) {
+                $selectedDeliveryRegions = json_decode($companyDetail->delivery_capabilities, true) ?: [];
+            }
+            if (!empty($companyDetail->office_locations)) {
+                $selectedOfficeRegions = json_decode($companyDetail->office_locations, true) ?: [];
+            }
+        }
+
+        // Always show the profile form so the user can create or update their business profile.
+        return view('company_register', compact(
+            'companyDetail',
+            'firstName',
+            'lastName',
+            'selectedIndustries',
+            'selectedSubcategories',
+            'selectedCompanyTypes',
+            'selectedCertifications',
+            'selectedDeliveryRegions',
+            'selectedOfficeRegions'
+        ));
     }
 
     public function store(Request $request)
@@ -100,7 +148,8 @@ class CompanyRegistrationController extends Controller
             'name' => $request->first . ' ' . $request->last,
         ]);
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Company profile created successfully! You can now post tenders and participate in the platform.');
+        // Stay on the same page and show a success message
+        return redirect()->route('company.register')
+            ->with('success', 'Your business profile has been saved successfully.');
     }
 }

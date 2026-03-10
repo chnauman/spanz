@@ -550,7 +550,7 @@
                     </div>
                     <div class="bg-white rounded-lg p-6 shadow">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I change my plan later?</h3>
-                        <p class="text-gray-600">Yes, you can upgrade or downgrade your subscription at any time. Changes will be reflected in your next billing cycle.</p>
+                        <p class="text-gray-600">Yes, you can upgrade or downgrade your subscription at any time.</p>
                     </div>
                     <div class="bg-white rounded-lg p-6 shadow">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there a free trial?</h3>
