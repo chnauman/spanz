@@ -134,6 +134,187 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <!-- Additional company information from client requirements -->
+                <hr class="my-4 sm:my-6">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Company Details</h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label for="headquarter_location" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Headquarter / Main Office Location</label>
+                        <input type="text" id="headquarter_location" name="headquarter_location"
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+                    <div>
+                        <label for="employees_range" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Number of Employees</label>
+                        <select id="employees_range" name="employees_range"
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                            <option value="">Select</option>
+                            <option value="1-10">1 - 10</option>
+                            <option value="11-30">11 - 30</option>
+                            <option value="31-50">31 - 50</option>
+                            <option value="50-100">50 - 100</option>
+                            <option value="100-500">100 - 500</option>
+                            <option value="500-1000">500 - 1000</option>
+                            <option value="1000-5000">1000 - 5000</option>
+                            <option value="5000+">Over 5000</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Select Your Business Industries &amp; Categories</h3>
+                    <p class="text-xs sm:text-sm text-gray-500 mb-3">Must select at least 1 main industry and 1 subcategory. Maximum 3 main industries and 6 subcategories for each.</p>
+
+                    <div class="space-y-3">
+                        @for ($i = 1; $i <= 3; $i++)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Select – DDM – Industry {{ $i }}</label>
+                                    <input type="text" name="main_industries[]" placeholder="Industry {{ $i }}"
+                                        class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Select – DDM subcategory</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        @for ($j = 1; $j <= 6; $j++)
+                                            <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                                <input type="checkbox" name="subcategories[{{ $i }}][]" value="Sub-category {{ $j }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                                <span class="ml-2">Sub-category {{ $j }}</span>
+                                            </label>
+                                        @endfor
+                                    </div>
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
+                </div>
+
+                <hr class="my-4 sm:my-6">
+
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Strengthen Your Company Profile</h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Company Type</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            @php
+                                $companyTypes = [
+                                    'OEM Manufacturer',
+                                    'Systems Integrator',
+                                    'Wholesaler / Distributor',
+                                    'Custom Manufacturer',
+                                    'Services Company',
+                                    'Re Manufacturer',
+                                    'Manufacturer\'s Rep',
+                                    'Trading Company',
+                                    'Retailer',
+                                ];
+                            @endphp
+                            @foreach ($companyTypes as $type)
+                                <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                    <input type="checkbox" name="company_types[]" value="{{ $type }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <span class="ml-2">{{ $type }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div>
+                        <label for="yearly_revenue_range" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Yearly Revenue</label>
+                        <select id="yearly_revenue_range" name="yearly_revenue_range"
+                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                            <option value="">Select</option>
+                            <option value="&lt;1M">Less than 1,000,000 AUD</option>
+                            <option value="1M-5M">1,000,000 – 5,000,000 AUD</option>
+                            <option value="5M-10M">5,000,000 – 10,000,000 AUD</option>
+                            <option value="10M-30M">10,000,000 – 30,000,000 AUD</option>
+                            <option value="30M-50M">30,000,000 – 50,000,000 AUD</option>
+                            <option value="50M-100M">50,000,000 – 100,000,000 AUD</option>
+                            <option value="100M-500M">100,000,000 – 500,000,000 AUD</option>
+                            <option value="500M-1B">500,000,000 – 1 Billion AUD</option>
+                            <option value="&gt;1B">Over 1 Billion AUD</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6">
+                    <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Quality Certifications</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        @php
+                            $certs = ['ISO 9001', 'ISO 27001', 'ISO 42001', 'ISO 14001', 'ISO 50001', 'ISO 26000', 'ISO 45001', 'ISO 22001', 'ISO 17025'];
+                        @endphp
+                        @foreach ($certs as $cert)
+                            <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                <input type="checkbox" name="quality_certifications[]" value="{{ $cert }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                <span class="ml-2">{{ $cert }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label for="brands_represented" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">List Brands Represented</label>
+                        <textarea id="brands_represented" name="brands_represented" rows="3"
+                            class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                    </div>
+                    <div>
+                        <label for="industry_awards" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">List Industry Awards &amp; Accreditations</label>
+                        <textarea id="industry_awards" name="industry_awards" rows="3"
+                            class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label for="industry_memberships" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">List Industry Memberships</label>
+                        <textarea id="industry_memberships" name="industry_memberships" rows="3"
+                            class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                    </div>
+                    <div>
+                        <label for="unique_value_propositions" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">List Unique Value Propositions</label>
+                        <textarea id="unique_value_propositions" name="unique_value_propositions" rows="3"
+                            class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            placeholder="Example – Faster lead times, customised solutions, same day delivery"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6">
+                    <label for="major_projects" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">List Major Projects (Present or Past)</label>
+                    <textarea id="major_projects" name="major_projects" rows="3"
+                        class="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                </div>
+
+                <div class="mt-4 sm:mt-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Elevate your Market Presence (Free)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div>
+                            <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Delivery Capabilities</p>
+                            @php
+                                $regions = ['Australia', 'MENA', 'Sub-Saharan Africa', 'New Zealand', 'Europe', 'APAC', 'North America', 'Latin America', 'Central Asia'];
+                            @endphp
+                            <div class="grid grid-cols-1 gap-2">
+                                @foreach ($regions as $region)
+                                    <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                        <input type="checkbox" name="delivery_capabilities[]" value="{{ $region }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                        <span class="ml-2">{{ $region }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Reps &amp; Office Locations</p>
+                            <div class="grid grid-cols-1 gap-2">
+                                @foreach ($regions as $region)
+                                    <label class="inline-flex items-center text-xs sm:text-sm text-gray-700">
+                                        <input type="checkbox" name="office_locations[]" value="{{ $region }}" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                        <span class="ml-2">{{ $region }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <button type="submit" class="w-full mt-6 sm:mt-6 bg-[#0D6AED] text-white py-3 sm:py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium text-base sm:text-base">
                     Complete Profile
                 </button>

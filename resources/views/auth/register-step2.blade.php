@@ -19,9 +19,11 @@
                     <a href="{{ route('home') }}" class="block">
                         <h1 class="text-xl sm:text-2xl md:text-3xl py-2 font-bold text-[#0D6AED] mb-1 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
                     </a>
-                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-1 sm:mb-2">Verify Your Email</h2>
-                    <span class="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
-                        We've sent a 6-digit code to <strong>{{ $progress->email }}</strong>
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-0.5 sm:mb-1">Verify Your Email</h2>
+                    <p class="text-[11px] sm:text-xs md:text-sm text-gray-500 mb-1">Step 2 of 3</p>
+                    <span class="block text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
+                        Thank you for submitting your business information. We've sent a 6-digit verification code to
+                        <strong>{{ $progress->email }}</strong>. Please enter it below to continue to the subscription step.
                     </span>
                 </div>
 
@@ -58,7 +60,7 @@
                 @endif
 
                 @if (session('success'))
-                    <div class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                    <div class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
                         {{ session('success') }}
                     </div>
                 @endif

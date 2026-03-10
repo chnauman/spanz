@@ -460,8 +460,11 @@ class MultiStepRegistrationController extends Controller
         // Clean up registration progress (optional - you might want to keep it for records)
         // $progress->delete();
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Registration completed successfully! Your subscription request is pending admin approval. You have received 2 free credits to explore the platform.');
+        // After subscription selection, send the user to the optional
+        // company profile completion page. They can complete it now
+        // or skip and do it later from their dashboard sidebar.
+        return redirect()->route('company.register')
+            ->with('success', 'Registration completed successfully! Your subscription request is pending admin approval. You have received 2 free credits to explore the platform. You can now strengthen your business profile to get better matches or skip and do it later.');
     }
 
     /**

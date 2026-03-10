@@ -72,6 +72,10 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Post Tender
             </a>
+            <a href="{{ route('company.register') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Strengthen Business Profile
+            </a>
             <a href="{{ route('tenders.my-tenders') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 My Tenders
