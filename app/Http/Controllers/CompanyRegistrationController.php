@@ -148,7 +148,15 @@ class CompanyRegistrationController extends Controller
             'name' => $request->first . ' ' . $request->last,
         ]);
 
-        // Stay on the same page and show a success message
+        // For AJAX requests, return JSON so the frontend can show a toast
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Your business profile has been saved successfully.',
+            ]);
+        }
+
+        // Fallback for normal form posts – stay on page with flash message
         return redirect()->route('company.register')
             ->with('success', 'Your business profile has been saved successfully.');
     }

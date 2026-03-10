@@ -33,7 +33,11 @@
             </div>
         @endif
         
-        <form method="POST" action="{{ route('company.register.store') }}" class="space-y-6">
+        <div id="profile-toast" class="hidden fixed bottom-6 right-6 z-50 max-w-sm px-4 py-3 rounded-lg shadow-lg bg-green-600 text-white text-sm">
+            <span id="profile-toast-message">Saved successfully.</span>
+        </div>
+
+        <form id="company-profile-form" method="POST" action="{{ route('company.register.store') }}" class="space-y-6">
                 @csrf
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left card -->
@@ -307,18 +311,17 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="brands_represented" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Brands Represented</label>
-                        <textarea id="brands_represented" name="brands_represented" rows="3"
-                            >{{ old('brands_represented', $companyDetail->brands_represented ?? '') }}</textarea>
-                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                    <div>
-                        <label for="industry_awards" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Industry Awards &amp; Accreditations</label>
-                        <textarea id="industry_awards" name="industry_awards" rows="3"
+                        <div>
+                            <label for="brands_represented" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Brands Represented</label>
+                            <textarea id="brands_represented" name="brands_represented" rows="3"
+                                      class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('brands_represented', $companyDetail->brands_represented ?? '') }}</textarea>
+                        </div>
+                        <div>
+                            <label for="industry_awards" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Industry Awards &amp; Accreditations</label>
+                            <textarea id="industry_awards" name="industry_awards" rows="3"
                                       class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('industry_awards', $companyDetail->industry_awards ?? '') }}</textarea>
+                        </div>
                     </div>
-                </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -554,6 +557,53 @@ document.addEventListener('DOMContentLoaded', function() {
             renderSubcategories(this);
         });
     });
+
+    // AJAX submit for realtime success toast (no full page refresh)
+    const form = document.getElementById('company-profile-form');
+    const toast = document.getElementById('profile-toast');
+    const toastMsg = document.getElementById('profile-toast-message');
+
+    if (form && toast && toastMsg) {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    // If validation fails, fallback to normal submit so errors show
+                    form.submit();
+                    return;
+                }
+
+                const data = await response.json();
+                if (data && data.success) {
+                    toastMsg.textContent = data.message || 'Your business profile has been saved successfully.';
+                    toast.classList.remove('hidden', 'opacity-0');
+                    toast.classList.add('flex');
+
+                    setTimeout(() => {
+                        toast.classList.add('opacity-0');
+                        setTimeout(() => {
+                            toast.classList.add('hidden');
+                            toast.classList.remove('flex');
+                        }, 300);
+                    }, 2500);
+                }
+            } catch (err) {
+                // On error, fall back to normal behaviour so user isn't blocked
+                form.submit();
+            }
+        });
+    }
 });
 </script>
 @endpush
