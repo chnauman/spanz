@@ -175,7 +175,7 @@
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#0D6AED] bg-opacity-10 text-[#0D6AED] border border-[#0D6AED] border-opacity-30">
                                                     {{ $request->currentSubscription->name }}
                                                 </span>
-                                                <span class="text-sm text-gray-500">${{ number_format((float)$request->currentSubscription->price, 2) }}/{{ $request->currentSubscription->billing_period }}</span>
+                                                <span class="text-sm text-gray-500">A${{ number_format((float)$request->currentSubscription->price, 2) }}/{{ $request->currentSubscription->billing_period }}</span>
                                             </div>
                                             <p class="text-sm text-gray-600 mt-1">
                                                 Requested: {{ $request->requested_at ? \Carbon\Carbon::parse($request->requested_at)->format('M d, Y H:i') : 'N/A' }}

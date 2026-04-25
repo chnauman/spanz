@@ -5,7 +5,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-        <label for="budget_min" class="block text-sm font-medium text-gray-700 mb-2">Budget Min (USD)</label>
+        <label for="budget_min" class="block text-sm font-medium text-gray-700 mb-2">Budget Min (AUD)</label>
         <input
             type="number"
             step="0.01"
@@ -20,7 +20,7 @@
     </div>
 
     <div>
-        <label for="budget_max" class="block text-sm font-medium text-gray-700 mb-2">Budget Max (USD) (optional)</label>
+        <label for="budget_max" class="block text-sm font-medium text-gray-700 mb-2">Budget Max (AUD) (optional)</label>
         <input
             type="number"
             step="0.01"

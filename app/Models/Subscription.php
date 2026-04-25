@@ -9,19 +9,18 @@ class Subscription extends Model
     protected $fillable = [
         'name',
         'description',
+        'features',
         'price',
         'credits_per_month',
         'credit_cost_per_view',
         'is_active',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'price' => 'decimal:2',
-            'is_active' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'price' => 'decimal:2',
+        'features' => 'array',
+        'is_active' => 'boolean',
+    ];
 
     public function userSubscriptions()
     {

@@ -40,10 +40,12 @@
             @endif
 
             <!-- Subscription Plans -->
+            @include('components.pricing-intro-banner')
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($subscriptions as $subscription)
-                <div class="border border-gray-200 rounded-lg p-6 {{ $subscription->name === 'Enterprise' ? 'border-purple-300 bg-purple-50' : '' }} hover:shadow-lg transition-shadow">
-                    @if($subscription->name === 'Enterprise')
+                <div class="border border-gray-200 rounded-lg p-6 {{ $subscription->name === 'Professional' ? 'border-purple-300 bg-purple-50' : '' }} hover:shadow-lg transition-shadow">
+                    @if($subscription->name === 'Professional')
                     <div class="text-center mb-4">
                         <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
                     </div>
@@ -51,10 +53,10 @@
                     
                     <div class="text-center mb-6">
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                        <div class="text-4xl font-bold {{ $subscription->name === 'Enterprise' ? 'text-purple-600' : 'text-blue-600' }} mb-2">
-                            ${{ number_format($subscription->price, 2) }}
+                        <div class="text-4xl font-bold {{ $subscription->name === 'Professional' ? 'text-purple-600' : 'text-blue-600' }} mb-2">
+                            AU${{ number_format((float) $subscription->price, 0) }}
                         </div>
-                        <div class="text-gray-500">per month</div>
+                        <div class="text-gray-500">/mo.</div>
                     </div>
                     
                     <div class="mb-6">
@@ -64,18 +66,16 @@
                         </div>
                         
                         @if($subscription->description)
-                        <p class="text-sm text-gray-600">{{ $subscription->description }}</p>
+                            <p class="text-sm text-gray-600">{{ $subscription->description }}</p>
                         @endif
                         
-                        <ul class="text-sm text-gray-600 space-y-2 mt-4">
-                            <li>• View detailed tender information</li>
-                            <li>• Access to premium features</li>
-                            @if($subscription->name === 'Enterprise')
-                            <li>• Advanced analytics</li>
-                            <li>• Custom integrations</li>
-                            @endif
-                            <li>• Priority support</li>
-                        </ul>
+                        @if(!empty($subscription->features))
+                            <ul class="text-sm text-gray-600 space-y-2 mt-4 text-left">
+                                @foreach($subscription->features as $feature)
+                                    <li>• {{ $feature }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
                     
                     <div class="text-center">
@@ -98,7 +98,7 @@
                             <form action="{{ route('subscription-requests.request', $subscription) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" 
-                                        class="w-full {{ $subscription->name === 'Enterprise' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
+                                        class="w-full {{ $subscription->name === 'Professional' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
                                     Request Subscription
                                 </button>
                             </form>
@@ -107,6 +107,8 @@
                 </div>
                 @endforeach
             </div>
+
+            @include('components.pricing-notes-footer')
             
             <div class="mt-8 text-center">
                 <p class="text-sm text-gray-500">

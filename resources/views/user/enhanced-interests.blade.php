@@ -132,7 +132,7 @@
                                             data-category-name="{{ strtolower($parentCategory->name) }}"
                                             data-category-description="{{ strtolower($parentCategory->description ?? '') }}"
                                             data-is-parent="true"
-                                            onclick="toggleCategory({{ $parentCategory->id }}, '{{ addslashes($parentCategory->name) }}', null, null, 'USD')">
+                                            onclick="toggleCategory({{ $parentCategory->id }}, '{{ addslashes($parentCategory->name) }}', null, null, 'AUD')">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-bold text-gray-900">{{ $parentCategory->name }}</div>
                                             </td>
@@ -178,7 +178,7 @@
                                                     data-category-name="{{ strtolower($subCategory->name) }}"
                                                     data-category-description="{{ strtolower($subCategory->description ?? '') }}"
                                                     data-is-parent="false"
-                                                    onclick="toggleCategory({{ $subCategory->id }}, '{{ addslashes($subCategory->name) }}', null, null, 'USD')">
+                                                    onclick="toggleCategory({{ $subCategory->id }}, '{{ addslashes($subCategory->name) }}', null, null, 'AUD')">
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <div class="text-sm font-normal text-gray-700 pl-8">
                                                             {{ $subCategory->name }}
@@ -395,7 +395,7 @@
                                 <input type="number" id="budgetMin" placeholder="0.00" step="0.01" min="0"
                                        class="w-full border-2 border-gray-200 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#092C48] transition-all duration-200 text-sm font-medium">
                                 <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 text-xs font-medium" id="minCurrency">USD</span>
+                                    <span class="text-gray-500 text-xs font-medium" id="minCurrency">AUD</span>
                                 </div>
                             </div>
                         </div>
@@ -408,7 +408,7 @@
                                 <input type="number" id="budgetMax" placeholder="1000000.00" step="0.01" min="0"
                                        class="w-full border-2 border-gray-200 rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#092C48] transition-all duration-200 text-sm font-medium">
                                 <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 text-xs font-medium" id="maxCurrency">USD</span>
+                                    <span class="text-gray-500 text-xs font-medium" id="maxCurrency">AUD</span>
                                 </div>
                             </div>
                         </div>
@@ -1372,8 +1372,8 @@ function openBudgetModal(categoryId, categoryName, minBudget, maxBudget, currenc
     if (budgetMinElement) budgetMinElement.value = minBudget || '';
     if (budgetMaxElement) budgetMaxElement.value = maxBudget || '';
 
-    // Update currency display in input fields (always USD)
-    updateCurrencyDisplay('USD');
+    // Update currency display in input fields (always AUD)
+    updateCurrencyDisplay('AUD');
 
     // Initialize radio buttons and fields
     initializeBudgetFields();
@@ -1449,7 +1449,7 @@ function saveBudgetForCategory() {
     const budgetType = document.querySelector('input[name="budgetType"]:checked').value;
     const minBudget = document.getElementById('budgetMin').value;
     const maxBudget = document.getElementById('budgetMax').value;
-    const currency = 'USD'; // Default currency
+    const currency = 'AUD'; // Default currency
 
     console.log('Saving budget:', {
         categoryId: currentCategoryId,
@@ -2003,7 +2003,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (categoriesPaginationControls) categoriesPaginationControls.style.display = 'none';
     if (summaryPaginationControls) summaryPaginationControls.style.display = 'flex';
 
-    // Currency is now fixed to USD, no listener needed
+    // Currency is now fixed to AUD, no listener needed
 
     // Add click outside to close modal
     const modal = document.getElementById('budgetModal');

@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -31,7 +33,7 @@ class ProductController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'max:10'],
+            'currency' => ['nullable', 'string', 'in:AUD'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'status' => ['required', 'in:draft,active,archived'],
             'featured' => ['sometimes', 'boolean'],
@@ -52,6 +54,23 @@ class ProductController extends Controller
             'gallery_images.*.max' => 'Each gallery image may not be greater than 5MB.',
         ]);
 
+        $hasImageColumn = Schema::hasColumn('products', 'image');
+        $hasImagesColumn = Schema::hasColumn('products', 'images');
+
+        if ($request->hasFile('image') && !$hasImageColumn) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'The products.image column is missing. Please run: php artisan migrate');
+        }
+
+        if ($request->hasFile('gallery_images') && !$hasImagesColumn) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'The products.images column is missing. Please run: php artisan migrate');
+        }
+
+        $storedPaths = [];
+
         try {
             $slug = Str::slug($validated['title']);
             if (Product::where('slug', $slug)->exists()) {
@@ -63,6 +82,7 @@ class ProductController extends Controller
                 $image = $request->file('image');
                 $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 $imagePath = $image->storeAs('products', $imageName, 'public');
+                $storedPaths[] = $imagePath;
             }
 
             $galleryPaths = [];
@@ -70,24 +90,36 @@ class ProductController extends Controller
                 foreach ((array) $request->file('gallery_images') as $img) {
                     if (!$img) continue;
                     $imageName = time() . '_' . Str::random(10) . '.' . $img->getClientOriginalExtension();
-                    $galleryPaths[] = $img->storeAs('products/gallery', $imageName, 'public');
+                    $path = $img->storeAs('products/gallery', $imageName, 'public');
+                    $galleryPaths[] = $path;
+                    $storedPaths[] = $path;
                 }
             }
 
-            $product = Product::create([
-                'title' => $validated['title'],
-                'slug' => $slug,
-                'description' => $validated['description'] ?? null,
-                'image' => $imagePath,
-                'images' => !empty($galleryPaths) ? $galleryPaths : null,
-                'price' => $validated['price'] ?? null,
-                'currency' => $validated['currency'] ?? 'USD',
-                'category_id' => $validated['category_id'] ?? null,
-                'status' => $validated['status'],
-                'featured' => (bool)($validated['featured'] ?? false),
-                'user_id' => auth()->id(),
-                'published_at' => $validated['status'] === 'active' ? now() : null,
-            ]);
+            DB::transaction(function () use ($validated, $slug, $imagePath, $galleryPaths, $hasImageColumn, $hasImagesColumn) {
+                $payload = [
+                    'title' => $validated['title'],
+                    'slug' => $slug,
+                    'description' => $validated['description'] ?? null,
+                    'price' => $validated['price'] ?? null,
+                    'currency' => $validated['currency'] ?? 'AUD',
+                    'category_id' => $validated['category_id'] ?? null,
+                    'status' => $validated['status'],
+                    'featured' => (bool)($validated['featured'] ?? false),
+                    'user_id' => auth()->id(),
+                    'published_at' => $validated['status'] === 'active' ? now() : null,
+                ];
+
+                if ($hasImageColumn) {
+                    $payload['image'] = $imagePath;
+                }
+
+                if ($hasImagesColumn) {
+                    $payload['images'] = !empty($galleryPaths) ? $galleryPaths : null;
+                }
+
+                Product::create($payload);
+            });
 
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Illuminate\Database\QueryException $e) {
@@ -102,6 +134,11 @@ class ProductController extends Controller
                 ->withInput()
                 ->with('error', 'Database error occurred. Please check the logs or contact support.');
         } catch (\Exception $e) {
+            foreach ($storedPaths as $path) {
+                if ($path && Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
             \Log::error('Product creation error: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
@@ -121,7 +158,7 @@ class ProductController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['nullable', 'numeric', 'min:0'],
-            'currency' => ['nullable', 'string', 'max:10'],
+            'currency' => ['nullable', 'string', 'in:AUD'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'status' => ['required', 'in:draft,active,archived'],
             'featured' => ['sometimes', 'boolean'],
@@ -210,7 +247,7 @@ class ProductController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'price' => $validated['price'] ?? null,
-            'currency' => $validated['currency'] ?? 'USD',
+            'currency' => $validated['currency'] ?? 'AUD',
             'category_id' => $validated['category_id'] ?? null,
             'status' => $validated['status'],
             'featured' => (bool)($validated['featured'] ?? false),

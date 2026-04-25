@@ -291,7 +291,7 @@
                                 <div class="plan-top">
                                     <div class="plan-title">{{ $subscription->name }}</div>
                                     <div class="plan-price">
-                                        <span class="amount">${{ number_format($subscription->price, 0) }}</span>
+                                        <span class="amount">A${{ number_format($subscription->price, 0) }}</span>
                                         @if($subscription->price > 0)
                                             <span class="per">/month</span>
                                         @endif

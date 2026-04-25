@@ -9,6 +9,49 @@
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        :root {
+            --thomas-navy: #032747;
+            --thomas-blue: #0d6efd;
+            --thomas-bg: #f3f6fa;
+            --thomas-border: #d8e2ee;
+            --thomas-text: #15314c;
+        }
+
+        body.thomas-product-show {
+            background: var(--thomas-bg);
+            color: var(--thomas-text);
+        }
+
+        .thomas-topbar {
+            background: linear-gradient(180deg, #032747 0%, #0a3255 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .thomas-content-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .thomas-panel {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(3, 39, 71, 0.06);
+        }
+
+        .thomas-title-strip {
+            background: linear-gradient(180deg, #052d50 0%, #0d3a63 100%);
+            border-radius: 6px;
+        }
+
+        .thomas-cta {
+            background: var(--thomas-blue);
+        }
+
+        .thomas-cta:hover {
+            background: #0b5fd7;
+        }
+
         /* Fix dropdown hover behavior */
         .dropdown-group {
             position: relative;
@@ -83,13 +126,15 @@
     </style>
 </head>
 
-<body>
-    <div class="bg-[#092C48] py-2">
+<body class="thomas-product-show">
+    <div class="thomas-topbar py-2">
         <nav>
             <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
-                        <a href="{{ route('home') }}" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
+                        <a href="{{ route('home') }}" class="block">
+                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                        </a>
                     </div>
 
                     <div class="hidden md:flex space-x-6">
@@ -183,12 +228,12 @@
         </nav>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <div class="border border-gray-300 rounded-sm p-3 sm:p-4 lg:p-6">
+    <div class="thomas-content-wrap max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div class="thomas-panel p-3 sm:p-4 lg:p-6">
             <div>
                 <h3 class="text-lg sm:text-xl font-semibold">Product Overview</h3>
             </div>
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
+            <div class="thomas-title-strip flex flex-col sm:flex-row sm:items-center sm:justify-between text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <h1 class="text-xl sm:text-2xl font-bold">{{ $product->title }}</h1>
                 <span class="text-sm sm:text-base">Category: {{ optional($product->category)->name ?? 'Uncategorized' }}</span>
             </div>
@@ -237,7 +282,7 @@
                             <img id="main-product-image"
                                  src="{{ $product->image ? asset('storage/' . $product->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2218%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E' }}" 
                                  alt="{{ $product->title }}" 
-                                 class="w-full h-auto max-h-80 object-contain rounded-lg border-2 border-gray-200 shadow-sm bg-white" 
+                                class="w-full h-auto max-h-80 object-contain rounded-lg border border-gray-200 shadow-sm bg-white" 
                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2218%22 dy=%2210.5%22 font-weight=%22bold%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';" />
 
                             @if(count($allImages) > 1)
@@ -262,7 +307,7 @@
             <!-- Purchase Button Section -->
             <div class="mt-8 flex justify-end">
             <a onclick="openPurchaseModal({{ $product->id }}, '{{ $product->title }}')"
-                    class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
+                    class="thomas-cta px-6 py-3 text-white rounded-sm text-base font-medium">
                         Purchase
     </a>
 
@@ -332,13 +377,13 @@
                                   placeholder="Any additional information about your purchase request..."></textarea>
                     </div>
 
-                    <div class="flex gap-3">
+                <div class="flex gap-3">
                         <button type="button" id="cancel-purchase"
                                 class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
                             Cancel
                         </button>
                         <button type="submit" id="submit-purchase"
-                                class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
+                                class="thomas-cta px-6 py-3 text-white rounded-sm text-base font-medium">
                             Submit Request
                         </button>
                     </div>

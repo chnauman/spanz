@@ -10,7 +10,7 @@
         @endif
     </div>
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <p class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-semibold leading-tight">
+        <p class="text-3xl font-semibold leading-tight tracking-tight">
             @if(request('search'))
                 Search Results for "{{ request('search') }}"
             @else
@@ -26,10 +26,43 @@
 </div>
 
 @forelse($tenders as $tender)
-    <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
+    <div class="thomas-result-card p-4 sm:p-5 {{ !$loop->first ? 'mt-5' : '' }}">
         @php($typeKey = is_string($tender->request_type) ? strtolower($tender->request_type) : null)
         @php($typeLabel = in_array($typeKey, ['rfq','rft','rfp','eoi'], true) ? strtoupper($typeKey) : null)
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-gray-600 mb-2">
+        <div class="flex items-start justify-between gap-4 mb-2">
+            <div class="min-w-0 flex-1">
+                <a href="{{ route('tenders.detail', $tender->id) }}" class="block text-[#0f3351] font-semibold text-[2rem] leading-none hover:text-blue-600 truncate">{{ $tender->title }}</a>
+                <p class="text-sm text-[#1f3f5f] mt-1">{{ $tender->user->name ?? 'Tender Owner' }}</p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
+                @auth
+                    <button type="button" class="thomas-action-link" onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        <span id="save-text-{{ $tender->id }}">Save</span>
+                    </button>
+                @else
+                    <button type="button" class="thomas-action-link disabled" disabled id="save-btn-{{ $tender->id }}">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        <span id="save-text-{{ $tender->id }}">Save</span>
+                    </button>
+                @endauth
+                <button type="button" class="thomas-action-link">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 8.25v7.5M8.25 12h7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>Select</span>
+                </button>
+                <a href="{{ route('tenders.detail', $tender->id) }}" class="thomas-primary-btn inline-flex items-center gap-2">
+                    View Details
+                </a>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mb-2">
             @if($typeLabel)
                 <span class="font-semibold text-[#092C48]">{{ $typeLabel }}</span>
                 <span class="text-gray-300">|</span>
@@ -51,25 +84,9 @@
                 </span>
             @endif
         </div>
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-            <a href="{{ route('tenders.detail', $tender->id) }}" class="text-[#092C48] font-semibold text-lg sm:text-xl hover:text-blue-600">{{ $tender->title }}</a>
-            <div class="flex gap-4 sm:gap-6">
-                @auth
-                    <div class="flex items-center gap-2 cursor-pointer" onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}">
-                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6ZM8.25 6.75V16.6838L12 14.4615L15.75 16.6838V6.75H8.25Z"
-                                fill="#080341" />
-                        </svg>
-                        <p class="text-[#092C48] text-sm sm:text-lg" id="save-text-{{ $tender->id }}">Save</p>
-                    </div>
-                @endauth
-            </div>
-        </div>
-        <div class="flex items-center gap-2 my-3">
+        <div class="flex items-center gap-2 my-2">
             <img src="{{ asset('spanz-img/location.svg') }}" alt="Location" class="w-4 sm:w-5">
-            <span class="text-[#092C48] font-semibold text-sm sm:text-base">{{ $tender->location ?? 'Location not specified' }}</span>
+            <span class="text-[#092C48] text-base">{{ $tender->location ?? 'Location not specified' }}</span>
         </div>
         <div class="flex flex-col lg:flex-row gap-4">
             <div class="flex-1 lg:w-[75%]">
@@ -80,7 +97,7 @@
                     </span>
                 </div>
                 <div>
-                    <p class="text-[#092C48] text-sm sm:text-base leading-relaxed">
+                    <p class="text-[#092C48] text-[1.07rem] leading-relaxed">
                         {{ Str::limit($tender->description, 200) }}
                     </p>
                 </div>
@@ -119,10 +136,10 @@
 
                 @if($breakdown->isNotEmpty())
                     <div class="mt-3">
-                        <div class="text-xs sm:text-sm font-semibold text-[#092C48]">Indicative Budget Break Down:</div>
-                        <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-700">
+                        <div class="text-sm font-semibold text-[#092C48]">Indicative Budget Break Down:</div>
+                        <div class="mt-2 flex flex-wrap gap-2 text-xs sm:text-sm text-gray-700">
                             @foreach($breakdown as $item)
-                                <span class="whitespace-nowrap">
+                                <span class="thomas-chip whitespace-nowrap">
                                     {{ $item['label'] }} – {{ $item['pct'] }}
                                 </span>
                             @endforeach
@@ -130,12 +147,6 @@
                     </div>
                 @endif
             </div>
-        </div>
-        <div class="flex justify-end items-end mt-4">
-            <a href="{{ route('tenders.detail', $tender->id) }}"
-                class="bg-[#0D6AED] hover:bg-blue-700 px-6 py-3 text-white rounded-sm text-base font-medium">
-                View Details
-            </a>
         </div>
     </div>
 @empty

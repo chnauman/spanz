@@ -65,7 +65,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                    <input name="currency" value="{{ old('currency', 'USD') }}" class="w-full border rounded px-3 py-2" />
+                    <input name="currency" value="{{ old('currency', 'AUD') }}" class="w-full border rounded px-3 py-2" readonly />
                 </div>
                 <div class="flex items-center mt-6">
                     <input id="featured" type="checkbox" name="featured" value="1" class="mr-2" {{ old('featured') ? 'checked' : '' }} />
@@ -96,11 +96,11 @@
 
             <div>
                 <label for="gallery_images" class="block text-sm font-medium text-gray-700 mb-2">Gallery Images (Optional)</label>
-                <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                <input type="file" id="gallery_images" name="gallery_images[]" accept=".jpg,.jpeg,.png,.gif,.webp,image/*" multiple="multiple"
                        class="w-full border rounded px-3 py-2" onchange="previewGallery(this)" />
                 @error('gallery_images')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
                 @error('gallery_images.*')<div class="text-red-600 text-sm mt-1">{{ $message }}</div>@enderror
-                <p class="text-xs text-gray-500 mt-1">You can select multiple images. Max: 12 images, 5MB each.</p>
+                <p class="text-xs text-gray-500 mt-1">You can select multiple images (hold Ctrl/Command to pick many). Max: 12 images, 5MB each.</p>
                 <div id="gallery-preview" class="mt-4 hidden">
                     <p class="text-sm font-medium text-gray-700 mb-2">Gallery Preview:</p>
                     <div id="gallery-preview-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>

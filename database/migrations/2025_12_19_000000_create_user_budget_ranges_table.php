@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->decimal('min_budget', 15, 2)->nullable();
             $table->decimal('max_budget', 15, 2)->nullable();
-            $table->string('currency', 3)->default('USD');
+            $table->string('currency', 3)->default('AUD');
             $table->enum('budget_type', ['less', 'greater', 'range'])->default('range');
             $table->timestamps();
             

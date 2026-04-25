@@ -20,7 +20,7 @@
                 <!-- Current Plan Info -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <h3 class="text-lg font-semibold text-blue-800 mb-2">Current Plan</h3>
-                    <p class="text-blue-700">{{ $activeSubscription->subscription->name }} - ${{ number_format((float)$activeSubscription->subscription->price, 2) }}/{{ $activeSubscription->subscription->billing_period }}</p>
+                    <p class="text-blue-700">{{ $activeSubscription->subscription->name }} - A${{ number_format((float)$activeSubscription->subscription->price, 2) }}/{{ $activeSubscription->subscription->billing_period }}</p>
                     <p class="text-blue-600 text-sm">Expires: {{ $activeSubscription->expires_at ? \Carbon\Carbon::parse($activeSubscription->expires_at)->format('M d, Y') : 'N/A' }}</p>
                 </div>
 

@@ -1,14 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<style>
+    .thomas-tenders-wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px 16px 36px;
+        color: #15314c;
+    }
+
+    .thomas-tenders-header {
+        background: #fff;
+        border: 1px solid #d8e2ee;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(3, 39, 71, 0.06);
+        padding: 16px 18px;
+        margin-bottom: 16px;
+    }
+
+    .thomas-tender-card {
+        background: #fff;
+        border: 1px solid #d8e2ee;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(3, 39, 71, 0.06);
+        height: 100%;
+    }
+
+    .thomas-post-btn {
+        background: #0d6efd;
+        color: #fff;
+        border: 1px solid #0d6efd;
+    }
+
+    .thomas-post-btn:hover {
+        background: #0b5fd7;
+        border-color: #0b5fd7;
+        color: #fff;
+    }
+</style>
+
+<div class="thomas-tenders-wrap">
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Active Tenders</h2>
+            <div class="thomas-tenders-header d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0 fw-bold">Active Tenders</h2>
                 @auth
                     @if(!auth()->user()->isAdmin())
-                        <a href="{{ route('tenders.create') }}" class="btn btn-primary">Post a Tender</a>
+                        <a href="{{ route('tenders.create') }}" class="btn thomas-post-btn">Post a Tender</a>
                     @endif
                 @endauth
             </div>
@@ -22,10 +60,10 @@
             <div class="row">
                 @forelse($tenders as $tender)
                 <div class="col-md-6 mb-4">
-                    <div class="card h-100">
+                    <div class="thomas-tender-card card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title">{{ $tender->title }}</h5>
+                                <h5 class="card-title fw-semibold">{{ $tender->title }}</h5>
                                 <span class="badge bg-primary">{{ $tender->category->name }}</span>
                             </div>
                             

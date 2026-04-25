@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->decimal('price', 12, 2)->nullable();
-            $table->string('currency', 10)->default('USD');
+            $table->string('currency', 10)->default('AUD');
             $table->enum('status', ['draft', 'active', 'archived'])->default('active');
             $table->json('images')->nullable();
             $table->json('specs')->nullable();

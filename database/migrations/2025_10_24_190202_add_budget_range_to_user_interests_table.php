@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('user_interests', function (Blueprint $table) {
             $table->decimal('min_budget', 15, 2)->nullable();
             $table->decimal('max_budget', 15, 2)->nullable();
-            $table->string('currency', 3)->default('USD');
+            $table->string('currency', 3)->default('AUD');
         });
     }
 

@@ -74,7 +74,7 @@
                             <select id="currency" name="currency" required
                                 class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('currency') border-red-300 @enderror">
                                 <option value="">Select currency</option>
-                                <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }} default>USD (US Dollar)</option>
+                                <option value="AUD" {{ old('currency', 'AUD') == 'AUD' ? 'selected' : '' }} default>AUD (Australian Dollar)</option>
                             </select>
                             @error('currency')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

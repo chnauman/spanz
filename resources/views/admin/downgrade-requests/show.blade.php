@@ -52,7 +52,7 @@
                             <h3 class="text-sm font-medium text-gray-700 mb-2">Current Subscription</h3>
                             <div class="space-y-2">
                                 <p><span class="font-medium">Plan:</span> {{ $downgradeRequest->currentSubscription->name }}</p>
-                                <p><span class="font-medium">Price:</span> ${{ number_format((float)$downgradeRequest->currentSubscription->price, 2) }}/{{ $downgradeRequest->currentSubscription->billing_period }}</p>
+                                <p><span class="font-medium">Price:</span> A${{ number_format((float)$downgradeRequest->currentSubscription->price, 2) }}/{{ $downgradeRequest->currentSubscription->billing_period }}</p>
                                 <p><span class="font-medium">Credits:</span> {{ $downgradeRequest->currentSubscription->credits_per_month }}</p>
                             </div>
                         </div>

@@ -41,7 +41,7 @@ class UserInterestController extends Controller
             'budget_ranges.*.category_id' => 'required_with:budget_ranges|exists:categories,id',
             'budget_ranges.*.min_budget' => 'nullable|numeric|min:0',
             'budget_ranges.*.max_budget' => 'nullable|numeric|min:0|gte:budget_ranges.*.min_budget',
-            'budget_ranges.*.currency' => 'required_with:budget_ranges|string|in:USD,AUD,EUR,GBP,SGD,NZD'
+            'budget_ranges.*.currency' => 'required_with:budget_ranges|string|in:AUD'
         ]);
 
         $user = Auth::user();
@@ -72,7 +72,7 @@ class UserInterestController extends Controller
                     [
                         'min_budget' => $budgetRange['min_budget'] ?? null,
                         'max_budget' => $budgetRange['max_budget'] ?? null,
-                        'currency' => $budgetRange['currency'] ?? 'USD'
+                        'currency' => $budgetRange['currency'] ?? 'AUD'
                     ]
                 );
             }
@@ -141,7 +141,7 @@ class UserInterestController extends Controller
             'category_id' => 'required|exists:categories,id',
             'min_budget' => 'nullable|numeric|min:0',
             'max_budget' => 'nullable|numeric|min:0',
-            'currency' => 'required|string|in:USD,AUD,EUR,GBP,SGD,NZD',
+            'currency' => 'required|string|in:AUD',
             'budget_type' => 'required|string|in:less,greater,range'
         ]);
 
@@ -181,7 +181,7 @@ class UserInterestController extends Controller
                 [
                     'min_budget' => null, // We'll store budgets in separate table now
                     'max_budget' => null,
-                    'currency' => 'USD'
+                    'currency' => 'AUD'
                 ]
             );
 

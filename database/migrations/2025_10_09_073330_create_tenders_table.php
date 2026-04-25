@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->decimal('budget', 15, 2)->nullable();
-            $table->string('currency', 3)->default('USD');
+            $table->string('currency', 3)->default('AUD');
             $table->date('deadline');
             $table->string('status')->default('active'); // active, closed, awarded
             $table->text('requirements')->nullable();

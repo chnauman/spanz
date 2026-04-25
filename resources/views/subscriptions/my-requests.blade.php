@@ -39,7 +39,7 @@
                                                 </span>
                                             </div>
                                             <div class="text-sm text-gray-600">
-                                                <p><strong>Price:</strong> ${{ number_format($request->subscription->price, 2) }}/month</p>
+                                                <p><strong>Price:</strong> A${{ number_format($request->subscription->price, 2) }}/month</p>
                                                 <p><strong>Credits:</strong> {{ $request->subscription->credits_per_month == -1 ? 'Unlimited' : $request->subscription->credits_per_month }}</p>
                                                 <p><strong>Requested:</strong> {{ $request->requested_at->format('M d, Y H:i') }}</p>
                                                 

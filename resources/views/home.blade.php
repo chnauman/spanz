@@ -7,6 +7,73 @@
     <title>Spanz</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <style>
+        :root {
+            --thomas-navy: #032747;
+            --thomas-blue: #0d6efd;
+            --thomas-text: #13283f;
+            --thomas-bg: #f4f7fb;
+            --thomas-border: #d9e1ec;
+        }
+
+        body.thomas-home {
+            background: var(--thomas-bg);
+            color: var(--thomas-text);
+        }
+
+        .thomas-hero {
+            position: relative;
+            background-blend-mode: multiply;
+            background-color: rgba(3, 39, 71, 0.78);
+        }
+
+        .thomas-hero nav {
+            background: rgba(3, 39, 71, 0.92);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+        }
+
+        .thomas-hero .hero-brand {
+            letter-spacing: 0.5px;
+        }
+
+        .thomas-hero .hero-search-shell {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 16px 28px rgba(3, 39, 71, 0.18);
+        }
+
+        .thomas-hero .hero-search-shell select,
+        .thomas-hero .hero-search-shell input {
+            height: 46px;
+            border: 0;
+            outline: none;
+            border-right: 1px solid var(--thomas-border);
+        }
+
+        .thomas-hero .hero-search-shell input {
+            border-right: 0;
+        }
+
+        .thomas-hero .hero-search-shell button {
+            height: 46px;
+            border-radius: 0;
+            font-weight: 600;
+            background: var(--thomas-blue);
+        }
+
+        .thomas-card {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(3, 39, 71, 0.06);
+        }
+
+        .thomas-section-heading {
+            color: #0e2f4f;
+            font-weight: 700;
+        }
         /* Fix dropdown hover behavior */
         .dropdown-group {
             position: relative;
@@ -134,19 +201,21 @@
         .subscription-card {
             transition: all 0.3s ease;
             position: relative;
+            width: 3in;
+            min-width: 3in;
+            max-width: 3in;
+            flex: 0 0 3in;
         }
 
         .subscription-card.active {
             z-index: 10;
-            transform: translateZ(20px) scale(1.05);
         }
 
         .subscription-card.active .bg-white {
             background: linear-gradient(135deg, #092C48 0%, #0D6AED 100%);
             border-color: #0D6AED;
             color: white;
-            box-shadow: 0 20px 40px rgba(13, 106, 237, 0.3);
-            transform: translateZ(20px) scale(1.05);
+            box-shadow: 0 8px 18px rgba(13, 106, 237, 0.2);
             border-radius: 1rem;
         }
 
@@ -213,15 +282,17 @@
         }
     </style>
 </head>
-<body>
-   <div class="bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
+<body class="thomas-home">
+   <div class="thomas-hero bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
         <!-- Navbar -->
         <nav class="bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}') absolute top-0 left-0 w-full z-50">
             <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <!-- Logo -->
                     <div class="flex-shrink-0">
-                        <a href="#" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
+                        <a href="{{ route('home') }}" class="hero-brand block">
+                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                        </a>
                     </div>
 
                     <!-- Desktop Menu -->
@@ -376,20 +447,20 @@
                     <p class="text-white mt-3 text-sm sm:text-lg">Search the largest network of trusted suppliers</p>
 
                     <!-- Search row: mobile stacked, sm inline -->
-                    <form id="home-search-form" class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-0 justify-center max-w-xl mx-auto" onsubmit="return handleHomeSearch(event)">
+                    <form id="home-search-form" class="hero-search-shell mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-0 justify-center max-w-3xl mx-auto" onsubmit="return handleHomeSearch(event)">
                         <!-- search type selector -->
                         <div class="w-full sm:w-auto">
-                            <select id="home-search-type" class="w-full sm:w-40 px-3 py-2 bg-gray-100 border border-gray-300 text-gray-700">
+                            <select id="home-search-type" class="w-full sm:w-44 px-3 py-2 bg-gray-50 text-gray-700">
                                 <option value="tenders">Tenders</option>
                                 <option value="products">Products</option>
                             </select>
                         </div>
 
                         <!-- input -->
-                        <input id="home-search-input" type="search" placeholder="By Category, Company or Brand..." class="w-full sm:w-96 px-3 py-2 border border-gray-300 text-gray-700 focus:outline-none"/>
+                        <input id="home-search-input" type="search" placeholder="Search by product, service, company or brand..." class="w-full sm:w-[34rem] px-3 py-2 text-gray-700 focus:outline-none"/>
 
                         <!-- search button -->
-                        <div class="w-full sm:w-auto sm:ml-3">
+                        <div class="w-full sm:w-auto">
                             <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-[#0D6AED] text-white">Search</button>
                         </div>
                     </form>
@@ -423,7 +494,7 @@
         </div>
         <!-- Right Image Section -->
         <div class="w-full lg:w-1/2 flex justify-center mt-8 lg:mt-0">
-            <img src="{{ asset('spanz-img/for-buyers.webp') }}" alt="For Buyers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
+            <img src="{{ asset('images/home-for-buyers.png') }}" alt="For Buyers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
         </div>
     </div>
 
@@ -431,7 +502,7 @@
     <div class="flex flex-col-reverse lg:flex-row justify-evenly items-center px-5 lg:px-20 py-12">
         <!-- Left: Image -->
         <div class="flex mt-8 lg:mt-0">
-            <img src="{{ asset('spanz-img/for-suppliers.webp') }}" alt="For Suppliers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
+            <img src="{{ asset('images/home-for-suppliers.png') }}" alt="For Suppliers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
         </div>
         <!-- Right: Text -->
         <div class="w-full lg:w-1/2 text-center flex justify-center lg:text-left mt-8 lg:mt-0">
@@ -455,104 +526,121 @@
     <div class="bg-gray-50 py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
-            <div class="text-center mb-16">
+            <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Plan</h1>
                 <p class="text-xl text-gray-600">Select the perfect subscription plan for your business needs</p>
             </div>
 
-            <!-- Pricing Cards -->
-            <div class="flex flex-wrap justify-center gap-8 mt-10" style="min-height: 4.5in;">
-                @foreach($subscriptions as $index => $subscription)
-                    @if($subscription->is_active)
-                        @php
-                            $userHasActiveSubscription = auth()->check() && auth()->user()->getActiveSubscription();
-                            $isBasicPlan = strtolower($subscription->name) === 'basic';
-                            $shouldShowBasic = !$userHasActiveSubscription;
-                            $shouldHideBasic = $userHasActiveSubscription && $isBasicPlan;
-                        @endphp
+            <div class="rounded-3xl border border-blue-100 bg-gradient-to-b from-white via-white to-blue-50/40 px-4 py-8 shadow-sm sm:px-6 sm:py-10">
+                @include('components.pricing-intro-banner')
 
-                        @if(!$shouldHideBasic)
-                            <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
-                                 data-plan="{{ strtolower($subscription->name) }}"
-                                 data-subscription-id="{{ $subscription->id }}">
-                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; height: 3.5in;">
-                                    @if($subscription->name === 'Pro')
-                                        <!-- Most Popular Badge -->
-                                        <div class="absolute -top-2 right-2 most-popular-badge z-20">
-                                            <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                                MOST POPULAR
+                <!-- Pricing Cards -->
+                <div class="flex flex-wrap items-stretch justify-center gap-4 mt-4 xl:flex-nowrap xl:justify-between" style="min-height: 3.6in;">
+                    @foreach($subscriptions as $index => $subscription)
+                        @if($subscription->is_active)
+                            @php
+                                $userHasActiveSubscription = auth()->check() && auth()->user()->getActiveSubscription();
+                            $isBasicPlan = in_array(strtolower($subscription->name), ['basic', 'buyer']);
+                                $shouldShowBasic = !$userHasActiveSubscription;
+                                $shouldHideBasic = false;
+                            @endphp
+
+                            @if(!$shouldHideBasic)
+                                <div class="subscription-card relative group flex cursor-pointer {{ $index === 0 ? 'active' : '' }}"
+                                     data-plan="{{ strtolower($subscription->name) }}"
+                                     data-subscription-id="{{ $subscription->id }}">
+                                    <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex h-full w-full min-h-[4.85in] flex-col">
+                                        @if($subscription->name === 'Professional')
+                                            <!-- Most Popular Badge -->
+                                            <div class="absolute -top-2 right-2 most-popular-badge z-20">
+                                                <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                                                    MOST POPULAR
+                                                </div>
                                             </div>
-                                        </div>
-                                    @endif
+                                        @endif
 
-                                    <div class="text-center h-full flex flex-col justify-between">
-                                        <div>
-                                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                                            <div class="text-3xl font-bold text-gray-900 mb-2">
-                                                ${{ $subscription->price }}
-                                                <span class="text-sm text-gray-500">/month</span>
-                                            </div>
-                                            <p class="text-gray-600 text-sm mb-4">{{ $subscription->description ?? 'Premium subscription plan' }}</p>
+                                        <div class="text-center h-full flex flex-col w-full">
+                                            <div class="flex-1 flex flex-col">
+                                                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
+                                                <div class="text-3xl font-bold text-gray-900 mb-2">
+                                                    AU${{ number_format((float) $subscription->price, 0) }}
+                                                    <span class="text-sm text-gray-500">/mo.</span>
+                                                </div>
+                                                <p class="text-gray-600 text-sm mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
 
-                                             <!-- Quota/Credits Display -->
-                                             <div class="bg-blue-50 rounded-lg p-3 mb-4">
-                                                 <div class="text-lg font-semibold text-[#0D6AED] mb-1">
-                                                     @if($subscription->credits_per_month < 0)
-                                                         Unlimited Credits
-                                                     @elseif($subscription->credits_per_month == 0)
-                                                         No Credits
-                                                     @else
-                                                         {{ $subscription->credits_per_month }} Credits
-                                                     @endif
-                                                 </div>
-                                                 <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
-                                             </div>
-                                        </div>
-
-                                        <div class="text-center">
-                                            @auth
-                                                @if(auth()->user()->getActiveSubscription() && auth()->user()->getActiveSubscription()->subscription_id == $subscription->id)
-                                                    <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
-                                                        Current Plan
-                                                    </button>
-                                                @elseif($isBasicPlan && !$userHasActiveSubscription)
-                                                    <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
-                                                        Current Plan
-                                                    </button>
-                                                @else
-                                                    <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
-                                                            onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
-                                                        {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
-                                                    </button>
+                                                @if(!empty($subscription->features))
+                                                    <ul class="text-left text-xs text-gray-700 space-y-1.5 mb-4 flex-1">
+                                                        @foreach($subscription->features as $feature)
+                                                            <li class="flex items-start gap-2">
+                                                                <span class="mt-0.5 text-[#0D6AED]">✓</span>
+                                                                <span>{{ $feature }}</span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
                                                 @endif
-                                            @else
-                                                <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
-                                                   class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
-                                                    Choose Plan
-                                                </a>
-                                            @endauth
+                                            </div>
+
+                                            <div class="mt-auto text-center space-y-3">
+                                                 <!-- Quota/Credits Display -->
+                                                 <div class="bg-blue-50 rounded-lg p-3">
+                                                     <div class="text-lg font-semibold text-[#0D6AED] mb-1">
+                                                         @if($subscription->credits_per_month < 0)
+                                                             Unlimited Credits
+                                                         @elseif($subscription->credits_per_month == 0)
+                                                             No Credits
+                                                         @else
+                                                             {{ $subscription->credits_per_month }} Credits
+                                                         @endif
+                                                     </div>
+                                                     <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
+                                                 </div>
+
+                                                @auth
+                                                    @if(auth()->user()->getActiveSubscription() && auth()->user()->getActiveSubscription()->subscription_id == $subscription->id)
+                                                        <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                            Current Plan
+                                                        </button>
+                                                    @elseif($isBasicPlan && !$userHasActiveSubscription)
+                                                        <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                            Current Plan
+                                                        </button>
+                                                    @else
+                                                        <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
+                                                                onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
+                                                            {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
+                                                        </button>
+                                                    @endif
+                                                @else
+                                                    <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
+                                                       class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
+                                                        Choose Plan
+                                                    </a>
+                                                @endauth
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         @endif
-                    @endif
-                @endforeach
+                    @endforeach
+                </div>
+
+                @include('components.pricing-notes-footer')
             </div>
 
             <!-- FAQ Section -->
             <div class="mt-16 max-w-3xl mx-auto">
-                <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Frequently Asked Questions</h2>
+                <h2 class="thomas-section-heading text-3xl font-bold text-center text-gray-900 mb-8">Frequently Asked Questions</h2>
                 <div class="space-y-6">
-                    <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="thomas-card p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">What are credits used for?</h3>
                         <p class="text-gray-600">Credits are used to view detailed tender information, contact buyers, and access premium features.</p>
                     </div>
-                    <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="thomas-card p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I change my plan later?</h3>
                         <p class="text-gray-600">Yes, you can upgrade or downgrade your subscription at any time.</p>
                     </div>
-                    <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="thomas-card p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there a free trial?</h3>
                         <p class="text-gray-600">Yes, the Basic plan is free and allows you to browse tenders. Premium features require a paid subscription.</p>
                     </div>

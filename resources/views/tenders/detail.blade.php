@@ -8,6 +8,41 @@
     <title>{{ $tender->title }} - Tender Details</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <style>
+        :root {
+            --thomas-navy: #032747;
+            --thomas-blue: #0d6efd;
+            --thomas-bg: #f3f6fa;
+            --thomas-border: #d8e2ee;
+            --thomas-text: #15314c;
+        }
+
+        body.thomas-tender-detail {
+            background: var(--thomas-bg);
+            color: var(--thomas-text);
+        }
+
+        .thomas-topbar {
+            background: linear-gradient(180deg, #032747 0%, #0a3255 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .thomas-content-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .thomas-panel {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(3, 39, 71, 0.06);
+        }
+
+        .thomas-title-strip {
+            background: linear-gradient(180deg, #052d50 0%, #0d3a63 100%);
+            border-radius: 6px;
+        }
+
         /* Fix dropdown hover behavior */
         .dropdown-group {
             position: relative;
@@ -82,15 +117,17 @@
     </style>
 </head>
 
-<body>
-    <div class="bg-[#092C48] py-2">
+<body class="thomas-tender-detail">
+    <div class="thomas-topbar py-2">
         <!-- Navbar -->
         <nav>
             <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <!-- Logo -->
                     <div class="flex-shrink-0">
-                        <a href="{{ route('home') }}" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
+                        <a href="{{ route('home') }}" class="block">
+                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                        </a>
                     </div>
 
                     <!-- Desktop Menu -->
@@ -214,13 +251,13 @@
     </div>
 
     <!-- project overview -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <div class="border border-gray-300 rounded-sm p-3 sm:p-4 lg:p-6">
+    <div class="thomas-content-wrap max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div class="thomas-panel p-3 sm:p-4 lg:p-6">
             <div>
                 <h3 class="text-lg sm:text-xl font-semibold">Project Overview</h3>
             </div>
             <div
-                class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
+                class="thomas-title-strip flex flex-col sm:flex-row sm:items-center sm:justify-between text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <h1 class="text-xl sm:text-2xl font-bold">{{ $tender->title }}</h1>
                 <span class="text-sm sm:text-base">Estimated Budget: {{ $tender->currency }} {{ $tender->budget ? number_format($tender->budget, 0) : 'Not specified' }}</span>
             </div>

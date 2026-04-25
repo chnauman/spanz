@@ -36,7 +36,7 @@
                 <table class="w-full table-fixed divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-6/12">Budget Range (USD)</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-6/12">Budget Range (AUD)</th>
                             <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Credits / View</th>
                             <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Status</th>
                             <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Actions</th>
@@ -47,9 +47,9 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     @if($rule->budget_max === null)
-                                        {{ '$' . number_format((float) $rule->budget_min, 0) }}+
+                                        {{ 'A$' . number_format((float) $rule->budget_min, 0) }}+
                                     @else
-                                        {{ '$' . number_format((float) $rule->budget_min, 0) }} - {{ '$' . number_format((float) $rule->budget_max, 0) }}
+                                        {{ 'A$' . number_format((float) $rule->budget_min, 0) }} - {{ 'A$' . number_format((float) $rule->budget_max, 0) }}
                                     @endif
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">

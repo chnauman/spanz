@@ -154,14 +154,14 @@
 
             <!-- Content -->
             <div class="p-4 pb-6">
-                <div class="flex flex-wrap justify-center gap-8 mt-4" style="min-height: 4.5in;">
+                <div class="flex flex-wrap justify-center gap-4 mt-3 xl:flex-nowrap xl:justify-between" style="min-height: 3.6in;">
                     @foreach($subscriptions as $index => $subscription)
                         @if($subscription->is_active)
                             <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
                                  data-plan="{{ strtolower($subscription->name) }}"
                                  data-subscription-id="{{ $subscription->id }}">
-                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; height: 3.5in;">
-                                    @if($subscription->name === 'Enterprise')
+                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; min-height: 4.6in;">
+                                    @if($subscription->name === 'Professional')
                                         <!-- Most Popular Badge -->
                                         <div class="absolute -top-3 right-4 most-popular-badge">
                                             <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold">
@@ -174,10 +174,21 @@
                                         <div>
                                             <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
                                             <div class="text-3xl font-bold text-gray-900 mb-2">
-                                                ${{ $subscription->price }}
-                                                <span class="text-sm text-gray-500">/month</span>
+                                                AU${{ number_format((float) $subscription->price, 0) }}
+                                                <span class="text-sm text-gray-500">/mo.</span>
                                             </div>
-                                            <p class="text-gray-600 text-sm mb-4">{{ $subscription->description ?? 'Premium subscription plan' }}</p>
+                                            <p class="text-gray-600 text-sm mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
+
+                                             @if(!empty($subscription->features))
+                                                <ul class="text-left text-xs text-gray-700 space-y-1.5 mb-4">
+                                                    @foreach($subscription->features as $feature)
+                                                        <li class="flex items-start gap-2">
+                                                            <span class="mt-0.5 text-[#0D6AED]">✓</span>
+                                                            <span>{{ $feature }}</span>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
 
                                              <!-- Quota/Credits Display -->
                                              <div class="bg-blue-50 rounded-lg p-3 mb-4">
@@ -203,6 +214,8 @@
                         @endif
                     @endforeach
                 </div>
+
+                @include('components.pricing-notes-footer', ['compact' => true])
 
                 <!-- Footer -->
                 <div class="mt-6 text-center">

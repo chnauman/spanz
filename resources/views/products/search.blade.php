@@ -9,6 +9,140 @@
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        :root {
+            --thomas-navy: #032747;
+            --thomas-blue: #0d6efd;
+            --thomas-bg: #f3f6fa;
+            --thomas-border: #d8e2ee;
+            --thomas-text: #15314c;
+        }
+
+        body.thomas-results {
+            background: var(--thomas-bg);
+            color: var(--thomas-text);
+        }
+
+        .thomas-topbar {
+            background: linear-gradient(180deg, #032747 0%, #0a3255 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .thomas-search-strip {
+            background: #f6f8fb;
+            border-bottom: 1px solid var(--thomas-border);
+            padding: 14px 0;
+        }
+
+        .thomas-search-shell {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(3, 39, 71, 0.16);
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .thomas-search-shell select,
+        .thomas-search-shell input {
+            border: 0;
+            border-right: 1px solid var(--thomas-border);
+            min-height: 42px;
+            font-size: 0.95rem;
+        }
+
+        .thomas-search-shell input {
+            border-right: 0;
+        }
+
+        .thomas-search-shell button {
+            min-height: 42px;
+            border-radius: 999px;
+            min-width: 86px;
+            margin: 3px;
+            font-weight: 700;
+            background: var(--thomas-blue) !important;
+        }
+
+        .thomas-breadcrumb {
+            background: #fff;
+            border-bottom: 1px solid var(--thomas-border);
+        }
+
+        .thomas-main-wrap {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 18px 16px 32px;
+        }
+
+        .thomas-filter-panel,
+        .thomas-results-header,
+        .thomas-product-card {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(3, 39, 71, 0.06);
+        }
+
+        .thomas-results-header {
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+
+        .thomas-filter-link {
+            color: #274b6b;
+        }
+
+        .thomas-filter-link:hover {
+            color: var(--thomas-blue);
+            text-decoration: underline;
+        }
+
+        .thomas-sidebar-toggle {
+            background: #fff;
+            border: 1px solid var(--thomas-border);
+            color: #123b5f;
+        }
+
+        .thomas-nav-link {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e6eef7;
+        }
+
+        .thomas-nav-link:hover {
+            color: #ffffff;
+        }
+
+        @media (min-width: 1024px) {
+            #desktop-layout {
+                display: flex !important;
+                gap: 1.25rem;
+                align-items: start;
+            }
+
+            #desktop-sidebar {
+                display: block;
+                flex: 0 0 min(300px, 28%);
+                min-width: 0;
+            }
+
+            #desktop-results {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            #desktop-layout.is-sidebar-collapsed {
+                display: block !important;
+            }
+
+            #desktop-layout.is-sidebar-collapsed #desktop-sidebar {
+                display: none !important;
+            }
+        }
+
         .filter-content {
             transition: all 0.3s ease;
         }
@@ -93,22 +227,24 @@
     </style>
 </head>
 
-<body>
-    <div class="bg-[#092C48] py-5">
+<body class="thomas-results">
+    <div class="thomas-topbar py-5">
         <!-- Navbar -->
         <nav>
-            <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
+            <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-14">
                     <!-- Logo -->
                     <div class="flex-shrink-0">
-                        <a href="{{ route('home') }}" class="text-2xl font-bold text-[#0D6AED]">Spanz</a>
+                        <a href="{{ route('home') }}" class="block">
+                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                        </a>
                     </div>
 
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
                         <!-- For Buyers Dropdown -->
                         <div class="dropdown-group">
-                            <button class="text-white hover:text-blue-400 flex items-center">
+                            <button class="thomas-nav-link flex items-center">
                                 For Buyers ▾
                             </button>
                             <div class="dropdown-menu">
@@ -128,7 +264,7 @@
 
                         <!-- For Suppliers Dropdown -->
                         <div class="dropdown-group">
-                            <button class="text-white hover:text-blue-400 flex items-center">
+                            <button class="thomas-nav-link flex items-center">
                                 For Suppliers ▾
                             </button>
                             <div class="dropdown-menu">
@@ -152,13 +288,13 @@
                             </div>
                         </div>
 
-                        <a href="#" class="text-white hover:text-blue-400">About</a>
+                        <a href="#" class="thomas-nav-link">About</a>
                     </div>
 
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                        <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('tenders.search') }}" class="thomas-nav-link">Tenders</a>
+                        <a href="{{ route('products.search') }}" class="thomas-nav-link">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -222,41 +358,35 @@
                     @endauth
             </div>
         </nav>
-        <!-- Hero main content (centered) -->
-        <div class="flex flex-col items-center justify-center">
-            <!-- Search row: centered -->
-            <div class="w-full max-w-4xl mx-auto mt-5 px-4 sm:px-8">
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0">
-                    <!-- search type selector -->
-                    <div class="w-full sm:w-auto">
-                        <select id="products-search-type" class="w-full sm:w-40 px-3 py-3 sm:py-2 bg-gray-100 border border-gray-300 text-gray-700 text-sm">
-                            <option value="products" selected>Products</option>
-                            <option value="tenders">Tenders</option>
-                        </select>
-                    </div>
-
-                    <!-- input -->
-                    <form id="products-search-form" method="GET" action="{{ route('products.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full max-w-2xl">
-                        <input id="products-search-input" type="search" name="q" value="{{ request('q') }}" placeholder="By Category, Company or Brand..."
-                            class="w-full px-3 py-3 sm:py-2 border border-gray-300 text-gray-700 focus:outline-none text-sm" />
-
-                        <!-- Hidden inputs to preserve current filters -->
-                        @if(request('category'))
-                            <input type="hidden" name="category" value="{{ request('category') }}">
-                        @endif
-
-                        <!-- search button -->
-                        <div class="w-full sm:w-auto">
-                            <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-[#0D6AED] text-white text-sm font-medium">Search</button>
-                        </div>
-                    </form>
+    </div>
+    <div class="thomas-search-strip">
+        <div class="w-full max-w-6xl mx-auto px-4 sm:px-8">
+            <div class="thomas-search-shell flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0">
+                <div class="w-full sm:w-auto">
+                    <select id="products-search-type" class="w-full sm:w-56 px-4 py-3 sm:py-2 bg-gray-50 text-gray-700 text-sm">
+                        <option value="products" selected>Products</option>
+                        <option value="tenders">Tenders</option>
+                    </select>
                 </div>
-            </div>
 
+                <form id="products-search-form" method="GET" action="{{ route('products.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full">
+                    <input id="products-search-input" type="search" name="q" value="{{ request('q') }}" placeholder="Search by product, service, company or brand..."
+                        class="w-full px-3 py-3 sm:py-2 text-gray-700 focus:outline-none text-sm" />
+
+                    <!-- Hidden inputs to preserve current filters -->
+                    @if(request('category'))
+                        <input type="hidden" name="category" value="{{ request('category') }}">
+                    @endif
+
+                    <div class="w-full sm:w-auto">
+                        <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-[#0D6AED] text-white text-sm font-medium">Search</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <div
-        class="flex flex-col md:flex-row bg-slate-50 justify-between items-start md:items-center p-4 sm:p-5 gap-4 md:gap-0">
+        class="thomas-breadcrumb flex flex-col md:flex-row justify-between items-start md:items-center p-4 sm:p-5 gap-4 md:gap-0">
         <div class="flex flex-wrap items-center text-sm flex-1">
             <span><a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-300">Home</a></span>
             <span class="mx-1"><a href="#" class="text-blue-600 hover:text-blue-300">/</a></span>
@@ -336,11 +466,23 @@
     </div>
 
     <!-- Desktop Grid Layout -->
-<div class="block lg:grid lg:grid-cols-12 w-full bg-slate-50">
-    <div class="hidden lg:block lg:col-span-2 p-4 lg:pl-10">
+<div class="thomas-main-wrap">
+<div class="hidden md:flex items-center justify-between mb-3">
+    <button id="desktop-sidebar-toggle" type="button" class="thomas-sidebar-toggle inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold shadow-sm">
+        <span id="desktop-sidebar-toggle-icon" aria-hidden="true">
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="none">
+                <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </span>
+        <span id="desktop-sidebar-toggle-text">Hide Filters</span>
+    </button>
+</div>
+<div id="desktop-layout" class="block lg:grid lg:grid-cols-12 w-full gap-5">
+    <div id="desktop-sidebar" class="hidden lg:block lg:col-span-3">
+        <div class="thomas-filter-panel p-4">
         <div class="flex gap-2 items-center mb-4">
             <img src="{{ asset('spanz-img/filter.svg') }}" alt="Filter" class="w-5 h-5">
-            <span class="text-sm font-medium">Filter</span>
+            <span class="text-sm font-semibold uppercase tracking-wide text-[#123b5f]">Filters</span>
         </div>
             <div class="flex flex-wrap gap-2 mb-4">
                 <button id="desktop-collapse-all"
@@ -364,7 +506,7 @@
                         @foreach($categories as $category)
                         <li>
                             <a href="{{ route('products.search', array_merge(request()->query(), ['category' => $category->id])) }}"
-                               class="text-sm sm:text-md hover:underline block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
+                               class="thomas-filter-link text-sm sm:text-md block py-1 {{ request('category') == $category->id ? 'font-semibold text-blue-600' : '' }}">
                                 {{ $category->name }}
                             </a>
                         </li>
@@ -380,9 +522,10 @@
             </div>
         </div>
     </div>
+    </div>
         <!-- Content area for desktop -->
-    <div class="w-full lg:col-span-9 p-4 lg:p-6">
-            <div class="text-[#092C48] mb-5">
+    <div id="desktop-results" class="w-full lg:col-span-9">
+            <div class="thomas-results-header text-[#092C48]">
                 <div class="text-sm sm:text-base mb-2">
                     <span>Displaying </span>
                     <span class="font-semibold">1 to {{ $products->count() }} </span>
@@ -410,7 +553,7 @@
         </div>
 
             @forelse($products as $product)
-            <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
+            <div class="thomas-product-card p-4 sm:p-6 {{ !$loop->first ? 'mt-4' : '' }}">
                 <div class="flex flex-col lg:flex-row gap-4">
                     <!-- Left side: Content -->
                     <div class="flex-1">
@@ -460,7 +603,7 @@
                 </div>
             </div>
             @empty
-            <div class="bg-white border border-gray-200 rounded-sm p-4 sm:p-6">
+            <div class="thomas-product-card p-4 sm:p-6">
                 <div class="text-center py-12">
                     @if(request('q'))
                         <h3 class="text-lg font-semibold text-[#092C48] mb-2">No Products Found</h3>
@@ -484,6 +627,7 @@
             @endif
         </div>
     </div>
+</div>
     <section class="bg-[#092C47] text-white py-10 px-5">
         <div class="flex flex-col md:flex-row md:justify-evenly gap-8 md:gap-0">
             <div class="space-y-3">
@@ -756,6 +900,43 @@
             // Initialize Show More functionality
             loadMoreCategories('mobile-categories-list', 'mobile-show-more-categories', true);
             loadMoreCategories('desktop-categories-list', 'desktop-show-more-categories', false);
+
+            // Desktop sidebar toggle
+            const sidebarToggleBtn = document.getElementById('desktop-sidebar-toggle');
+            const sidebarToggleText = document.getElementById('desktop-sidebar-toggle-text');
+            const sidebarToggleIcon = document.getElementById('desktop-sidebar-toggle-icon');
+            const desktopLayout = document.getElementById('desktop-layout');
+            const desktopSidebar = document.getElementById('desktop-sidebar');
+
+            function syncDesktopSidebar() {
+                if (!desktopSidebar || !desktopLayout || !sidebarToggleText || !sidebarToggleIcon) return;
+
+                if (window.innerWidth < 1024) {
+                    desktopLayout.classList.remove('is-sidebar-collapsed');
+                    return;
+                }
+
+                const collapsed = desktopSidebar.dataset.collapsed === 'true';
+                desktopLayout.classList.toggle('is-sidebar-collapsed', collapsed);
+                sidebarToggleText.textContent = collapsed ? 'Show Filters' : 'Hide Filters';
+                sidebarToggleIcon.innerHTML = collapsed
+                    ? `<svg class="w-4 h-4" viewBox="0 0 20 20" fill="none">
+                           <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                       </svg>`
+                    : `<svg class="w-4 h-4" viewBox="0 0 20 20" fill="none">
+                           <path d="M5 5l10 10M15 5l-10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                       </svg>`;
+            }
+
+            if (sidebarToggleBtn && desktopSidebar) {
+                desktopSidebar.dataset.collapsed = 'false';
+                sidebarToggleBtn.addEventListener('click', () => {
+                    desktopSidebar.dataset.collapsed = desktopSidebar.dataset.collapsed === 'true' ? 'false' : 'true';
+                    syncDesktopSidebar();
+                });
+                window.addEventListener('resize', syncDesktopSidebar);
+                syncDesktopSidebar();
+            }
 
             // Purchase modal functionality
             const purchaseModal = document.getElementById('purchase-modal');

@@ -36,6 +36,16 @@ class UserBudgetRange extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function getCurrencyAttribute($value): string
+    {
+        return 'AUD';
+    }
+
+    public function setCurrencyAttribute($value): void
+    {
+        $this->attributes['currency'] = 'AUD';
+    }
+
     /**
      * Get formatted budget range string
      */

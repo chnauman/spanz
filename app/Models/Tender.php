@@ -88,4 +88,14 @@ class Tender extends Model
         
         return \Carbon\Carbon::parse($this->deadline)->format($format);
     }
+
+    public function getCurrencyAttribute($value): string
+    {
+        return 'AUD';
+    }
+
+    public function setCurrencyAttribute($value): void
+    {
+        $this->attributes['currency'] = 'AUD';
+    }
 }

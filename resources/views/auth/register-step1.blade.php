@@ -127,16 +127,30 @@
                                     <option value="">Select Country</option>
                                     <option value="Australia" {{ old('country', $progress->country ?? '') == 'Australia' ? 'selected' : '' }}>Australia</option>
                                     <option value="New Zealand" {{ old('country', $progress->country ?? '') == 'New Zealand' ? 'selected' : '' }}>New Zealand</option>
-                                    <option value="Singapore" {{ old('country', $progress->country ?? '') == 'Singapore' ? 'selected' : '' }}>Singapore</option>
-                                    <option value="United States" {{ old('country', $progress->country ?? '') == 'United States' ? 'selected' : '' }}>United States</option>
-                                    <option value="United Kingdom" {{ old('country', $progress->country ?? '') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
-                                    <option value="Canada" {{ old('country', $progress->country ?? '') == 'Canada' ? 'selected' : '' }}>Canada</option>
-                                    <option value="Germany" {{ old('country', $progress->country ?? '') == 'Germany' ? 'selected' : '' }}>Germany</option>
-                                    <option value="France" {{ old('country', $progress->country ?? '') == 'France' ? 'selected' : '' }}>France</option>
+                                    <option value="USA" {{ old('country', $progress->country ?? '') == 'USA' ? 'selected' : '' }}>USA</option>
                                     <option value="China" {{ old('country', $progress->country ?? '') == 'China' ? 'selected' : '' }}>China</option>
+                                    <option value="Germany" {{ old('country', $progress->country ?? '') == 'Germany' ? 'selected' : '' }}>Germany</option>
                                     <option value="Japan" {{ old('country', $progress->country ?? '') == 'Japan' ? 'selected' : '' }}>Japan</option>
+                                    <option value="United Kingdom" {{ old('country', $progress->country ?? '') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
+                                    <option value="France" {{ old('country', $progress->country ?? '') == 'France' ? 'selected' : '' }}>France</option>
+                                    <option value="Italy" {{ old('country', $progress->country ?? '') == 'Italy' ? 'selected' : '' }}>Italy</option>
+                                    <option value="Brazil" {{ old('country', $progress->country ?? '') == 'Brazil' ? 'selected' : '' }}>Brazil</option>
+                                    <option value="Canada" {{ old('country', $progress->country ?? '') == 'Canada' ? 'selected' : '' }}>Canada</option>
+                                    <option value="Russia" {{ old('country', $progress->country ?? '') == 'Russia' ? 'selected' : '' }}>Russia</option>
+                                    <option value="South Korea" {{ old('country', $progress->country ?? '') == 'South Korea' ? 'selected' : '' }}>South Korea</option>
+                                    <option value="Spain" {{ old('country', $progress->country ?? '') == 'Spain' ? 'selected' : '' }}>Spain</option>
+                                    <option value="Turkiye" {{ old('country', $progress->country ?? '') == 'Turkiye' ? 'selected' : '' }}>Turkiye</option>
+                                    <option value="Singapore" {{ old('country', $progress->country ?? '') == 'Singapore' ? 'selected' : '' }}>Singapore</option>
+                                    <option value="Saudi Arabia" {{ old('country', $progress->country ?? '') == 'Saudi Arabia' ? 'selected' : '' }}>Saudi Arabia</option>
+                                    <option value="Thailand" {{ old('country', $progress->country ?? '') == 'Thailand' ? 'selected' : '' }}>Thailand</option>
+                                    <option value="Sweden" {{ old('country', $progress->country ?? '') == 'Sweden' ? 'selected' : '' }}>Sweden</option>
+                                    <option value="Ireland" {{ old('country', $progress->country ?? '') == 'Ireland' ? 'selected' : '' }}>Ireland</option>
                                     <option value="India" {{ old('country', $progress->country ?? '') == 'India' ? 'selected' : '' }}>India</option>
-                                    <option value="Other" {{ old('country', $progress->country ?? '') == 'Other' ? 'selected' : '' }}>Other</option>
+                                    <option value="Malaysia" {{ old('country', $progress->country ?? '') == 'Malaysia' ? 'selected' : '' }}>Malaysia</option>
+                                    <option value="Argentina" {{ old('country', $progress->country ?? '') == 'Argentina' ? 'selected' : '' }}>Argentina</option>
+                                    <option value="Austria" {{ old('country', $progress->country ?? '') == 'Austria' ? 'selected' : '' }}>Austria</option>
+                                    <option value="Azerbaijan" {{ old('country', $progress->country ?? '') == 'Azerbaijan' ? 'selected' : '' }}>Azerbaijan</option>
+                                    <option value="Bangladesh" {{ old('country', $progress->country ?? '') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
                                 </select>
                             </div>
                             <div>

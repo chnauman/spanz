@@ -178,7 +178,7 @@ class TenderController extends Controller
                 'description' => 'required|string',
                 'budget' => 'required|string|in:1000,5000,10000,30000,50000,100000,500000,1000000,1000001',
                 'location' => 'required|string',
-                'currency' => 'required|string|in:AUD,USD,EUR,GBP,SGD,NZD',
+                'currency' => 'required|string|in:AUD',
                 'deadline' => 'required|date|after:today',
                 'requirements' => 'nullable|string',
                 'contact_email' => 'nullable|email',
