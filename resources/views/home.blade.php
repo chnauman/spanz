@@ -291,7 +291,10 @@
                     <!-- Logo -->
                     <div class="flex-shrink-0">
                         <a href="{{ route('home') }}" class="hero-brand block">
-                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                            <img src="{{ asset('spanz-img/logo.png') }}"
+                                 onerror="this.onerror=null;this.src='{{ url('public/spanz-img/logo.png') }}';"
+                                 alt="Spanz"
+                                 style="height: 42px; width: auto; display: block;">
                         </a>
                     </div>
 
@@ -494,7 +497,10 @@
         </div>
         <!-- Right Image Section -->
         <div class="w-full lg:w-1/2 flex justify-center mt-8 lg:mt-0">
-            <img src="{{ asset('images/home-for-buyers.png') }}" alt="For Buyers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
+            <img src="{{ asset('images/home-for-buyers.png') }}"
+                 onerror="this.onerror=null;this.src='{{ url('public/images/home-for-buyers.png') }}';"
+                 alt="For Buyers"
+                 class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
         </div>
     </div>
 
@@ -502,7 +508,10 @@
     <div class="flex flex-col-reverse lg:flex-row justify-evenly items-center px-5 lg:px-20 py-12">
         <!-- Left: Image -->
         <div class="flex mt-8 lg:mt-0">
-            <img src="{{ asset('images/home-for-suppliers.png') }}" alt="For Suppliers" class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
+            <img src="{{ asset('images/home-for-suppliers.png') }}"
+                 onerror="this.onerror=null;this.src='{{ url('public/images/home-for-suppliers.png') }}';"
+                 alt="For Suppliers"
+                 class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
         </div>
         <!-- Right: Text -->
         <div class="w-full lg:w-1/2 text-center flex justify-center lg:text-left mt-8 lg:mt-0">
