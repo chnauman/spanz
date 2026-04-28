@@ -123,6 +123,19 @@
             pointer-events: auto !important;
             transform: translateY(0) !important;
         }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.65rem 1rem !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            color: #0f3556 !important;
+        }
+
+        .dropdown-menu a:hover {
+            background: #eaf2ff !important;
+            color: #0d6aed !important;
+        }
     </style>
 </head>
 
@@ -132,8 +145,8 @@
             <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
-                        <a href="{{ route('home') }}" class="block">
-                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                        <a href="{{ route('home') }}" class="block text-white text-3xl font-extrabold italic tracking-widest leading-none" style="font-family: 'Eurostile', 'Orbitron', 'Arial Black', sans-serif;">
+                            SPANZ
                         </a>
                     </div>
 
@@ -315,11 +328,7 @@
         </div>
     </div>
 
-    <section class="bg-[#092C47] text-white py-10 px-5">
-        <div class="text-center text-sm pt-4">
-            <span class="px-5">Copyright © 2025 SPANZ Publishing Company. All Rights Reserved.</span>
-        </div>
-    </section>
+    @include('components.mainfooter')
 
     <!-- Purchase Request Modal -->
     <div id="purchase-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">

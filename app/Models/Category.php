@@ -40,6 +40,11 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_category_id');
     }
 
+    public function tenders()
+    {
+        return $this->hasMany(Tender::class, 'category_id');
+    }
+
     public function isParent()
     {
         return $this->subcategories()->exists();

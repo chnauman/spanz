@@ -44,16 +44,10 @@
             box-shadow: 0 16px 28px rgba(3, 39, 71, 0.18);
         }
 
-        .thomas-hero .hero-search-shell select,
         .thomas-hero .hero-search-shell input {
             height: 46px;
             border: 0;
             outline: none;
-            border-right: 1px solid var(--thomas-border);
-        }
-
-        .thomas-hero .hero-search-shell input {
-            border-right: 0;
         }
 
         .thomas-hero .hero-search-shell button {
@@ -144,6 +138,19 @@
             visibility: visible !important;
             pointer-events: auto !important;
             transform: translateY(0) !important;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.65rem 1rem !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            color: #0f3556 !important;
+        }
+
+        .dropdown-menu a:hover {
+            background: #eaf2ff !important;
+            color: #0d6aed !important;
         }
 
         /* Pricing Cards Styles */
@@ -290,11 +297,8 @@
                 <div class="flex items-center justify-between h-16">
                     <!-- Logo -->
                     <div class="flex-shrink-0">
-                        <a href="{{ route('home') }}" class="hero-brand block">
-                            <img src="{{ asset('spanz-img/logo.png') }}"
-                                 onerror="this.onerror=null;this.src='{{ url('public/spanz-img/logo.png') }}';"
-                                 alt="Spanz"
-                                 style="height: 42px; width: auto; display: block;">
+                        <a href="{{ route('home') }}" class="hero-brand block text-white text-3xl font-extrabold italic tracking-widest leading-none" style="font-family: 'Eurostile', 'Orbitron', 'Arial Black', sans-serif;">
+                            SPANZ
                         </a>
                     </div>
 
@@ -302,7 +306,7 @@
                     <div class="hidden md:flex space-x-6">
                         <!-- For Buyers Dropdown -->
                         <div class="dropdown-group">
-                            <button class="text-white hover:text-blue-400 flex items-center">
+                            <button class="text-white hover:text-blue-400 flex items-center text-lg font-bold">
                                 For Buyers ▾
                             </button>
                             <div class="dropdown-menu">
@@ -322,7 +326,7 @@
 
                         <!-- For Suppliers Dropdown -->
                         <div class="dropdown-group">
-                            <button class="text-white hover:text-blue-400 flex items-center">
+                            <button class="text-white hover:text-blue-400 flex items-center text-lg font-bold">
                                 For Suppliers ▾
                             </button>
                             <div class="dropdown-menu">
@@ -347,13 +351,13 @@
                             </div>
                         </div>
 
-                        <a href="#" class="text-white hover:text-blue-400">About</a>
+                        <a href="#" class="text-white hover:text-blue-400 text-lg font-bold">About</a>
                     </div>
 
                     <!-- Right Actions -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
-                        <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400">Products</a>
+                        <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400 text-lg font-bold">Tenders</a>
+                        <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400 text-lg font-bold">Products</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -446,21 +450,13 @@
         </nav><!-- Hero main content (centered) -->
             <div class="mt-28">
                 <div class="container mx-auto px-4 text-center">
-                    <h2 class="text-3xl sm:text-6xl text-[#0D6AED] font-bold leading-tight">SPANZ</h2>
+                    <h2 class="text-3xl sm:text-6xl text-[#0D6AED] font-bold leading-tight">Welcome to SPANZ</h2>
                     <p class="text-white mt-3 text-sm sm:text-lg">Search the largest network of trusted suppliers</p>
 
                     <!-- Search row: mobile stacked, sm inline -->
                     <form id="home-search-form" class="hero-search-shell mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-0 justify-center max-w-3xl mx-auto" onsubmit="return handleHomeSearch(event)">
-                        <!-- search type selector -->
-                        <div class="w-full sm:w-auto">
-                            <select id="home-search-type" class="w-full sm:w-44 px-3 py-2 bg-gray-50 text-gray-700">
-                                <option value="tenders">Tenders</option>
-                                <option value="products">Products</option>
-                            </select>
-                        </div>
-
                         <!-- input -->
-                        <input id="home-search-input" type="search" placeholder="Search by product, service, company or brand..." class="w-full sm:w-[34rem] px-3 py-2 text-gray-700 focus:outline-none"/>
+                        <input id="home-search-input" type="search" placeholder="Search by product, service, company or brand..." class="w-full sm:w-[34rem] pl-5 pr-3 py-2 text-gray-700 focus:outline-none"/>
 
                         <!-- search button -->
                         <div class="w-full sm:w-auto">
@@ -469,9 +465,13 @@
                     </form>
 
                     <!-- CTA row below search -->
-                    <div class="flex p-6 pb-14 justify-center gap-2 flex-wrap">
+                    <div class="flex p-6 pb-14 justify-center gap-2 flex-wrap items-center">
                         <span class="text-white text-sm sm:text-base">New to SPANZ?</span>
                         <span class="text-[#0D6AED] text-sm sm:text-base">Join FREE for FULL Access</span>
+                        <span class="text-white text-sm sm:text-base">|</span>
+                        <a href="#" onclick="openSubscriptionModal(); return false;" class="text-[#0D6AED] text-sm sm:text-base font-semibold hover:text-blue-300 underline">
+                            View Pricing
+                        </a>
                     </div>
                 </div>
             </div>
@@ -484,23 +484,23 @@
     <div class="flex flex-col-reverse lg:flex-row justify-evenly items-center px-5 lg:px-20 py-12">
         <!-- Left Text Section -->
         <div class=" text-center lg:text-left mt-8 lg:mt-0">
-            <span class="text-white bg-blue-950 px-5 py-1 rounded-full inline-block">For Buyers</span>
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0 lg:w-[26rem]">Every 10 seconds, a buyer finds what they need on SPANZ</h1>
+            <span class="text-blue-950 border border-blue-950 px-5 py-1 rounded-full inline-block font-semibold">Buyers</span>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0 lg:w-[26rem]">Get Qualified Quotes.</h1>
             <ul class="list-disc pl-5 text-blue-950 space-y-2 text-left inline-block lg:block">
-                <li>Access our network of 500,000+ trusted suppliers</li>
-                <li>Filter by Distance, Certification, and more</li>
-                <li>Evaluate Supplier Capabilities and Services</li>
-                <li>Get Direct Quotes</li>
-                <li>Source Parts and Services Today</li>
+                <li>Expand your supplier network across local & global markets</li>
+                <li>Designed for speed, simplicity and results</li>
+                <li>No purchase request is too Small - or too Big</li>
+                <li>Free to join - no complex setup or credit card required</li>
+                <li>Platform built on collaboration, quality, and support</li>
             </ul>
-            <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5">Search for a Supplier</button>
+            <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5 rounded-sm w-full sm:w-auto sm:min-w-[180px]">Post RFX, its free</button>
         </div>
         <!-- Right Image Section -->
         <div class="w-full lg:w-1/2 flex justify-center mt-8 lg:mt-0">
-            <img src="{{ asset('images/home-for-buyers.png') }}"
-                 onerror="this.onerror=null;this.src='{{ url('public/images/home-for-buyers.png') }}';"
+            <img src="{{ asset('spanz-img/home-hero-industrial-team.png') }}"
+                 onerror="this.onerror=null;this.src='{{ url('public/spanz-img/home-hero-industrial-team.png') }}';"
                  alt="For Buyers"
-                 class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
+                 class="w-full max-w-md sm:max-w-lg lg:w-[34rem]">
         </div>
     </div>
 
@@ -511,149 +511,22 @@
             <img src="{{ asset('images/home-for-suppliers.png') }}"
                  onerror="this.onerror=null;this.src='{{ url('public/images/home-for-suppliers.png') }}';"
                  alt="For Suppliers"
-                 class="w-full max-w-sm sm:max-w-md lg:w-[29rem]">
+                 class="w-full max-w-md sm:max-w-lg lg:w-[34rem]">
         </div>
         <!-- Right: Text -->
         <div class="w-full lg:w-1/2 text-center flex justify-center lg:text-left mt-8 lg:mt-0">
             <div>
-                <span class="text-white bg-blue-950 px-5 py-1 rounded-full inline-block">For Suppliers</span>
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0 lg:w-[26rem]">Make every marketing dollar count. Get discovered on SPANZ.</h1>
+                <span class="text-blue-950 border border-blue-950 px-5 py-1 rounded-full inline-block font-semibold">Suppliers</span>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl text-blue-950 py-5 mx-auto lg:mx-0 lg:w-[26rem]">Capture Buyer Leads & RFXs</h1>
                 <ul class="list-disc pl-5 text-blue-950 space-y-2 text-left inline-block lg:block">
-                    <li>Join a trusted Network of Suppliers</li>
-                    <li>Customize your Ad budget</li>
-                    <li>Define your target market</li>
-                    <li>Pay for what you get</li>
-                    <li>Drive results & track your progress</li>
+                    <li>Capture business leads without heavy marketing spend</li>
+                    <li>Discover and engage verified, credible buyers</li>
+                    <li>Promote your business capabilities to ANZ and global buyers</li>
+                    <li>Free to join - no complex setup or credit card required.</li>
+                    <li>Simple, intuitive, and user-friendly interface</li>
                 </ul>
 
-                <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5">Get Started Today</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pricing Cards Section -->
-    <div class="bg-gray-50 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header -->
-            <div class="text-center mb-10">
-                <h1 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Plan</h1>
-                <p class="text-xl text-gray-600">Select the perfect subscription plan for your business needs</p>
-            </div>
-
-            <div class="rounded-3xl border border-blue-100 bg-gradient-to-b from-white via-white to-blue-50/40 px-4 py-8 shadow-sm sm:px-6 sm:py-10">
-                @include('components.pricing-intro-banner')
-
-                <!-- Pricing Cards -->
-                <div class="flex flex-wrap items-stretch justify-center gap-4 mt-4 xl:flex-nowrap xl:justify-between" style="min-height: 3.6in;">
-                    @foreach($subscriptions as $index => $subscription)
-                        @if($subscription->is_active)
-                            @php
-                                $userHasActiveSubscription = auth()->check() && auth()->user()->getActiveSubscription();
-                            $isBasicPlan = in_array(strtolower($subscription->name), ['basic', 'buyer']);
-                                $shouldShowBasic = !$userHasActiveSubscription;
-                                $shouldHideBasic = false;
-                            @endphp
-
-                            @if(!$shouldHideBasic)
-                                <div class="subscription-card relative group flex cursor-pointer {{ $index === 0 ? 'active' : '' }}"
-                                     data-plan="{{ strtolower($subscription->name) }}"
-                                     data-subscription-id="{{ $subscription->id }}">
-                                    <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex h-full w-full min-h-[4.85in] flex-col">
-                                        @if($subscription->name === 'Professional')
-                                            <!-- Most Popular Badge -->
-                                            <div class="absolute -top-2 right-2 most-popular-badge z-20">
-                                                <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                                    MOST POPULAR
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        <div class="text-center h-full flex flex-col w-full">
-                                            <div class="flex-1 flex flex-col">
-                                                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                                                <div class="text-3xl font-bold text-gray-900 mb-2">
-                                                    AU${{ number_format((float) $subscription->price, 0) }}
-                                                    <span class="text-sm text-gray-500">/mo.</span>
-                                                </div>
-                                                <p class="text-gray-600 text-sm mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
-
-                                                @if(!empty($subscription->features))
-                                                    <ul class="text-left text-xs text-gray-700 space-y-1.5 mb-4 flex-1">
-                                                        @foreach($subscription->features as $feature)
-                                                            <li class="flex items-start gap-2">
-                                                                <span class="mt-0.5 text-[#0D6AED]">✓</span>
-                                                                <span>{{ $feature }}</span>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
-                                            </div>
-
-                                            <div class="mt-auto text-center space-y-3">
-                                                 <!-- Quota/Credits Display -->
-                                                 <div class="bg-blue-50 rounded-lg p-3">
-                                                     <div class="text-lg font-semibold text-[#0D6AED] mb-1">
-                                                         @if($subscription->credits_per_month < 0)
-                                                             Unlimited Credits
-                                                         @elseif($subscription->credits_per_month == 0)
-                                                             No Credits
-                                                         @else
-                                                             {{ $subscription->credits_per_month }} Credits
-                                                         @endif
-                                                     </div>
-                                                     <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
-                                                 </div>
-
-                                                @auth
-                                                    @if(auth()->user()->getActiveSubscription() && auth()->user()->getActiveSubscription()->subscription_id == $subscription->id)
-                                                        <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
-                                                            Current Plan
-                                                        </button>
-                                                    @elseif($isBasicPlan && !$userHasActiveSubscription)
-                                                        <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
-                                                            Current Plan
-                                                        </button>
-                                                    @else
-                                                        <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
-                                                                onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
-                                                            {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
-                                                        </button>
-                                                    @endif
-                                                @else
-                                                    <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
-                                                       class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
-                                                        Choose Plan
-                                                    </a>
-                                                @endauth
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        @endif
-                    @endforeach
-                </div>
-
-                @include('components.pricing-notes-footer')
-            </div>
-
-            <!-- FAQ Section -->
-            <div class="mt-16 max-w-3xl mx-auto">
-                <h2 class="thomas-section-heading text-3xl font-bold text-center text-gray-900 mb-8">Frequently Asked Questions</h2>
-                <div class="space-y-6">
-                    <div class="thomas-card p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">What are credits used for?</h3>
-                        <p class="text-gray-600">Credits are used to view detailed tender information, contact buyers, and access premium features.</p>
-                    </div>
-                    <div class="thomas-card p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I change my plan later?</h3>
-                        <p class="text-gray-600">Yes, you can upgrade or downgrade your subscription at any time.</p>
-                    </div>
-                    <div class="thomas-card p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there a free trial?</h3>
-                        <p class="text-gray-600">Yes, the Basic plan is free and allows you to browse tenders. Premium features require a paid subscription.</p>
-                    </div>
-                </div>
+                <button class="bg-[#0D6AED] text-white px-4 py-2 mt-5 rounded-sm w-full sm:w-auto sm:min-w-[180px]">Join the Pannel</button>
             </div>
         </div>
     </div>
@@ -700,15 +573,25 @@
         @foreach($categories as $category)
             <div>
                 <div class="font-semibold pb-4 {{ $category->name === 'Custom Manufacturing & Fabricating' ? 'w-44' : '' }}">
-                    <h2>{{ $category->name }}</h2>
+                    <h2>
+                        <a href="{{ route('tenders.search', ['category' => [$category->id]]) }}" class="hover:text-[#0D6AED]">
+                            {{ $category->name }}
+                        </a>
+                        <span class="text-xs font-semibold text-gray-600">
+                            ({{ (int) ($category->subcategories_tenders_total ?? 0) }})
+                        </span>
+                    </h2>
                 </div>
                 <div class="text-sm">
                     <ul>
                         @foreach($category->subcategories as $subcategory)
                             <li>
-                                <a href="/{{ strtolower(str_replace([' ', '&', '/'], ['-', '', ''], $subcategory->name)) }}">
+                                <a href="{{ route('tenders.search', ['category' => [$subcategory->id]]) }}" class="hover:text-[#0D6AED]">
                                     {{ $subcategory->name }}
                                 </a>
+                                <span class="text-xs font-semibold text-gray-600">
+                                    ({{ (int) ($subcategory->tenders_count ?? 0) }})
+                                </span>
                             </li>
                         @endforeach
                     </ul>
@@ -804,83 +687,7 @@
                 </footer>
         </div>
     </section>
-<section class="bg-[#092C47] text-white py-10 px-5">
-    <div class="flex flex-col md:flex-row md:justify-evenly gap-8 md:gap-0">
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>For Buyers</span>
-            </div>
-
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>Industry Insights</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Topic</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Index</a></li>
-                    <li><a href="#" class="hover:underline">Guides</a></li>
-                    <li><a href="#" class="hover:underline">White Papers</a></li>
-                    <li><a href="#" class="hover:underline">Certification Glossary</a></li>
-                    <li><a href="#" class="hover:underline">Subscribe</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>For Business</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Advertise</a></li>
-                    <li><a href="#" class="hover:underline">Content & Data Services</a></li>
-                    <li><a href="#" class="hover:underline">Marketing Services</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Reviews</a></li>
-                    <li><a href="#" class="hover:underline">Claim Your Company Profile</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Analytics</a></li>
-                    <li><a href="#" class="hover:underline">Events & Webinars</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>Site Map</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Categories</a></li>
-                    <li><a href="#" class="hover:underline">Featured Companies</a></li>
-                    <li><a href="#" class="hover:underline">Featured Categories</a></li>
-                    <li><a href="#" class="hover:underline">Featured Products</a></li>
-                    <li><a href="#" class="hover:underline">Featured Catalogs</a></li>
-
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>About Us</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">SPANZ Brand Center</a></li>
-                    <li><a href="#" class="hover:underline">Careers</a></li>
-                    <li><a href="#" class="hover:underline">Press Room</a></li>
-                    <li><a href="#" class="hover:underline">Sign Up</a></li>
-                    <li><a href="#" class="hover:underline">Sign In</a></li>
-                    <li><a href="#" class="hover:underline">Contact</a></li>
-                    <li><a href="#" class="hover:underline">Help Center</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="text-center text-sm pt-10">
-        <span class="px-5">Copyright © 2025 SPANZ Publishing Company. All Rights Reserved. See Terms And Conditions, Privacy Statement and California Do Not Track Notice. Website Last Motified September 3, 2025.
-            SPANZ Register and SPANZ Regional are part of spanz.Com. SPANZ is a registered trademark of SPANZ Publishing Company.
-        </span>
-    </div>
-</section>
+@include('components.mainfooter')
 <script>
   const menuBtn = document.getElementById("menu-btn");
   const mobileMenu = document.getElementById("mobile-menu");
@@ -891,22 +698,15 @@
 
   function handleHomeSearch(e) {
     e.preventDefault();
-    const type = document.getElementById('home-search-type')?.value || 'tenders';
     const query = document.getElementById('home-search-input')?.value || '';
     if (!query.trim()) {
-      // navigate to listing page if no query
-      window.location.href = type === 'products' ? "{{ route('products.search') }}" : "{{ route('tenders.search') }}";
+      // navigate to tenders listing page if no query
+      window.location.href = "{{ route('tenders.search') }}";
       return false;
     }
-    if (type === 'products') {
-      const url = new URL("{{ route('products.search') }}", window.location.origin);
-      url.searchParams.set('q', query);
-      window.location.href = url.toString();
-    } else {
-      const url = new URL("{{ route('tenders.search') }}", window.location.origin);
-      url.searchParams.set('search', query);
-      window.location.href = url.toString();
-    }
+    const url = new URL("{{ route('tenders.search') }}", window.location.origin);
+    url.searchParams.set('search', query);
+    window.location.href = url.toString();
     return false;
   }
 

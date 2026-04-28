@@ -1,86 +1,56 @@
-<section class="bg-[#092C47] text-white py-10 px-5">
-    <div class="flex flex-col md:flex-row md:justify-evenly gap-8 md:gap-0">
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>For Buyers</span>
-            </div>
-            <div>
-                <ul class="space-y-3">                    
-                    <li><a href="#" class="hover:underline">Supplier Discovery</a></li>
-                    <li><a href="#" class="hover:underline">Product Catalogs</a></li>
-                    <li><a href="#" class="hover:underline">CAD</a></li>
-                    <li><a href="#" class="hover:underline">Diversity</a></li>
-                    <li><a href="#" class="hover:underline">Instant Quotes</a></li>
-                    <li><a href="#" class="hover:underline">Buyer & Engineer Reviews</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>Industry Insights</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Topic</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Index</a></li>
-                    <li><a href="#" class="hover:underline">Guides</a></li>
-                    <li><a href="#" class="hover:underline">White Papers</a></li>
-                    <li><a href="#" class="hover:underline">Certification Glossary</a></li>
-                    <li><a href="#" class="hover:underline">Subscribe</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>For Business</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Advertise</a></li>
-                    <li><a href="#" class="hover:underline">Content & Data Services</a></li>
-                    <li><a href="#" class="hover:underline">Marketing Services</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Reviews</a></li>
-                    <li><a href="#" class="hover:underline">Claim Your Company Profile</a></li>
-                    <li><a href="#" class="hover:underline">SPANZ Analytics</a></li>
-                    <li><a href="#" class="hover:underline">Events & Webinars</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>Site Map</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">Categories</a></li>
-                    <li><a href="#" class="hover:underline">Featured Companies</a></li>
-                    <li><a href="#" class="hover:underline">Featured Categories</a></li>
-                    <li><a href="#" class="hover:underline">Featured Products</a></li>
-                    <li><a href="#" class="hover:underline">Featured Catalogs</a></li>
-                    
-                </ul>
+<footer class="bg-[#092C47] text-white">
+    <div class="px-5 py-16">
+        <div class="mx-auto w-full max-w-7xl">
+            <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-56 xl:gap-64">
+                <div class="lg:col-span-1 lg:max-w-[520px]">
+                    <h3 class="text-[12px] font-semibold tracking-[0.08em] uppercase">Global Support</h3>
+                    <p class="mt-4 text-[12px] leading-6 text-white/85">
+                        SPANZ is an Australian-owned organization serving a global clientele from our headquarters in Australia. We are dedicated to providing comprehensive email and phone support to our members during standard business hours.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-1 lg:justify-self-end lg:w-[240px] lg:ml-12 xl:ml-16">
+                    <h3 class="text-[12px] font-semibold tracking-[0.08em] uppercase">Our Services</h3>
+                    <ul class="mt-4 space-y-2 text-[12px] leading-6 text-white/85">
+                        <li><a href="{{ url('/pricing') }}" class="hover:underline underline-offset-4">Pricing</a></li>
+                        <li><a href="#" class="hover:underline underline-offset-4">How it works &amp; FAQ</a></li>
+                        <li><a href="#" class="hover:underline underline-offset-4">Buy Now Specials</a></li>
+                        <li><a href="#" class="hover:underline underline-offset-4">Join the Panel</a></li>
+                        <li><a href="#" class="hover:underline underline-offset-4">Our Terms &amp; Conditions</a></li>
+                        <li><a href="{{ route('login') }}" class="hover:underline underline-offset-4">Login</a></li>
+                    </ul>
+                </div>
+
+                <div class="lg:col-span-1 lg:w-[380px] lg:justify-self-end">
+                    <h3 class="text-[12px] font-semibold tracking-[0.08em] uppercase">Contact Email</h3>
+
+                    <div class="mt-4 space-y-4 text-[12px] leading-6 text-white/85">
+                        <div>
+                            <div class="font-semibold text-white">Existing Customer Support:</div>
+                            <a class="hover:underline underline-offset-4" href="mailto:support@spanz.com.au">support@spanz.com.au</a>
+                        </div>
+
+                        <div>
+                            <div class="font-semibold text-white">General Inquiries:</div>
+                            <a class="hover:underline underline-offset-4" href="mailto:enquiries@spanz.com.au">enquiries@spanz.com.au</a>
+                        </div>
+
+                        <div class="space-y-1">
+                            <div>Australia &amp; New Zealand: <a class="hover:underline underline-offset-4" href="mailto:anz@spanz.com.au">anz@spanz.com.au</a></div>
+                            <div>Asia Pacific: <a class="hover:underline underline-offset-4" href="mailto:apac@spanz.com.au">apac@spanz.com.au</a></div>
+                            <div>North, Central &amp; South America: <a class="hover:underline underline-offset-4" href="mailto:americas@spanz.com.au">americas@spanz.com.au</a></div>
+                            <div>Latin America: <a class="hover:underline underline-offset-4" href="mailto:latam@spanz.com.au">latam@spanz.com.au</a></div>
+                            <div>Europe, Middle East, Africa: <a class="hover:underline underline-offset-4" href="mailto:emea@spanz.com.au">emea@spanz.com.au</a></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="space-y-3">
-            <div class="font-semibold">
-                <span>About Us</span>
-            </div>
-            <div>
-                <ul class="space-y-3">
-                    <li><a href="#" class="hover:underline">SPANZ Brand Center</a></li>
-                    <li><a href="#" class="hover:underline">Careers</a></li>
-                    <li><a href="#" class="hover:underline">Press Room</a></li>
-                    <li><a href="#" class="hover:underline">Sign Up</a></li>
-                    <li><a href="#" class="hover:underline">Sign In</a></li>
-                    <li><a href="#" class="hover:underline">Contact</a></li>
-                    <li><a href="#" class="hover:underline">Help Center</a></li>
-                </ul>
-            </div>
-        </div>   
     </div>
-    <div class="text-center text-sm pt-10">
-        <span class="px-5">Copyright © 2025 SPANZ Publishing Company. All Rights Reserved. See Terms And Conditions, Privacy Statement and California Do Not Track Notice. Website Last Motified September 3, 2025.
-            SPANZ Register and SPANZ Regional are part of spanz.Com. SPANZ is a registered trademark of SPANZ Publishing Company.
-        </span>
-    </div>     
-</section>
+
+    <div class="border-t border-white/15 bg-white">
+        <div class="mx-auto max-w-7xl px-5 py-4 text-center text-[11px] leading-5" style="color:#092C47;">
+            © All rights reserved. Unauthorised use, reproduction, or distribution of the content of this website is strictly prohibited.
+        </div>
+    </div>
+</footer>

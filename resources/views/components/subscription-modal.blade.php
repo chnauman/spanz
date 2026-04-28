@@ -54,11 +54,11 @@
 .subscription-card {
     transition: all 0.3s ease;
     position: relative;
+    display: flex;
 }
 
 .subscription-card.active {
     z-index: 10;
-    transform: translateZ(20px) scale(1.05);
 }
 
 .subscription-card.active .bg-white {
@@ -66,7 +66,6 @@
     border-color: #0D6AED;
     color: white;
     box-shadow: 0 20px 40px rgba(13, 106, 237, 0.3);
-    transform: translateZ(20px) scale(1.05);
     border-radius: 1rem;
 }
 
@@ -160,7 +159,7 @@
                             <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
                                  data-plan="{{ strtolower($subscription->name) }}"
                                  data-subscription-id="{{ $subscription->id }}">
-                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; min-height: 4.6in;">
+                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 h-full" style="width: 3in; min-height: 4.6in;">
                                     @if($subscription->name === 'Professional')
                                         <!-- Most Popular Badge -->
                                         <div class="absolute -top-3 right-4 most-popular-badge">

@@ -107,8 +107,8 @@
             <div class="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex-shrink-0">
-                        <a href="{{ route('home') }}" class="block">
-                            <img src="{{ asset('spanz-img/logo.png') }}" alt="Spanz" style="height: 42px; width: auto; display: block;">
+                        <a href="{{ route('home') }}" class="block text-white text-3xl font-extrabold italic tracking-widest leading-none" style="font-family: 'Eurostile', 'Orbitron', 'Arial Black', sans-serif;">
+                            SPANZ
                         </a>
                     </div>
 
