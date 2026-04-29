@@ -44,7 +44,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($subscriptions as $subscription)
-                <div class="border border-gray-200 rounded-lg p-6 {{ $subscription->name === 'Professional' ? 'border-purple-300 bg-purple-50' : '' }} hover:shadow-lg transition-shadow">
+                <div class="subscription-card border border-gray-200 rounded-lg p-6 {{ $subscription->name === 'Professional' ? 'border-purple-300 bg-purple-50' : '' }} hover:shadow-lg transition-shadow"
+                     data-plan="{{ strtolower($subscription->name) }}"
+                     data-subscription-id="{{ $subscription->id }}">
                     @if($subscription->name === 'Professional')
                     <div class="text-center mb-4">
                         <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
@@ -95,13 +97,11 @@
                                 Current Plan
                             </button>
                         @else
-                            <form action="{{ route('subscription-requests.request', $subscription) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" 
-                                        class="w-full {{ $subscription->name === 'Professional' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
-                                    Request Subscription
-                                </button>
-                            </form>
+                            <button type="button"
+                                    onclick="selectSubscriptionPlan({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)"
+                                    class="w-full {{ $subscription->name === 'Professional' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
+                                Choose Plan
+                            </button>
                         @endif
                     </div>
                 </div>
@@ -109,6 +109,18 @@
             </div>
 
             @include('components.pricing-notes-footer')
+
+            <div id="subscriptionRequestConsentBox" class="mt-6 rounded-xl border border-gray-200 bg-white p-4">
+                <label class="flex items-start gap-3 text-sm text-gray-700">
+                    <input id="pricingTermsCheckbox" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600">
+                    <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
+                </label>
+                <div class="mt-4">
+                    <button id="submitSubscriptionRequestBtn" type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed" disabled onclick="submitSelectedSubscriptionRequest()">
+                        Submit Request
+                    </button>
+                </div>
+            </div>
             
             <div class="mt-8 text-center">
                 <p class="text-sm text-gray-500">
@@ -124,4 +136,72 @@
         </div>
     </div>
 </div>
+
+<script>
+    let selectedSubscriptionId = null;
+    let selectedPlanName = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const cards = document.querySelectorAll('.subscription-card');
+        const checkbox = document.getElementById('pricingTermsCheckbox');
+        if (checkbox) {
+            checkbox.addEventListener('change', updateSubmitRequestButtonState);
+        }
+
+        cards.forEach(card => {
+            card.addEventListener('click', function () {
+                cards.forEach(c => c.classList.remove('ring-2', 'ring-blue-400'));
+                card.classList.add('ring-2', 'ring-blue-400');
+            });
+        });
+    });
+
+    function selectSubscriptionPlan(subscriptionId, planName, button) {
+        if (button.disabled) return;
+        selectedSubscriptionId = String(subscriptionId);
+        selectedPlanName = planName;
+
+        const cards = document.querySelectorAll('.subscription-card');
+        cards.forEach(c => c.classList.remove('ring-2', 'ring-blue-400'));
+        const selectedCard = button.closest('.subscription-card');
+        if (selectedCard) selectedCard.classList.add('ring-2', 'ring-blue-400');
+
+        updateSubmitRequestButtonState();
+    }
+
+    function updateSubmitRequestButtonState() {
+        const submitButton = document.getElementById('submitSubscriptionRequestBtn');
+        const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+        if (!submitButton || !termsCheckbox) return;
+        submitButton.disabled = !(selectedSubscriptionId && termsCheckbox.checked);
+    }
+
+    function submitSelectedSubscriptionRequest() {
+        const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+        if (!selectedSubscriptionId) {
+            alert('Please choose a plan first.');
+            return;
+        }
+        if (!termsCheckbox || !termsCheckbox.checked) {
+            alert('Please accept Terms & Conditions first.');
+            return;
+        }
+
+        fetch(`/subscription-requests-by-id/${selectedSubscriptionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        }).then(async response => {
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Request failed.');
+            }
+            window.location.reload();
+        }).catch(error => {
+            alert(error.message || 'Unable to submit request.');
+        });
+    }
+</script>
 @endsection

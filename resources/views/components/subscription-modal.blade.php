@@ -57,6 +57,13 @@
     display: flex;
 }
 
+.subscription-plans-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: stretch;
+}
+
 .subscription-card.active {
     z-index: 10;
 }
@@ -133,7 +140,7 @@
 </style>
 
 <div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full hidden z-[9999] backdrop-blur-sm flex items-start justify-center p-4 pt-8" onclick="closeModalOnBackdrop(event)">
-    <div class="w-full max-w-4xl" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[1320px]" onclick="event.stopPropagation()">
         <!-- Modal Content with Animation -->
         <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-500 ease-out scale-95 opacity-0" id="modalContent">
             <!-- Header with Gradient -->
@@ -153,13 +160,17 @@
 
             <!-- Content -->
             <div class="p-4 pb-6">
-                <div class="flex flex-wrap justify-center gap-4 mt-3 xl:flex-nowrap xl:justify-between" style="min-height: 3.6in;">
+                <div class="mb-2">
+                    @include('components.pricing-intro-banner')
+                </div>
+
+                <div class="mt-3 subscription-plans-grid">
                     @foreach($subscriptions as $index => $subscription)
                         @if($subscription->is_active)
                             <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
                                  data-plan="{{ strtolower($subscription->name) }}"
                                  data-subscription-id="{{ $subscription->id }}">
-                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 h-full" style="width: 3in; min-height: 4.6in;">
+                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 h-full min-h-[560px]">
                                     @if($subscription->name === 'Professional')
                                         <!-- Most Popular Badge -->
                                         <div class="absolute -top-3 right-4 most-popular-badge">
@@ -204,7 +215,8 @@
                                              </div>
                                         </div>
 
-                                        <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105">
+                                        <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
+                                                onclick="selectSubscriptionPlan('{{ $subscription->id }}', '{{ strtolower($subscription->name) }}', this)">
                                             Choose Plan
                                         </button>
                                     </div>
@@ -215,6 +227,18 @@
                 </div>
 
                 @include('components.pricing-notes-footer', ['compact' => true])
+
+                <div id="subscriptionRequestConsentBoxModal" class="mt-4 rounded-xl border border-gray-200 bg-white p-4">
+                    <label class="flex items-start gap-3 text-sm text-gray-700">
+                        <input id="pricingTermsCheckboxModal" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#092C48] focus:ring-[#092C48]">
+                        <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
+                    </label>
+                    <div class="mt-4 flex justify-start">
+                        <button id="submitSubscriptionRequestBtnModal" type="button" class="w-[170px] bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:transform-none" disabled onclick="submitSelectedSubscriptionRequest()">
+                            Submit Request
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Footer -->
                 <div class="mt-6 text-center">
@@ -244,6 +268,7 @@ function openSubscriptionModal() {
 
     // Check localStorage status when modal opens
     checkLocalStorageStatus();
+    updateSubmitRequestButtonState();
 
     // Trigger animation
     setTimeout(() => {
@@ -281,7 +306,11 @@ function closeModalOnBackdrop(event) {
 // Handle card selection and button clicks
 document.addEventListener('DOMContentLoaded', function() {
     initializeSubscriptionCards();
+    initializeSubscriptionSubmitControls();
 });
+
+let selectedSubscriptionId = null;
+let selectedPlanName = null;
 
 function initializeSubscriptionCards() {
     const cards = document.querySelectorAll('.subscription-card');
@@ -302,22 +331,69 @@ function initializeSubscriptionCards() {
         });
     });
 
-    // Handle button clicks for subscription requests
+    // Keep button click from selecting the whole card twice
     buttons.forEach(button => {
         button.addEventListener('click', function(event) {
             event.stopPropagation(); // Prevent card click
-
-            const card = this.closest('.subscription-card');
-            const subscriptionId = card.getAttribute('data-subscription-id');
-            const planName = card.getAttribute('data-plan');
-
-            // Request subscription
-            requestSubscription(subscriptionId, planName, this);
         });
     });
 }
 
-function requestSubscription(subscriptionId, planName, button) {
+function initializeSubscriptionSubmitControls() {
+    const checkbox = document.getElementById('pricingTermsCheckboxModal');
+    if (checkbox) {
+        checkbox.addEventListener('change', updateSubmitRequestButtonState);
+    }
+    updateSubmitRequestButtonState();
+}
+
+function selectSubscriptionPlan(subscriptionId, planName, button) {
+    if (button.disabled) return;
+
+    selectedSubscriptionId = String(subscriptionId);
+    selectedPlanName = planName;
+
+    const cards = document.querySelectorAll('.subscription-card');
+    cards.forEach(card => card.classList.remove('active'));
+    const activeCard = button.closest('.subscription-card');
+    if (activeCard) activeCard.classList.add('active');
+
+    updateSubmitRequestButtonState();
+}
+
+function updateSubmitRequestButtonState() {
+    const submitButton = document.getElementById('submitSubscriptionRequestBtnModal');
+    const termsCheckbox = document.getElementById('pricingTermsCheckboxModal');
+    if (!submitButton || !termsCheckbox) return;
+    submitButton.disabled = !(selectedSubscriptionId && termsCheckbox.checked);
+}
+
+function submitSelectedSubscriptionRequest() {
+    const submitButton = document.getElementById('submitSubscriptionRequestBtnModal');
+    const termsCheckbox = document.getElementById('pricingTermsCheckboxModal');
+
+    if (!selectedSubscriptionId) {
+        showNotification('Please choose a plan first.', 'error');
+        return;
+    }
+    if (!termsCheckbox || !termsCheckbox.checked) {
+        showNotification('Please accept Terms & Conditions first.', 'error');
+        return;
+    }
+
+    const selectedCard = document.querySelector(`.subscription-card[data-subscription-id="${selectedSubscriptionId}"]`);
+    const selectedCardButton = selectedCard ? selectedCard.querySelector('button') : null;
+    if (!selectedCardButton || selectedCardButton.disabled) {
+        showNotification('Selected plan is not available for request.', 'error');
+        return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+    requestSubscription(selectedSubscriptionId, selectedPlanName, selectedCardButton, submitButton);
+}
+
+function requestSubscription(subscriptionId, planName, button, submitButton = null) {
     console.log('Requesting subscription:', { subscriptionId, planName });
     console.log('Subscription ID type:', typeof subscriptionId);
     console.log('Subscription ID value:', subscriptionId);
@@ -418,11 +494,19 @@ function requestSubscription(subscriptionId, planName, button) {
 
             // Disable all other subscription cards
             disableAllOtherSubscriptionCards(subscriptionId);
+            selectedSubscriptionId = null;
+            selectedPlanName = null;
+            const termsCheckbox = document.getElementById('pricingTermsCheckboxModal');
+            if (termsCheckbox) termsCheckbox.checked = false;
+            if (submitButton) submitButton.textContent = 'Submit Request';
+            updateSubmitRequestButtonState();
         } else {
             showNotification(data.message || 'An error occurred. Please try again.', 'error');
             button.textContent = originalText;
             button.disabled = false;
             button.classList.remove('opacity-75', 'cursor-not-allowed');
+            if (submitButton) submitButton.textContent = 'Submit Request';
+            updateSubmitRequestButtonState();
         }
     })
     .catch(error => {
@@ -431,6 +515,8 @@ function requestSubscription(subscriptionId, planName, button) {
         button.textContent = originalText;
         button.disabled = false;
         button.classList.remove('opacity-75', 'cursor-not-allowed');
+        if (submitButton) submitButton.textContent = 'Submit Request';
+        updateSubmitRequestButtonState();
     });
 }
 

@@ -289,8 +289,8 @@
                                             </button>
                                         @else
                                                                 <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
-                                                                        onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
-                                                                    {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
+                                                                        onclick="selectSubscriptionPlan({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
+                                                                    Choose Plan
                                             </button>
                                         @endif
                                                         @else
@@ -309,6 +309,17 @@
                         </div>
 
                         @include('components.pricing-notes-footer')
+                        <div id="subscriptionRequestConsentBox" class="mt-6 rounded-xl border border-gray-200 bg-white p-4">
+                            <label class="flex items-start gap-3 text-sm text-gray-700">
+                                <input id="pricingTermsCheckbox" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#092C48] focus:ring-[#092C48]">
+                                <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
+                            </label>
+                            <div class="mt-4">
+                                <button id="submitSubscriptionRequestBtn" type="button" class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:transform-none" disabled onclick="submitSelectedSubscriptionRequest()">
+                                    Submit Request
+                                </button>
+                            </div>
+                        </div>
                     @else
                         <div class="text-center py-8">
                             <p class="text-gray-500">No subscription plans available at the moment.</p>
@@ -369,7 +380,11 @@
         clearStaleLocalStorage();
         checkSubscriptionStatus();
         checkDowngradeRequestStatus();
+        initializeSubscriptionSubmitControls();
     });
+
+    let selectedSubscriptionId = null;
+    let selectedPlanName = null;
 
     function clearStaleLocalStorage() {
         // Clear any stale localStorage entries that don't have corresponding database records
@@ -402,7 +417,65 @@
         });
     }
 
-    function requestSubscription(subscriptionId, planName, button) {
+    function initializeSubscriptionSubmitControls() {
+        const checkbox = document.getElementById('pricingTermsCheckbox');
+        if (checkbox) {
+            checkbox.addEventListener('change', updateSubmitRequestButtonState);
+        }
+        updateSubmitRequestButtonState();
+    }
+
+    function selectSubscriptionPlan(subscriptionId, planName, button) {
+        if (button.disabled) return;
+
+        selectedSubscriptionId = String(subscriptionId);
+        selectedPlanName = planName;
+
+        const cards = document.querySelectorAll('.subscription-card');
+        cards.forEach(card => card.classList.remove('active'));
+        const activeCard = button.closest('.subscription-card');
+        if (activeCard) {
+            activeCard.classList.add('active');
+        }
+
+        updateSubmitRequestButtonState();
+    }
+
+    function updateSubmitRequestButtonState() {
+        const submitButton = document.getElementById('submitSubscriptionRequestBtn');
+        const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+        if (!submitButton || !termsCheckbox) return;
+
+        submitButton.disabled = !(selectedSubscriptionId && termsCheckbox.checked);
+    }
+
+    function submitSelectedSubscriptionRequest() {
+        const submitButton = document.getElementById('submitSubscriptionRequestBtn');
+        const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+
+        if (!selectedSubscriptionId) {
+            showNotification('Please choose a plan first.', 'error');
+            return;
+        }
+
+        if (!termsCheckbox || !termsCheckbox.checked) {
+            showNotification('Please accept Terms & Conditions first.', 'error');
+            return;
+        }
+
+        const selectedCard = document.querySelector(`.subscription-card[data-subscription-id="${selectedSubscriptionId}"]`);
+        const selectedCardButton = selectedCard ? selectedCard.querySelector('button') : null;
+        if (!selectedCardButton || selectedCardButton.disabled) {
+            showNotification('Selected plan is not available for request.', 'error');
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+        requestSubscription(selectedSubscriptionId, selectedPlanName, selectedCardButton, submitButton);
+    }
+
+    function requestSubscription(subscriptionId, planName, button, submitButton = null) {
         console.log('Requesting subscription:', { subscriptionId, planName });
         console.log('Subscription ID type:', typeof subscriptionId);
         console.log('Subscription ID value:', subscriptionId);
@@ -517,10 +590,19 @@
                 // Clear the request in progress flag
                 window.subscriptionRequestInProgress = false;
 
+                selectedSubscriptionId = null;
+                selectedPlanName = null;
+                const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+                if (termsCheckbox) termsCheckbox.checked = false;
+                if (submitButton) submitButton.textContent = 'Submit Request';
+                updateSubmitRequestButtonState();
+
             } else {
                 showNotification(data.message || 'An error occurred. Please try again.', 'error');
                 resetButtonToOriginal(button, originalText);
                 window.subscriptionRequestInProgress = false;
+                if (submitButton) submitButton.textContent = 'Submit Request';
+                updateSubmitRequestButtonState();
             }
         })
         .catch(error => {
@@ -528,6 +610,8 @@
             showNotification(error.message || 'An error occurred. Please try again.', 'error');
             resetButtonToOriginal(button, originalText);
             window.subscriptionRequestInProgress = false;
+            if (submitButton) submitButton.textContent = 'Submit Request';
+            updateSubmitRequestButtonState();
         });
     }
 

@@ -64,43 +64,14 @@
         }
 
         .subscription-card.active {
-            z-index: 10;
-            transform: translateZ(20px) scale(1.05);
+            z-index: 2;
+            transform: none;
         }
 
         .subscription-card.active .bg-white {
-            background: linear-gradient(135deg, #092C48 0%, #0D6AED 100%);
-            border-color: #0D6AED;
-            color: white;
-            box-shadow: 0 20px 40px rgba(13, 106, 237, 0.3);
-            transform: translateZ(20px) scale(1.05);
-            border-radius: 1rem;
-        }
-
-        .subscription-card.active .text-gray-900 {
-            color: white;
-        }
-
-        .subscription-card.active .text-gray-700 {
-            color: #e5e7eb;
-        }
-
-        .subscription-card.active .text-gray-600 {
-            color: #d1d5db;
-        }
-
-        .subscription-card.active .text-gray-500 {
-            color: #9ca3af;
-        }
-
-        .subscription-card.active button {
-            background: white;
-            color: #092C48;
-        }
-
-        .subscription-card.active button:hover {
-            background: #f3f4f6;
-            color: #092C48;
+            border-color: #d1d5db;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+            transform: none;
         }
 
         /* Requested button styling - always visible */
@@ -151,19 +122,13 @@
 
             <!-- Main Content -->
             <div class="flex-1 overflow-y-auto">
-                <div class="min-h-screen bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <!-- Header -->
-                <div class="text-center mb-10">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Plan</h1>
-                    <p class="text-xl text-gray-600">Select the perfect subscription plan for your business needs</p>
-                </div>
-
-                <div class="rounded-3xl border border-blue-100 bg-gradient-to-b from-white via-white to-blue-50/40 px-4 py-8 shadow-sm sm:px-6 sm:py-10">
+                <div class="min-h-screen bg-[#f4f4f4]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="rounded-3xl border border-gray-200 bg-[#f8f8f8] px-4 py-8 shadow-sm sm:px-8 sm:py-10">
                     @include('components.pricing-intro-banner')
 
                     <!-- Pricing Cards -->
-                    <div class="flex flex-wrap justify-center gap-4 mt-4 xl:flex-nowrap xl:justify-between" style="min-height: 3.6in;">
+                    <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                         @foreach($subscriptions as $index => $subscription)
                             @if($subscription->is_active)
                                 @php
@@ -177,27 +142,27 @@
                                     <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
                                          data-plan="{{ strtolower($subscription->name) }}"
                                          data-subscription-id="{{ $subscription->id }}">
-                                        <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; min-height: 4.6in;">
+                                        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex h-full flex-col">
                                             @if($subscription->name === 'Professional')
                                                 <!-- Most Popular Badge -->
-                                                <div class="absolute -top-2 right-2 most-popular-badge z-20">
-                                                    <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                                        MOST POPULAR
+                                                <div class="absolute -top-3 right-3 most-popular-badge z-20">
+                                                    <div class="bg-gray-800 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg">
+                                                        Most Popular
                                                     </div>
                                                 </div>
                                             @endif
 
                                             <div class="text-center h-full flex flex-col justify-between">
                                                 <div>
-                                                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                                                    <div class="text-3xl font-bold text-gray-900 mb-2">
+                                                    <h3 class="text-3xl font-extrabold text-gray-900 mb-1">{{ $subscription->name }}</h3>
+                                                    <p class="text-sm text-gray-600 mb-1">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
+                                                    <div class="text-4xl font-extrabold text-gray-900 leading-none mb-3">
                                                         AU${{ number_format((float) $subscription->price, 0) }}
-                                                        <span class="text-sm text-gray-500">/mo.</span>
+                                                        <span class="text-base font-semibold text-gray-500">/mo.</span>
                                                     </div>
-                                                    <p class="text-gray-600 text-sm mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
 
                                                     @if(!empty($subscription->features))
-                                                        <ul class="text-left text-xs text-gray-700 space-y-1.5 mb-4">
+                                                        <ul class="text-left text-sm text-gray-700 space-y-1.5 mb-4">
                                                             @foreach($subscription->features as $feature)
                                                                 <li class="flex items-start gap-2">
                                                                     <span class="mt-0.5 text-[#0D6AED]">✓</span>
@@ -208,8 +173,8 @@
                                                     @endif
 
                                                      <!-- Quota/Credits Display -->
-                                                     <div class="bg-blue-50 rounded-lg p-3 mb-4">
-                                                         <div class="text-lg font-semibold text-[#0D6AED] mb-1">
+                                                     <div class="bg-blue-50 rounded-lg p-3 mb-5">
+                                                         <div class="text-base font-semibold text-[#0D6AED] mb-1">
                                                              @if($subscription->credits_per_month < 0)
                                                                  Unlimited Credits
                                                              @elseif($subscription->credits_per_month == 0)
@@ -225,22 +190,22 @@
                                                 <div class="text-center">
                                                     @auth
                                                         @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
-                                                            <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                            <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold cursor-not-allowed">
                                                                 Current Plan
                                                             </button>
                                                         @elseif($isBasicPlan && !$userHasActiveSubscription)
-                                                            <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                            <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold cursor-not-allowed">
                                                                 Current Plan
                                                             </button>
                                                         @else
-                                                            <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
-                                                                    onclick="requestSubscription({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
-                                                                {{ $subscription->price == 0 ? 'Get Started' : 'Request Subscription' }}
+                                                            <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300"
+                                                                    onclick="selectSubscriptionPlan({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
+                                                                Choose Plan
                                                             </button>
                                                         @endif
                                                     @else
                                                         <a href="{{ route('register') }}"
-                                                           class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
+                                                           class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300 inline-block text-center">
                                                             Sign Up
                                                         </a>
                                                     @endauth
@@ -254,6 +219,18 @@
                     </div>
 
                     @include('components.pricing-notes-footer')
+
+                    <div id="subscriptionRequestConsentBox" class="mt-6 rounded-xl border border-gray-200 bg-white p-4">
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="pricingTermsCheckbox" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d4f8b] focus:ring-[#0d4f8b]">
+                            <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
+                        </label>
+                        <div class="mt-4">
+                            <button id="submitSubscriptionRequestBtn" type="button" class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed" disabled onclick="submitSelectedSubscriptionRequest()">
+                                Submit Request
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- FAQ Section -->
@@ -286,7 +263,11 @@
             clearStaleLocalStorage();
             checkSubscriptionStatus();
             checkDowngradeRequestStatus();
+            initializeSubscriptionSubmitControls();
         });
+
+        let selectedSubscriptionId = null;
+        let selectedPlanName = null;
 
         function clearStaleLocalStorage() {
             // Clear any stale localStorage entries that don't have corresponding database records
@@ -319,7 +300,69 @@
             });
         }
 
-        function requestSubscription(subscriptionId, planName, button) {
+        function initializeSubscriptionSubmitControls() {
+            const checkbox = document.getElementById('pricingTermsCheckbox');
+            if (checkbox) {
+                checkbox.addEventListener('change', updateSubmitRequestButtonState);
+            }
+            updateSubmitRequestButtonState();
+        }
+
+        function selectSubscriptionPlan(subscriptionId, planName, button) {
+            if (button.disabled) return;
+
+            selectedSubscriptionId = String(subscriptionId);
+            selectedPlanName = planName;
+
+            const cards = document.querySelectorAll('.subscription-card');
+            cards.forEach(card => card.classList.remove('active'));
+            const activeCard = button.closest('.subscription-card');
+            if (activeCard) {
+                activeCard.classList.add('active');
+            }
+
+            updateSubmitRequestButtonState();
+        }
+
+        function updateSubmitRequestButtonState() {
+            const submitButton = document.getElementById('submitSubscriptionRequestBtn');
+            const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+            if (!submitButton || !termsCheckbox) return;
+
+            submitButton.disabled = !(selectedSubscriptionId && termsCheckbox.checked);
+        }
+
+        function submitSelectedSubscriptionRequest() {
+            const submitButton = document.getElementById('submitSubscriptionRequestBtn');
+            const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+
+            if (!selectedSubscriptionId) {
+                showNotification('Please choose a plan first.', 'error');
+                return;
+            }
+
+            if (!termsCheckbox || !termsCheckbox.checked) {
+                showNotification('Please accept Terms & Conditions first.', 'error');
+                return;
+            }
+
+            const selectedCard = document.querySelector(`.subscription-card[data-subscription-id="${selectedSubscriptionId}"]`);
+            const selectedCardButton = selectedCard ? selectedCard.querySelector('button') : null;
+
+            if (!selectedCardButton || selectedCardButton.disabled) {
+                showNotification('Selected plan is not available for request.', 'error');
+                return;
+            }
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting...';
+            }
+
+            requestSubscription(selectedSubscriptionId, selectedPlanName, selectedCardButton, submitButton);
+        }
+
+        function requestSubscription(subscriptionId, planName, button, submitButton = null) {
             console.log('Requesting subscription:', { subscriptionId, planName });
             console.log('Subscription ID type:', typeof subscriptionId);
             console.log('Subscription ID value:', subscriptionId);
@@ -400,7 +443,7 @@
 
                     // Update button state to "Requested" immediately (don't close modal)
                     button.textContent = 'Requested';
-                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105');
+                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75');
                     button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -424,10 +467,19 @@
                     // Clear the request in progress flag
                     window.subscriptionRequestInProgress = false;
 
+                    selectedSubscriptionId = null;
+                    selectedPlanName = null;
+                    const termsCheckbox = document.getElementById('pricingTermsCheckbox');
+                    if (termsCheckbox) termsCheckbox.checked = false;
+                    if (submitButton) submitButton.textContent = 'Submit Request';
+                    updateSubmitRequestButtonState();
+
                 } else {
                     showNotification(data.message || 'An error occurred. Please try again.', 'error');
                     resetButtonToOriginal(button, originalText);
                     window.subscriptionRequestInProgress = false;
+                    if (submitButton) submitButton.textContent = 'Submit Request';
+                    updateSubmitRequestButtonState();
                 }
             })
             .catch(error => {
@@ -435,6 +487,8 @@
                 showNotification(error.message || 'An error occurred. Please try again.', 'error');
                 resetButtonToOriginal(button, originalText);
                 window.subscriptionRequestInProgress = false;
+                if (submitButton) submitButton.textContent = 'Submit Request';
+                updateSubmitRequestButtonState();
             });
         }
 
@@ -443,7 +497,7 @@
             button.textContent = 'Requested';
 
             // Remove all existing classes that might interfere
-            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105', 'bg-yellow-500', 'cursor-not-allowed');
+            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75', 'bg-yellow-500', 'cursor-not-allowed');
 
             // Add new classes for requested state
             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
@@ -479,7 +533,7 @@
             button.textContent = originalText;
             button.disabled = false;
             button.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-yellow-500', 'bg-green-500', 'bg-gray-400');
-            button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
 
             // Reset inline styles
             button.style.removeProperty('background-color');
@@ -578,7 +632,7 @@
                             pendingSubscriptionId = subscriptionId;
 
                             button.textContent = 'Requested';
-                            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                             button.disabled = true;
 
@@ -591,7 +645,7 @@
                             localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                         } else if (status === 'approved') {
                             button.textContent = 'Current Plan';
-                            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                             button.classList.add('bg-green-500', 'cursor-not-allowed');
                             button.disabled = true;
 
@@ -605,7 +659,7 @@
                         } else if (status === 'declined') {
                             button.textContent = 'Choose Plan';
                             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                            button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                             button.disabled = false;
 
                             // Clear localStorage for declined requests
@@ -617,7 +671,7 @@
                             // No status from server, reset button to default
                             button.textContent = 'Choose Plan';
                             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                            button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                             button.disabled = false;
 
                             // Clear localStorage
@@ -655,7 +709,7 @@
                             const button = card.querySelector('button');
                             if (button && !button.disabled && button.textContent !== 'Current Plan') {
                                 button.textContent = 'Request Pending';
-                                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                                button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                                 button.classList.add('bg-gray-400', 'cursor-not-allowed');
                                 button.disabled = true;
 
@@ -702,7 +756,7 @@
             buttons.forEach(button => {
                 button.textContent = 'Choose Plan';
                 button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                 button.disabled = false;
             });
 
@@ -725,7 +779,7 @@
                 // Disable all other cards
                 if (button && !button.disabled) {
                     button.textContent = 'Request Pending';
-                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                     button.classList.add('bg-gray-400', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -754,7 +808,7 @@
                 if (button && button.textContent === 'Request Pending') {
                     button.textContent = 'Request Subscription';
                     button.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                    button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                    button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                     button.disabled = false;
 
                     // Reset inline styles
