@@ -18,7 +18,7 @@
                             <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border border-gray-200">
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">
-                                        {{ $view->tender->title }}
+                                        {{ $view->tender->titleHeadline() }}
                                     </h3>
                                     <span class="text-xs text-gray-500">
                                         Viewed {{ $view->created_at->diffForHumans() }}
@@ -33,7 +33,7 @@
 
                                 <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                                     <span>{{ $view->tender->category->name }}</span>
-                                    <span>{{ $view->tender->location }}</span>
+                                    <span>{{ $view->tender->displayLocation() }}</span>
                                 </div>
 
                                 <div class="flex items-center justify-between">

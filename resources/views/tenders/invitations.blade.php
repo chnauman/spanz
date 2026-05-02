@@ -21,7 +21,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title">{{ $invitation->tender->title }}</h5>
+                                <h5 class="card-title">{{ $invitation->tender->titleHeadline() }}</h5>
                                 <span class="badge bg-{{ $invitation->status === 'pending' ? 'warning' : ($invitation->status === 'viewed' ? 'info' : 'success') }}">
                                     {{ ucfirst($invitation->status) }}
                                 </span>
@@ -45,9 +45,9 @@
                                 <div class="col-6">
                                     <strong>Deadline:</strong> {{ $invitation->tender->deadline->format('M d, Y') }}
                                 </div>
-                                @if($invitation->tender->location)
+                                @if($invitation->tender->displayLocation() !== 'Location not specified')
                                 <div class="col-6">
-                                    <strong>Location:</strong> {{ $invitation->tender->location }}
+                                    <strong>Location:</strong> {{ $invitation->tender->displayLocation() }}
                                 </div>
                                 @endif
                             </div>

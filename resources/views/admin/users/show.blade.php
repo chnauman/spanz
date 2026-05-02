@@ -105,7 +105,7 @@
                     @forelse($user->tenders as $tender)
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 sm:px-6 py-4 text-sm text-gray-900 max-w-xs">
-                            <span class="block truncate" title="{{ $tender->title }}">{{ $tender->title }}</span>
+                            <span class="block truncate" title="{{ $tender->titleHeadline() }}">{{ $tender->titleHeadline() }}</span>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full

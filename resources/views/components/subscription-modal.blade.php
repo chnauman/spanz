@@ -171,15 +171,6 @@
                                  data-plan="{{ strtolower($subscription->name) }}"
                                  data-subscription-id="{{ $subscription->id }}">
                                 <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 h-full min-h-[560px]">
-                                    @if($subscription->name === 'Professional')
-                                        <!-- Most Popular Badge -->
-                                        <div class="absolute -top-3 right-4 most-popular-badge">
-                                            <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold">
-                                                MOST POPULAR
-                                            </div>
-                                        </div>
-                                    @endif
-
                                     <div class="text-center h-full flex flex-col justify-between">
                                         <div>
                                             <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
@@ -187,10 +178,10 @@
                                                 AU${{ number_format((float) $subscription->price, 0) }}
                                                 <span class="text-sm text-gray-500">/mo.</span>
                                             </div>
-                                            <p class="text-gray-600 text-sm mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
+                                            <p class="text-gray-600 text-base mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
 
                                              @if(!empty($subscription->features))
-                                                <ul class="text-left text-xs text-gray-700 space-y-1.5 mb-4">
+                                                <ul class="text-left text-sm sm:text-base text-gray-700 space-y-1.5 mb-4">
                                                     @foreach($subscription->features as $feature)
                                                         <li class="flex items-start gap-2">
                                                             <span class="mt-0.5 text-[#0D6AED]">✓</span>
@@ -211,7 +202,7 @@
                                                          {{ $subscription->credits_per_month }} Credits
                                                      @endif
                                                  </div>
-                                                 <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
+                                                 <p class="text-sm text-gray-800 font-medium">To view tenders and buyers</p>
                                              </div>
                                         </div>
 

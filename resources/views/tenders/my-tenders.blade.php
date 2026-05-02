@@ -34,7 +34,7 @@
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-3">
-                            <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">{{ $tender->title }}</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">{{ $tender->titleHeadline() }}</h3>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $tender->isActive() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $tender->isActive() ? 'Active' : 'Expired' }}
                             </span>
@@ -57,10 +57,10 @@
                                 <span class="text-gray-500">Deadline:</span>
                                 <span class="font-medium">{{ $tender->deadline->format('M d, Y') }}</span>
                             </div>
-                            @if($tender->location)
+                            @if($tender->displayLocation() !== 'Location not specified')
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Location:</span>
-                                <span class="font-medium">{{ $tender->location }}</span>
+                                <span class="font-medium">{{ $tender->displayLocation() }}</span>
                             </div>
                             @endif
                         </div>
@@ -90,7 +90,7 @@
                     <div class="mt-6">
                         <a href="{{ route('tenders.create') }}" 
                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Post a Tender
+                            Post a RFX
                         </a>
                     </div>
                 </div>

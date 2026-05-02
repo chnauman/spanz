@@ -2,7 +2,7 @@
 <div class="flex flex-col h-full">
     <!-- Logo Section -->
     <div class="hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 h-20 transition-colors duration-300">
-        <a href="{{ route('home') }}" class="text-4xl font-bold text-[#0D6AED] h-20 flex items-center pl-5 hover:text-blue-300 transition-colors duration-300">SPANZ</a>
+        <a href="{{ route('home') }}" class="text-4xl font-bold text-white h-20 flex items-center pl-5 hover:text-blue-300 transition-colors duration-300">SPANZ</a>
     </div>
     <hr class="border-[#657a9871]" />
 
@@ -70,15 +70,15 @@
             class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
             <a href="{{ route('tenders.create') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Post Tender
+                Post a RFX
             </a>
             <a href="{{ route('company.register') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Strengthen Business Profile
             </a>
-            <a href="{{ route('tenders.my-tenders') }}"
+            <a href="{{ route('tenders.saved') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                My Tenders
+                Saved RFXs
             </a>
             <a href="{{ route('tenders.search') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">

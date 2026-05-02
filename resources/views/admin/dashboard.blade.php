@@ -350,7 +350,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <p class="text-sm font-medium text-gray-900">{{ $tender->title }}</p>
+                                            <p class="text-sm font-medium text-gray-900">{{ $tender->titleHeadline() }}</p>
                                             <p class="text-sm text-gray-500">
                                                 @if($tender->category)
                                                     {{ $tender->category->name }} • 

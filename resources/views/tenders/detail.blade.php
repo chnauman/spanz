@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $tender->title }} - Tender Details</title>
+    <title>{{ $tender->titleHeadline() }} - Tender Details</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <style>
         :root {
@@ -154,12 +154,12 @@
                                 <div class="py-1 whitespace-nowrap">
                                     @auth
                                         @if(!auth()->user()->isAdmin())
-                                            <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
-                                            <a href="{{ route('tenders.my-tenders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                            <a href="{{ route('tenders.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a RFX</a>
+                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved RFXs</a>
                                         @endif
                                     @else
-                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a Tender</a>
-                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.my-tenders')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Tenders</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.create')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Post a RFX</a>
+                                        <a href="{{ route('login') }}?redirect={{ urlencode(route('tenders.saved')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved RFXs</a>
                                     @endauth
                                 </div>
                             </div>
@@ -271,8 +271,8 @@
             </div>
             <div
                 class="thomas-title-strip flex flex-col sm:flex-row sm:items-center sm:justify-between text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
-                <h1 class="text-xl sm:text-2xl font-bold">{{ $tender->title }}</h1>
-                <span class="text-sm sm:text-base">Estimated Budget: {{ $tender->currency }} {{ $tender->budget ? number_format($tender->budget, 0) : 'Not specified' }}</span>
+                <h1 class="text-xl sm:text-2xl font-bold">{{ $tender->titleHeadline() }}</h1>
+                <span class="text-sm sm:text-base">Estimated Budget: {{ $tender->budget ? $tender->budgetRangeLabel() : 'Not specified' }}</span>
             </div>
             <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:justify-between space-y-4 sm:space-y-0">
                 <h3 class="text-base sm:text-lg font-semibold">Tender Details</h3>
@@ -299,24 +299,35 @@
                                 </g>
                             </g>
                         </svg>
-                        <span class="text-sm sm:text-base">{{ $tender->location ?? 'Location not specified' }}</span>
+                        <span class="text-sm sm:text-base">{{ $tender->displayLocation() }}</span>
                     </div>
 
                 </div>
 
             </div>
+            @php($detailGroups = $tender->categoriesGroupedForDisplay())
             <div class="flex flex-col lg:flex-row lg:gap-8 mt-6 sm:mt-8">
                 <div class="flex-1">
                     <div class="mt-6 sm:mt-8">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 max-w-sm sm:max-w-md">
                             <p class="text-sm sm:text-base font-medium text-gray-700">Tender #:</p>
                             <p class="text-sm sm:text-base">#{{ str_pad($tender->id, 8, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-sm sm:text-base font-medium text-gray-700">Title:</p>
+                            <p class="text-sm sm:text-base">{{ filled($tender->title) ? $tender->title : '—' }}</p>
                             <p class="text-sm sm:text-base font-medium text-gray-700">Publish Date:</p>
                             <p class="text-sm sm:text-base">{{ $tender->created_at->format('d F Y') }}</p>
                             <p class="text-sm sm:text-base font-medium text-gray-700">Deadline:</p>
                             <p class="text-sm sm:text-base">{{ $tender->getFormattedDeadline('d F Y') }}</p>
-                            <p class="text-sm sm:text-base font-medium text-gray-700">Category:</p>
-                            <p class="text-sm sm:text-base">{{ $tender->category->name }}</p>
+                            <p class="text-sm sm:text-base font-medium text-gray-700">Categories:</p>
+                            <p class="text-sm sm:text-base">
+                                @if($detailGroups->isNotEmpty())
+                                    {{ $detailGroups->pluck('main_name')->unique()->implode(', ') }}
+                                @elseif($tender->category)
+                                    {{ $tender->category->name }}
+                                @else
+                                    —
+                                @endif
+                            </p>
                         </div>
                     </div>
 
@@ -324,7 +335,7 @@
                     <div class="mt-6 sm:mt-8">
                         <h3 class="font-semibold mb-3 text-base sm:text-lg">Budget Information:</h3>
                         <div class="space-y-1 text-sm sm:text-base">
-                            <p>Total Budget: {{ $tender->currency }} {{ number_format($tender->budget, 0) }}</p>
+                            <p>Total Budget: {{ $tender->budgetRangeLabel() }}</p>
                             @if($tender->budget > 0)
                             <p>Estimated Project Duration: {{ ceil($tender->budget / 10000) }} months</p>
                             @endif
@@ -332,60 +343,23 @@
                     </div>
                     @endif
 
-                    @php
-                        $subCategoryLabels = [
-                            'electrical' => 'Electrical',
-                            'mechanical' => 'Mechanical',
-                            'engines' => 'Engines',
-                            'avionics' => 'Avionics',
-                            'apus' => 'Auxiliary Power Units (APUs)',
-                            'navigation' => 'Navigation systems',
-                            'communication' => 'Communication systems (radio, satellite)',
-                        ];
-
-                        $rows = is_array($tender->categories) ? $tender->categories : [];
-
-                        $breakdown = collect($rows)->map(function ($row) use ($subCategoryLabels) {
-                            if (!is_array($row)) return null;
-
-                            $rawLabel = $row['sub_category'] ?? $row['work'] ?? $row['type'] ?? null;
-                            $label = null;
-                            if (is_string($rawLabel) && $rawLabel !== '') {
-                                $key = strtolower($rawLabel);
-                                $label = $subCategoryLabels[$key] ?? ucwords(str_replace(['_', '-'], ' ', $rawLabel));
-                            }
-
-                            $pctRaw = $row['product_type'] ?? $row['percentage'] ?? $row['percent'] ?? null;
-                            $pct = null;
-                            if (is_numeric($pctRaw)) {
-                                $pctNum = (int) $pctRaw;
-                                $pct = $pctNum === 5 ? '<10%' : ($pctNum . '%');
-                            } elseif (is_string($pctRaw) && trim($pctRaw) !== '') {
-                                $pct = trim($pctRaw);
-                            }
-
-                            if (!$label && !$pct) return null;
-                            return ['label' => $label ?: 'Work', 'pct' => $pct ?: '—'];
-                        })->filter()->values();
-                    @endphp
-
-                    @if($breakdown->isNotEmpty())
+                    @if($detailGroups->isNotEmpty())
                         <div class="mt-6 sm:mt-8">
-                            <h3 class="font-semibold mb-3 text-base sm:text-lg">Indicative Budget Break Down:</h3>
-                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm sm:text-base text-gray-700">
-                                @foreach($breakdown as $item)
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-800 whitespace-nowrap">
-                                        {{ $item['label'] }} – {{ $item['pct'] }}
-                                    </span>
+                            <h3 class="font-semibold mb-3 text-base sm:text-lg">Indicative budget breakdown by category</h3>
+                            <div class="space-y-4">
+                                @foreach($detailGroups as $group)
+                                    <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
+                                        <div class="font-semibold text-gray-900 text-base sm:text-lg">{{ $group['main_name'] }}</div>
+                                        <ul class="mt-2 space-y-1.5 text-sm sm:text-base text-gray-800 list-disc pl-5">
+                                            @foreach($group['lines'] as $line)
+                                                <li>{{ $line['sub_label'] }} – {{ $line['pct'] }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 @endforeach
                             </div>
                         </div>
                     @endif
-
-                    <div class="mt-6 sm:mt-8">
-                        <h3 class="font-semibold mb-3 text-base sm:text-lg">Project Title:</h3>
-                        <p class="text-sm sm:text-base">{{ $tender->title }}</p>
-                    </div>
 
                     <div class="mt-8">
                         <h3 class="font-semibold mb-3">Description:</h3>
@@ -394,9 +368,16 @@
                         </div>
                     </div>
 
+                    @if(filled($tender->product_or_service))
+                    <div class="mt-6 sm:mt-8">
+                        <h3 class="font-semibold mb-3 text-base sm:text-lg">Product or service required</h3>
+                        <p class="text-sm sm:text-base">{{ $tender->product_or_service }}</p>
+                    </div>
+                    @endif
+
                     @if($tender->requirements)
                     <div class="mt-6 sm:mt-8">
-                        <h3 class="font-semibold mb-3 text-base sm:text-lg">Requirements:</h3>
+                        <h3 class="font-semibold mb-3 text-base sm:text-lg">Comments:</h3>
                         <div class="text-sm sm:text-base leading-relaxed">
                             {!! nl2br(e($tender->requirements)) !!}
                         </div>

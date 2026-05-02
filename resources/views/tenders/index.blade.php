@@ -46,7 +46,7 @@
                 <h2 class="mb-0 fw-bold">Active Tenders</h2>
                 @auth
                     @if(!auth()->user()->isAdmin())
-                        <a href="{{ route('tenders.create') }}" class="btn thomas-post-btn">Post a Tender</a>
+                        <a href="{{ route('tenders.create') }}" class="btn thomas-post-btn">Post a RFX</a>
                     @endif
                 @endauth
             </div>
@@ -63,7 +63,7 @@
                     <div class="thomas-tender-card card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title fw-semibold">{{ $tender->title }}</h5>
+                                <h5 class="card-title fw-semibold">{{ $tender->titleHeadline() }}</h5>
                                 <span class="badge bg-primary">{{ $tender->category->name }}</span>
                             </div>
                             
@@ -82,9 +82,9 @@
                                 <div class="col-6">
                                     <strong>Deadline:</strong> {{ is_string($tender->deadline) ? \Carbon\Carbon::parse($tender->deadline)->format('M d, Y') : $tender->deadline->format('M d, Y') }}
                                 </div>
-                                @if($tender->location)
+                                @if($tender->displayLocation() !== 'Location not specified')
                                 <div class="col-12 mt-1">
-                                    <strong>Location:</strong> {{ $tender->location }}
+                                    <strong>Location:</strong> {{ $tender->displayLocation() }}
                                 </div>
                                 @endif
                             </div>

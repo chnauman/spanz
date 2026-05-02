@@ -9,10 +9,12 @@ use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
 use App\Models\Credit;
 use App\Models\SupplierInvitation;
+use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class MultiStepRegistrationController extends Controller
 {
@@ -48,7 +50,21 @@ class MultiStepRegistrationController extends Controller
             $progress = RegistrationProgress::findByEmail($invitation->email);
         }
 
-        return view('auth.register-step1', compact('progress', 'invitation'));
+        $statesByCountry = State::with('cities:id,state_id,name')
+            ->orderBy('name')
+            ->get(['id', 'name', 'country_name'])
+            ->groupBy('country_name')
+            ->map(function ($states) {
+                return $states->map(function ($state) {
+                    return [
+                        'id' => $state->id,
+                        'name' => $state->name,
+                        'cities' => $state->cities->pluck('name')->values()->all(),
+                    ];
+                })->values()->all();
+            });
+
+        return view('auth.register-step1', compact('progress', 'invitation', 'statesByCountry'));
     }
 
     /**
@@ -56,17 +72,51 @@ class MultiStepRegistrationController extends Controller
      */
     public function submitStep1(Request $request)
     {
+        $countryHasStates = State::where('country_name', $request->country)->exists();
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:255',
             'password' => 'required|string|min:8|confirmed',
             'registered_business_name' => 'required|string|max:255',
             'country' => 'required|string|max:255',
+            'state' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf($countryHasStates),
+            ],
+            'city' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf($countryHasStates),
+            ],
             'business_address' => 'required|string',
             'full_name' => 'required|string|max:255',
             'title_position' => 'required|string|max:255',
             'cell_mobile' => 'required|string|max:255',
             'whatsapp_wechat' => 'nullable|string|max:255',
         ]);
+
+        $validator->after(function ($validator) use ($request, $countryHasStates) {
+            if (!$countryHasStates) {
+                return;
+            }
+
+            $state = State::where('country_name', $request->country)
+                ->where('name', $request->state)
+                ->first();
+
+            if (!$state) {
+                $validator->errors()->add('state', 'Please select a valid state for the selected country.');
+                return;
+            }
+
+            $cityExists = $state->cities()->where('name', $request->city)->exists();
+            if (!$cityExists) {
+                $validator->errors()->add('city', 'Please select a valid city for the selected state.');
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -111,6 +161,8 @@ class MultiStepRegistrationController extends Controller
                 'password' => Hash::make($request->password),
                 'registered_business_name' => $request->registered_business_name,
                 'country' => $request->country,
+                'state' => $countryHasStates ? $request->state : null,
+                'city' => $countryHasStates ? $request->city : null,
                 'business_address' => $request->business_address,
                 'full_name' => $request->full_name,
                 'title_position' => $request->title_position,
@@ -125,6 +177,8 @@ class MultiStepRegistrationController extends Controller
                 'password' => Hash::make($request->password),
                 'registered_business_name' => $request->registered_business_name,
                 'country' => $request->country,
+                'state' => $countryHasStates ? $request->state : null,
+                'city' => $countryHasStates ? $request->city : null,
                 'business_address' => $request->business_address,
                 'full_name' => $request->full_name,
                 'title_position' => $request->title_position,
@@ -424,8 +478,8 @@ class MultiStepRegistrationController extends Controller
             'user_id' => $user->id,
             'company_name' => $progress->registered_business_name,
             'address' => $progress->business_address,
-            'city' => '', // Can be added later if needed
-            'state' => '', // Can be added later if needed
+            'city' => $progress->city ?? '',
+            'state' => $progress->state ?? '',
             'postal_code' => '', // Can be added later if needed
             'country' => $progress->country,
             'phone' => $progress->cell_mobile,

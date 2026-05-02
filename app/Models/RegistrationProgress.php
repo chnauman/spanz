@@ -16,6 +16,8 @@ class RegistrationProgress extends Model
         'password',
         'registered_business_name',
         'country',
+        'state',
+        'city',
         'business_address',
         'full_name',
         'title_position',

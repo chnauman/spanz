@@ -33,7 +33,7 @@ class TenderInvitationMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Tender Posted - ' . $this->tender->title,
+            subject: 'New Tender Posted - ' . $this->tender->cardTitle(),
         );
     }
 

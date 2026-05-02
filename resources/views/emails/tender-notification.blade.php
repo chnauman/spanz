@@ -29,7 +29,7 @@
                 @foreach($tenders as $tender)
                 <tr style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 12px; color: #2d3748; font-size: 14px;">
-                        <strong>{{ $tender->title }}</strong>
+                        <strong>{{ $tender->cardTitle() }}</strong>
                     </td>
                     <td style="padding: 12px; color: #4a5568; font-size: 14px;">
                         {{ $tender->category->name ?? 'N/A' }}

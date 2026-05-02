@@ -59,12 +59,12 @@
                                             <h3 class="text-lg font-semibold text-[#092C48] mb-2 line-clamp-2">
                                                 <a href="{{ route('tenders.detail', $tender->id) }}"
                                                    class="hover:text-blue-600 transition-colors duration-200">
-                                                    {{ $tender->title }}
+                                                    {{ $tender->titleHeadline() }}
                                                 </a>
                                             </h3>
                                             <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
                                                 <img src="{{ asset('spanz-img/location.svg') }}" alt="Location" class="w-4 h-4">
-                                                <span>{{ $tender->location ?? 'Location not specified' }}</span>
+                                                <span>{{ $tender->displayLocation() }}</span>
                                             </div>
                                             <div class="flex items-center gap-2 text-sm text-gray-600">
                                                 <img src="{{ asset('spanz-img/factory.svg') }}" alt="Category" class="w-4 h-4">

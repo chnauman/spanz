@@ -405,7 +405,7 @@ class User extends Authenticatable
         }
 
         // Build description with user name and tender title
-        $tenderTitle = $tender ? $tender->title : 'Tender #' . $tenderId;
+        $tenderTitle = $tender ? $tender->cardTitle() : 'Tender #' . $tenderId;
         $userName = $this->name;
         $description = $this->isSubSupplier() 
             ? "Credits used by {$userName} (Sub Supplier) to view tender: {$tenderTitle}"

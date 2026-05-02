@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tender;
 use App\Models\Category;
+use App\Models\City;
+use App\Models\State;
 use App\Models\UserInterest;
 use App\Models\TenderInvitation;
 use App\Models\SavedTender;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TenderInvitationMail;
 use App\Jobs\SendTenderInvitationJob;
@@ -18,7 +22,7 @@ class TenderController extends Controller
 {
     public function index()
     {
-        $tenders = Tender::with(['user', 'category'])
+        $tenders = Tender::with(['user', 'category', 'city.state'])
             ->where('status', 'active')
             ->where('deadline', '>', now())
             ->orderBy('created_at', 'desc')
@@ -29,7 +33,7 @@ class TenderController extends Controller
 
     public function search(Request $request)
     {
-        $query = Tender::with(['user', 'category'])
+        $query = Tender::with(['user', 'category', 'city.state'])
             ->where('status', 'active')
             ->where('deadline', '>', now());
 
@@ -63,12 +67,23 @@ class TenderController extends Controller
             }
         }
 
-        // Apply location filter
+        // Apply location filter (checkbox values = country slugs, e.g. australia)
         if ($request->filled('location')) {
             $locations = is_array($request->location) ? $request->location : [$request->location];
-            $query->where(function($q) use ($locations) {
-                foreach ($locations as $location) {
-                    $q->orWhere('location', 'like', '%' . $location . '%');
+            $slugKeys = array_keys(Tender::locationSlugLabels());
+            $query->where(function ($q) use ($locations, $slugKeys) {
+                foreach ($locations as $loc) {
+                    $q->orWhere(function ($q2) use ($loc, $slugKeys) {
+                        if (in_array($loc, $slugKeys, true)) {
+                            $q2->where('country_code', $loc)
+                                ->orWhere(function ($q3) use ($loc) {
+                                    $q3->whereNull('country_code')->where('location', $loc);
+                                });
+                        } else {
+                            $q2->where('location', 'like', '%' . $loc . '%')
+                                ->orWhere('country_code', 'like', '%' . $loc . '%');
+                        }
+                    });
                 }
             });
         }
@@ -86,6 +101,7 @@ class TenderController extends Controller
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('product_or_service', 'like', '%' . $searchTerm . '%')
                   ->orWhere('description', 'like', '%' . $searchTerm . '%')
                   ->orWhere('location', 'like', '%' . $searchTerm . '%')
                   ->orWhere('requirements', 'like', '%' . $searchTerm . '%')
@@ -114,17 +130,8 @@ class TenderController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Get dynamic locations from actual tender data
-        $allLocations = Tender::where('status', 'active')
-            ->where('deadline', '>', now())
-            ->whereNotNull('location')
-            ->where('location', '!=', '')
-            ->distinct()
-            ->pluck('location')
-            ->filter()
-            ->sort()
-            ->values()
-            ->toArray();
+        $locationFilterOptions = $this->buildLocationFilterOptions();
+        $allLocationSlugs = array_keys($locationFilterOptions);
 
         $categories = $allCategories;
 
@@ -132,8 +139,11 @@ class TenderController extends Controller
         $locationPage = $request->get('location_page', 1);
         $locationsPerPage = 5;
         $startLocationIndex = ($locationPage - 1) * $locationsPerPage;
-        $locations = collect($allLocations)->slice($startLocationIndex, $locationsPerPage)->values()->toArray();
-        $hasMoreLocations = count($allLocations) > ($locationPage * $locationsPerPage);
+        $locations = collect($allLocationSlugs)
+            ->slice($startLocationIndex, $locationsPerPage)
+            ->mapWithKeys(fn ($slug) => [$slug => $locationFilterOptions[$slug]])
+            ->all();
+        $hasMoreLocations = count($allLocationSlugs) > ($locationPage * $locationsPerPage);
 
         // Get active subscriptions for the modal (excluding Basic plan)
         $subscriptions = Subscription::where('is_active', true)
@@ -146,7 +156,17 @@ class TenderController extends Controller
             return response()->json(['html' => $html]);
         }
 
-        return view('tenders.search', compact('tenders', 'categories', 'locations', 'hasMoreLocations', 'allCategories', 'allLocations', 'subscriptions'));
+        return view('tenders.search', compact(
+            'tenders',
+            'categories',
+            'locations',
+            'hasMoreLocations',
+            'allCategories',
+            'subscriptions'
+        ))->with([
+            'allLocations' => $allLocationSlugs,
+            'locationFilterOptions' => $locationFilterOptions,
+        ]);
     }
 
     public function create()
@@ -161,7 +181,9 @@ class TenderController extends Controller
         $hasCompany = $user->companyDetail ? true : false;
 
         $categories = Category::where('is_active', true)->get();
-        return view('tenders.create', compact('categories', 'hasCompany'));
+        $locationData = $this->locationPayloadForCreateForm();
+
+        return view('tenders.create', compact('categories', 'hasCompany', 'locationData'));
     }
 
     public function store(Request $request)
@@ -172,12 +194,16 @@ class TenderController extends Controller
         }
 
         try {
+            $countryKeys = array_keys(Tender::locationSlugLabels());
             $request->validate([
                 'request_type' => 'required|string|in:rfq,rft,rfp,eoi',
                 'title' => 'required|string|max:255',
+                'product_or_service' => 'required|string|max:255',
                 'description' => 'required|string',
                 'budget' => 'required|string|in:1000,5000,10000,30000,50000,100000,500000,1000000,1000001',
-                'location' => 'required|string',
+                'country_code' => ['required', 'string', Rule::in($countryKeys)],
+                'state_id' => 'nullable|required_if:country_code,australia|exists:states,id',
+                'city_id' => 'required|exists:cities,id',
                 'currency' => 'required|string|in:AUD',
                 'deadline' => 'required|date|after:today',
                 'requirements' => 'nullable|string',
@@ -187,7 +213,8 @@ class TenderController extends Controller
                 'categories.*.main_category' => 'required|exists:categories,id',
                 'categories.*.sub_category' => 'required|string',
                 'categories.*.product_type' => 'required|string',
-                'files.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif,webp|max:10240', // 10MB max
+                'files' => 'nullable|array',
+                'files.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif,webp|max:10240',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Return back with errors and old input to keep form filled
@@ -196,6 +223,32 @@ class TenderController extends Controller
                 ->withInput();
         }
 
+        $city = City::with('state')->find($request->city_id);
+        if (!$city || !$city->state) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['city_id' => 'Invalid city selection.']);
+        }
+
+        $expectedCountry = Tender::countryCodeToDbCountryName($request->country_code);
+        if ($expectedCountry === '' || strcasecmp($city->state->country_name, $expectedCountry) !== 0) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['city_id' => 'Selected city does not match the chosen country.']);
+        }
+
+        if ($request->country_code === 'australia') {
+            if ((int) $request->state_id !== (int) $city->state_id) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['state_id' => 'Selected city does not match the chosen state.']);
+            }
+        }
+
+        $displayLocation = strcasecmp($city->state->country_name, 'Australia') === 0
+            ? $city->name . ', ' . $city->state->name . ', Australia'
+            : $city->name . ', ' . $city->state->country_name;
+
         // try {
             $user = Auth::user();
 
@@ -203,7 +256,8 @@ class TenderController extends Controller
             $attachments = [];
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
-                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $safeOriginal = preg_replace('/[^\pL\pN\s.\-_]/u', '_', $file->getClientOriginalName()) ?: 'file';
+                    $filename = Str::uuid()->toString() . '_' . $safeOriginal;
                     $path = $file->storeAs('tender-attachments', $filename, 'public');
                     $attachments[] = [
                         'filename' => $file->getClientOriginalName(),
@@ -222,12 +276,16 @@ class TenderController extends Controller
                 'user_id' => $user->id,
                 'category_id' => $request->categories[0]['main_category'], // Use first category as primary
                 'title' => $request->title,
+                'product_or_service' => $request->product_or_service,
                 'description' => $request->description,
                 'budget' => $budgetValue,
                 'currency' => $request->currency,
                 'deadline' => $request->deadline,
                 'requirements' => $request->requirements,
-                'location' => $request->location,
+                'location' => $displayLocation,
+                'country_code' => $request->country_code,
+                'state_id' => $request->country_code === 'australia' ? $request->state_id : null,
+                'city_id' => $city->id,
                 'contact_email' => $request->contact_email,
                 'contact_phone' => $request->contact_phone,
                 'request_type' => $request->request_type,
@@ -259,7 +317,7 @@ class TenderController extends Controller
 
     public function detail(Tender $tender)
     {
-        $tender->load(['user', 'category']);
+        $tender->load(['user', 'category', 'city.state']);
         $subscriptions = Subscription::where('is_active', true)
             ->where('name', '!=', 'Basic')
             ->get();
@@ -324,7 +382,7 @@ class TenderController extends Controller
                             'name' => $tender->user->name,
                             'email' => $tender->contact_email ?? $tender->user->email,
                             'phone' => $tender->contact_phone,
-                            'location' => $tender->location,
+                            'location' => $tender->displayLocation(),
                             'category' => $tender->category->name,
                             'posted_at' => $tender->created_at->diffForHumans(),
                             'deadline' => $tender->getFormattedDeadline('M d, Y'),
@@ -356,7 +414,7 @@ class TenderController extends Controller
         }
 
         $tenders = Auth::user()->tenders()
-            ->with('category')
+            ->with(['category', 'city.state'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -366,7 +424,7 @@ class TenderController extends Controller
     public function savedTenders()
     {
         $savedTenders = Auth::user()->savedTenders()
-            ->with(['tender.user', 'tender.category'])
+            ->with(['tender.user', 'tender.category', 'tender.city.state'])
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
@@ -376,7 +434,7 @@ class TenderController extends Controller
     public function invitations()
     {
         $invitations = Auth::user()->tenderInvitations()
-            ->with(['tender.user', 'tender.category'])
+            ->with(['tender.user', 'tender.category', 'tender.city.state'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -389,7 +447,7 @@ class TenderController extends Controller
 
         // Get tenders that the user has viewed
         $viewedTenders = $user->tenderViews()
-            ->with(['tender.user', 'tender.category'])
+            ->with(['tender.user', 'tender.category', 'tender.city.state'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -402,6 +460,80 @@ class TenderController extends Controller
         $invitation->markAsViewed();
 
         return redirect()->route('tenders.detail', $invitation->tender_id);
+    }
+
+    /**
+     * Country slugs present on active tenders → sidebar labels.
+     *
+     * @return array<string, string>
+     */
+    private function buildLocationFilterOptions(): array
+    {
+        $labels = Tender::locationSlugLabels();
+        $tenders = Tender::where('status', 'active')
+            ->where('deadline', '>', now())
+            ->get(['country_code', 'location']);
+
+        $slugs = collect();
+        foreach ($tenders as $t) {
+            if (! empty($t->country_code)) {
+                $slugs->push($t->country_code);
+            } elseif ($t->location && isset($labels[$t->location])) {
+                $slugs->push($t->location);
+            }
+        }
+
+        $out = [];
+        foreach ($slugs->unique()->sort() as $slug) {
+            if (isset($labels[$slug])) {
+                $out[$slug] = $labels[$slug];
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function locationPayloadForCreateForm(): array
+    {
+        $payload = [];
+        foreach (Tender::locationSlugLabels() as $slug => $label) {
+            $dbCountry = Tender::countryCodeToDbCountryName($slug);
+            if ($dbCountry === '') {
+                continue;
+            }
+
+            $states = State::where('country_name', $dbCountry)->orderBy('name')->get(['id', 'name']);
+            $citiesByState = [];
+            $citiesFlat = [];
+
+            foreach ($states as $state) {
+                $cities = $state->cities()->orderBy('name')->get(['id', 'name']);
+                $citiesByState[$state->id] = $cities->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values()->all();
+                foreach ($cities as $c) {
+                    $citiesFlat[] = [
+                        'id' => $c->id,
+                        'name' => $c->name,
+                        'state_id' => $state->id,
+                        'state_name' => $state->name,
+                    ];
+                }
+            }
+
+            usort($citiesFlat, fn ($a, $b) => strcmp($a['name'], $b['name']));
+
+            $payload[$slug] = [
+                'label' => $label,
+                'requires_state' => $slug === 'australia',
+                'states' => $states->map(fn ($s) => ['id' => $s->id, 'name' => $s->name])->values()->all(),
+                'cities_by_state' => $citiesByState,
+                'cities_flat' => $citiesFlat,
+            ];
+        }
+
+        return $payload;
     }
 
     /**
@@ -600,7 +732,7 @@ class TenderController extends Controller
             'name' => $tender->user->name,
             'email' => $tender->contact_email ?? $tender->user->email,
             'phone' => $tender->contact_phone,
-            'location' => $tender->location,
+            'location' => $tender->displayLocation(),
             'category' => $tender->category->name,
             'posted_at' => $tender->created_at->diffForHumans(),
             'deadline' => $tender->getFormattedDeadline('M d, Y'),

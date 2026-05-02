@@ -96,14 +96,40 @@
                             </div>
                             <div>
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password <span class="text-red-500">*</span></label>
-                                <input type="password" id="password" name="password" required
-                                    class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                <div class="relative">
+                                    <input type="password" id="password" name="password" required data-password-toggle-target
+                                        class="w-full pr-10 px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                    <button type="button" class="text-gray-500 hover:text-gray-700 leading-none" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); width:20px; height:20px; display:flex; align-items:center; justify-content:center; background:transparent; border:0; padding:0;" data-password-toggle-btn aria-label="Show password">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" data-password-icon-show>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" data-password-icon-hide style="display:none;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.584 10.587a3 3 0 104.243 4.243"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.88 5.09A9.77 9.77 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.72 9.72 0 01-4.125 5.208M6.228 6.228A9.72 9.72 0 002.458 12c1.274 4.057 5.065 7 9.542 7 1.61 0 3.13-.38 4.478-1.055"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                                 <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
                             </div>
                             <div>
                                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password <span class="text-red-500">*</span></label>
-                                <input type="password" id="password_confirmation" name="password_confirmation" required
-                                    class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                <div class="relative">
+                                    <input type="password" id="password_confirmation" name="password_confirmation" required data-password-toggle-target
+                                        class="w-full pr-10 px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                    <button type="button" class="text-gray-500 hover:text-gray-700 leading-none" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); width:20px; height:20px; display:flex; align-items:center; justify-content:center; background:transparent; border:0; padding:0;" data-password-toggle-btn aria-label="Show password">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" data-password-icon-show>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" data-password-icon-hide style="display:none;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.584 10.587a3 3 0 104.243 4.243"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.88 5.09A9.77 9.77 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.72 9.72 0 01-4.125 5.208M6.228 6.228A9.72 9.72 0 002.458 12c1.274 4.057 5.065 7 9.542 7 1.61 0 3.13-.38 4.478-1.055"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label for="registered_business_name" class="block text-sm font-medium text-gray-700 mb-1.5">Registered Business Name <span class="text-red-500">*</span></label>
@@ -151,6 +177,24 @@
                                     <option value="Austria" {{ old('country', $progress->country ?? '') == 'Austria' ? 'selected' : '' }}>Austria</option>
                                     <option value="Azerbaijan" {{ old('country', $progress->country ?? '') == 'Azerbaijan' ? 'selected' : '' }}>Azerbaijan</option>
                                     <option value="Bangladesh" {{ old('country', $progress->country ?? '') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="state" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                    State <span id="state-required-indicator" class="text-red-500 hidden">*</span>
+                                </label>
+                                <select id="state" name="state"
+                                    class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                    <option value="">Select State</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                    City <span id="city-required-indicator" class="text-red-500 hidden">*</span>
+                                </label>
+                                <select id="city" name="city"
+                                    class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                    <option value="">Select City</option>
                                 </select>
                             </div>
                             <div>
@@ -203,5 +247,113 @@
             </div>
         </footer>
     </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const locationData = @json($statesByCountry ?? []);
+        const selectedState = @json(old('state', $progress->state ?? ''));
+        const selectedCity = @json(old('city', $progress->city ?? ''));
+        const countrySelect = document.getElementById('country');
+        const stateSelect = document.getElementById('state');
+        const citySelect = document.getElementById('city');
+        const stateRequiredIndicator = document.getElementById('state-required-indicator');
+        const cityRequiredIndicator = document.getElementById('city-required-indicator');
+
+        const resetSelect = function (selectElement, placeholder) {
+            selectElement.innerHTML = '';
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = placeholder;
+            selectElement.appendChild(option);
+        };
+
+        const renderStates = function (countryName, preferredState = '') {
+            resetSelect(stateSelect, 'Select State');
+            resetSelect(citySelect, 'Select City');
+
+            const states = locationData[countryName] || [];
+            if (!states.length) {
+                stateSelect.disabled = true;
+                citySelect.disabled = true;
+                stateSelect.required = false;
+                citySelect.required = false;
+                stateRequiredIndicator.classList.add('hidden');
+                cityRequiredIndicator.classList.add('hidden');
+                return;
+            }
+
+            stateSelect.disabled = false;
+            stateSelect.required = true;
+            citySelect.required = true;
+            stateRequiredIndicator.classList.remove('hidden');
+            cityRequiredIndicator.classList.remove('hidden');
+            states.forEach(function (state) {
+                const option = document.createElement('option');
+                option.value = state.name;
+                option.textContent = state.name;
+                if (state.name === preferredState) {
+                    option.selected = true;
+                }
+                stateSelect.appendChild(option);
+            });
+
+            renderCities(countryName, stateSelect.value, selectedCity);
+        };
+
+        const renderCities = function (countryName, stateName, preferredCity = '') {
+            resetSelect(citySelect, 'Select City');
+            const states = locationData[countryName] || [];
+            const matchedState = states.find(function (state) {
+                return state.name === stateName;
+            });
+
+            if (!matchedState || !matchedState.cities.length) {
+                citySelect.disabled = true;
+                return;
+            }
+
+            citySelect.disabled = false;
+            matchedState.cities.forEach(function (cityName) {
+                const option = document.createElement('option');
+                option.value = cityName;
+                option.textContent = cityName;
+                if (cityName === preferredCity) {
+                    option.selected = true;
+                }
+                citySelect.appendChild(option);
+            });
+        };
+
+        countrySelect.addEventListener('change', function () {
+            renderStates(this.value);
+        });
+
+        stateSelect.addEventListener('change', function () {
+            renderCities(countrySelect.value, this.value);
+        });
+
+        renderStates(countrySelect.value, selectedState);
+
+        const syncPasswordToggleIcon = function (button, input) {
+            const isVisible = input.type === 'text';
+            const showIcon = button.querySelector('[data-password-icon-show]');
+            const hideIcon = button.querySelector('[data-password-icon-hide]');
+
+            if (showIcon) showIcon.style.display = isVisible ? 'none' : 'block';
+            if (hideIcon) hideIcon.style.display = isVisible ? 'block' : 'none';
+            button.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+        };
+
+        document.querySelectorAll('[data-password-toggle-btn]').forEach(function (button) {
+            const input = button.parentElement.querySelector('[data-password-toggle-target]');
+            if (!input) return;
+            syncPasswordToggleIcon(button, input);
+
+            button.addEventListener('click', function () {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                syncPasswordToggleIcon(button, input);
+            });
+        });
+    });
+</script>
 </body>
 </html>

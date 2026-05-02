@@ -5,7 +5,7 @@
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         <div class="mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Strengthen Your Business Profile</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Elevate Your Business Credibility</h1>
             <p class="mt-1 text-sm sm:text-base text-gray-600">
                 Update or add more details about your company to receive better tender matches. You can skip this step anytime.
             </p>
@@ -176,7 +176,7 @@
                     </div>
 
                     <div class="border-t border-gray-200 pt-4 mt-2">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-2">Select Your Business Industries &amp; Categories</h3>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2">Choose Industry Categories to Receive Projects Leads, Tenders &amp; RFXs.</h3>
                         <p class="text-xs sm:text-sm text-gray-500 mb-3">
                             Must select at least 1 main industry and 1 subcategory. Maximum 3 main industries and 6 subcategories for each.
                         </p>
@@ -348,7 +348,7 @@
                 </div>
 
                 <div class="border-t border-gray-200 pt-4 mt-2">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-2">Elevate your Market Presence (Free)</h3>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-2">Elevate your Market Presence</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Delivery Capabilities</p>
@@ -388,15 +388,17 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-gray-200 mt-6">
-                <a href="{{ route('dashboard') }}"
-                   class="w-full sm:w-auto inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 sm:px-7 py-3 text-sm sm:text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
-                    Skip for now
-                </a>
-                <button type="submit"
-                        class="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-[#0D6AED] px-5 sm:px-8 py-3 text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Save Profile
-                </button>
+            <div class="w-full pt-6 border-t border-gray-200 mt-6" style="display:flex; justify-content:flex-end; width:100%;">
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-end" style="margin-left:auto;">
+                    <a href="{{ route('dashboard') }}"
+                       class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 sm:px-7 py-3 text-sm sm:text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
+                        Skip for now
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-lg bg-[#0D6AED] px-5 sm:px-8 py-3 text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Save Profile
+                    </button>
+                </div>
             </div>
         </form>
     </div>

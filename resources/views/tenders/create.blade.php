@@ -1,10 +1,30 @@
 @extends('layouts.admin')
 
-@section('title', 'Post a Tender - SPANZ')
+@section('title', 'Post a RFX - SPANZ')
 
 @section('content')
             <!-- Include Company Registration Modal -->
             @include('components.company-registration-modal')
+
+            <!-- Soft modal: category % validation (replaces browser confirm/alert) -->
+            <div id="percentageSoftModal" class="fixed inset-0 hidden flex items-center justify-center p-4" style="z-index: 100002;" aria-hidden="true">
+                <div id="percentageSoftModalBackdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+                <div class="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-white" role="dialog" aria-modal="true" aria-labelledby="percentageSoftModalTitle">
+                    <div class="bg-gradient-to-r from-[#092C48] to-[#0D6AED] text-white px-6 py-4">
+                        <h3 id="percentageSoftModalTitle" class="text-lg font-bold">Confirm</h3>
+                    </div>
+                    <div class="px-6 py-5">
+                        <p id="percentageSoftModalMessage" class="text-gray-700 text-sm leading-relaxed"></p>
+                        <div id="percentageSoftModalFooterConfirm" class="mt-6 flex flex-wrap justify-end gap-3 hidden">
+                            <button type="button" id="percentageSoftModalBtnCancel" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+                            <button type="button" id="percentageSoftModalBtnSubmit" class="px-4 py-2 rounded-lg bg-[#0D6AED] text-white text-sm font-semibold hover:bg-blue-700 transition-colors">Submit anyway</button>
+                        </div>
+                        <div id="percentageSoftModalFooterAlert" class="mt-6 flex justify-end hidden">
+                            <button type="button" id="percentageSoftModalBtnOk" class="px-4 py-2 rounded-lg bg-[#0D6AED] text-white text-sm font-semibold hover:bg-blue-700 transition-colors">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
                 <div class="border border-gray-300 p-3 sm:p-4 lg:p-6">
@@ -27,7 +47,7 @@
                 </a>
             </div>
         @else
-        <form action="{{ route('tenders.store') }}" method="post" class="space-y-4 sm:space-y-6" enctype="multipart/form-data" onsubmit="return validatePercentageTotal()">
+        <form id="tender-create-form" action="{{ route('tenders.store') }}" method="post" class="space-y-4 sm:space-y-6" enctype="multipart/form-data" onsubmit="return handleTenderFormSubmit(event)">
             @csrf
             
             @if(session('error'))
@@ -46,6 +66,14 @@
                     <option value="eoi" {{ old('request_type') == 'eoi' ? 'selected' : '' }}>Request for Expression of Interest (EOI)</option>
                 </select>
                 @error('request_type')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title <span class="text-red-500">*</span></label>
+                            <input type="text" id="title" name="title" value="{{ old('title') }}" required
+                                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('title') border-red-300 @enderror">
+                            @error('title')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
@@ -90,36 +118,58 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div>
-                            <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location <span class="text-red-500">*</span></label>
-                <select id="location" name="location" required
-                                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('location') border-red-300 @enderror">
-                                <option value="">Select Country</option>
-                                <option value="australia" {{ old('location') == 'australia' ? 'selected' : '' }}>Australia</option>
-                                <option value="new-zealand" {{ old('location') == 'new-zealand' ? 'selected' : '' }}>New Zealand</option>
-                                <option value="singapore" {{ old('location') == 'singapore' ? 'selected' : '' }}>Singapore</option>
-                                <option value="usa" {{ old('location') == 'usa' ? 'selected' : '' }}>United States</option>
-                                <option value="uk" {{ old('location') == 'uk' ? 'selected' : '' }}>United Kingdom</option>
-                                <option value="canada" {{ old('location') == 'canada' ? 'selected' : '' }}>Canada</option>
-                                <option value="germany" {{ old('location') == 'germany' ? 'selected' : '' }}>Germany</option>
-                                <option value="france" {{ old('location') == 'france' ? 'selected' : '' }}>France</option>
-                            </select>
-                            @error('location')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                        <div class="space-y-4">
+                            <p class="text-sm font-medium text-gray-700">Location where service required <span class="text-red-500">*</span></p>
+                            <p class="text-xs text-gray-500 -mt-2 mb-1">Select country, then city. For Australia, choose state or territory first.</p>
+
+                            <div>
+                                <label for="tender-country" class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                                <select id="tender-country" name="country_code" required
+                                    class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('country_code') border-red-300 @enderror">
+                                    <option value="">Select country</option>
+                                    @foreach(\App\Models\Tender::locationSlugLabels() as $slug => $label)
+                                        <option value="{{ $slug }}" {{ old('country_code', old('location')) == $slug ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                @error('country_code')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div id="tender-state-wrap" class="hidden">
+                                <label for="tender-state" class="block text-sm font-medium text-gray-700 mb-2">State / territory</label>
+                                <select id="tender-state" name="state_id"
+                                    class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('state_id') border-red-300 @enderror">
+                                    <option value="">Select state</option>
+                                </select>
+                                @error('state_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="tender-city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                                <select id="tender-city" name="city_id" required
+                                    class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('city_id') border-red-300 @enderror">
+                                    <option value="">Select city</option>
+                                </select>
+                                @error('city_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
             <div>
-                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Products or Services <span class="text-red-500">*</span></label>
-                <input type="text" id="title" name="title" value="{{ old('title') }}" placeholder="Short title of Products or services required" required
-                    class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 @error('title') border-red-300 @enderror">
-                @error('title')
+                <label for="product_or_service" class="block text-sm font-medium text-gray-700 mb-2">Product or service required <span class="text-red-500">*</span></label>
+                <input type="text" id="product_or_service" name="product_or_service" value="{{ old('product_or_service') }}" placeholder="What product or service you need (not the listing headline)" required
+                    class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 @error('product_or_service') border-red-300 @enderror">
+                @error('product_or_service')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
-                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description <span class="text-red-500">*</span></label>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Describe your project <span class="text-red-500">*</span></label>
                             <textarea id="description" name="description" rows="4" required
-                                placeholder="Description or bullet list of Scope of Works and what is required"
+                                placeholder="Describe your project — scope of work, timeline, or bullet list of what you need"
                                 class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 resize-y min-h-[100px] @error('description') border-red-300 @enderror">{{ old('description') }}</textarea>
                             @error('description')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -211,8 +261,8 @@
                         </div>
 
                         <div>
-                            <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements</label>
-                            <textarea id="requirements" name="requirements" rows="3"
+                            <label for="comments" class="block text-sm font-medium text-gray-700 mb-2">Comments</label>
+                            <textarea id="comments" name="requirements" rows="3" placeholder="Optional notes or comments for suppliers"
                                       class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('requirements') border-red-300 @enderror">{{ old('requirements') }}</textarea>
                             @error('requirements')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -220,44 +270,42 @@
                         </div>
                         
                         <div>
-                            <h2 class="mb-4 mt-6 sm:mt-8 text-lg sm:text-xl font-semibold text-gray-800">Attach Project Files</h2>
-                            
-                            <!-- Custom File Input -->
-                            <div class="border-2 border-gray-300 border-dashed h-48 sm:h-60 rounded-md p-4 sm:p-6 w-full flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors relative">
-                                <!-- Hidden actual file input -->
-                                <input type="file" name="files[]" id="file" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this)">
-                                
-                                <!-- Custom button design -->
-                                <div class="text-center">
-                                    <svg class="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    
-                                    <p class="text-gray-600 text-base sm:text-lg mb-1 sm:mb-2">
-                                        <span class="font-semibold">Click to upload</span> <span class="hidden sm:inline">or drag and drop</span>
-                                    </p>
-                                    <p class="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4">PNG, JPG, PDF up to 10MB</p>
-                                    
-                                    <!-- Custom Choose Files Button -->
-                                    <button type="button" class="bg-[#0D6AED] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium text-sm sm:text-base">
-                                        Choose Files
-                                    </button>
-                                    
-                                    <!-- Selected files display -->
-                                    <div id="selectedFiles" class="mt-4 text-left hidden">
-                                        <h4 class="text-sm font-semibold text-gray-700 mb-2">Selected Files:</h4>
-                                        <div id="fileList" class="space-y-1"></div>
+                            <h2 class="mb-2 mt-6 sm:mt-8 text-lg sm:text-xl font-semibold text-gray-800">Attach project files</h2>
+                            <p class="text-sm text-gray-600 mb-4">You can upload <strong>multiple files</strong> at once or add more in several steps. PDF, Word, or images — max <strong>10MB per file</strong>.</p>
+
+                            <div id="tender-drop-zone" class="border-2 border-gray-300 border-dashed rounded-md w-full flex flex-col bg-gray-50 hover:bg-gray-100 transition-colors min-h-[12rem] sm:min-h-[14rem] overflow-hidden">
+                                {{-- Top strip only: invisible input so previews/buttons below stay clickable --}}
+                                <div id="tender-drop-zone-trigger" class="relative shrink-0 px-4 sm:px-6 pt-5 pb-4 border-b border-dashed border-gray-300">
+                                    <input type="file" name="files[]" id="tender-files-input" multiple
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,application/pdf,image/*"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-[1]"
+                                        aria-label="Upload project files">
+
+                                    <div class="relative z-[2] pointer-events-none text-center px-2 max-w-lg mx-auto">
+                                        <svg class="mx-auto h-8 w-8 sm:h-10 sm:w-10 text-gray-400 mb-2 sm:mb-3" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <p class="text-gray-600 text-sm sm:text-base mb-1">
+                                            <span class="font-semibold">Click to upload</span> <span class="hidden sm:inline">or drag and drop</span>
+                                        </p>
+                                        <p class="text-gray-500 text-xs sm:text-sm mb-3">PNG, JPG, PDF, DOC/DOCX — up to 10MB each · Multiple files allowed</p>
+                                        <button type="button" id="tender-files-choose-btn"
+                                            class="pointer-events-auto bg-[#0D6AED] text-white px-4 sm:px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium text-sm sm:text-base">
+                                            Choose files
+                                        </button>
                                     </div>
                                 </div>
+
+                                {{-- Previews live inside the same dashed field --}}
+                                <div id="tender-files-list-wrap" class="hidden flex-1 flex flex-col min-h-0 w-full px-4 sm:px-6 pb-4 pt-3">
+                                    <p class="text-xs font-semibold text-gray-700 mb-2">
+                                        <span id="tender-files-count">0</span> file(s) ready to upload
+                                    </p>
+                                    <div id="uploadedFilesList" class="space-y-2 max-h-52 sm:max-h-64 overflow-y-auto overscroll-contain pr-0.5"></div>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Uploaded Files Display Section -->
-                        <div id="uploadedFilesSection" class="mt-6 sm:mt-8 hidden">
-                            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Uploaded Files</h2>
-                            <div id="uploadedFilesList" class="space-y-3">
-                                <!-- Uploaded files will appear here -->
-                            </div>
+
+                            <p id="tender-files-error" class="mt-2 text-sm text-red-600 hidden"></p>
                         </div>
                         
                         <!-- Form Actions -->
@@ -279,6 +327,106 @@
 
 @push('scripts')
 <script>
+window.SPANZ_LOCATION_DATA = @json($locationData ?? []);
+const TENDER_OLD_STATE_ID = @json(old('state_id'));
+const TENDER_OLD_CITY_ID = @json(old('city_id'));
+
+function tenderFillStateOptions(slug) {
+    const data = window.SPANZ_LOCATION_DATA[slug];
+    const sel = document.getElementById('tender-state');
+    if (!sel || !data) return;
+    sel.innerHTML = '<option value="">Select state</option>';
+    (data.states || []).forEach(function(s) {
+        const opt = document.createElement('option');
+        opt.value = String(s.id);
+        opt.textContent = s.name;
+        sel.appendChild(opt);
+    });
+}
+
+function tenderFillCityOptions(slug, stateId) {
+    const data = window.SPANZ_LOCATION_DATA[slug];
+    const sel = document.getElementById('tender-city');
+    if (!sel || !data) return;
+    sel.innerHTML = '<option value="">Select city</option>';
+    let rows = [];
+    if (data.requires_state) {
+        if (!stateId) {
+            sel.innerHTML = '<option value="">Select state first</option>';
+            return;
+        }
+        rows = data.cities_by_state[String(stateId)] || data.cities_by_state[stateId] || [];
+    } else {
+        rows = data.cities_flat || [];
+    }
+    rows.forEach(function(c) {
+        const opt = document.createElement('option');
+        opt.value = String(c.id);
+        opt.textContent = (!data.requires_state && c.state_name)
+            ? (c.name + ' (' + c.state_name + ')')
+            : c.name;
+        sel.appendChild(opt);
+    });
+}
+
+function tenderSyncLocationFields(isInitial) {
+    const slug = document.getElementById('tender-country')?.value || '';
+    const data = window.SPANZ_LOCATION_DATA[slug];
+    const stateWrap = document.getElementById('tender-state-wrap');
+    const stateSel = document.getElementById('tender-state');
+    const citySel = document.getElementById('tender-city');
+
+    if (!stateWrap || !stateSel || !citySel) return;
+
+    if (!slug || !data) {
+        citySel.innerHTML = '<option value="">Select country first</option>';
+        citySel.disabled = true;
+        return;
+    }
+
+    citySel.disabled = false;
+
+    if (data.requires_state) {
+        stateWrap.classList.remove('hidden');
+        stateSel.disabled = false;
+        stateSel.setAttribute('required', 'required');
+        tenderFillStateOptions(slug);
+        if (isInitial && TENDER_OLD_STATE_ID) {
+            stateSel.value = String(TENDER_OLD_STATE_ID);
+        }
+        tenderFillCityOptions(slug, stateSel.value);
+        if (isInitial && TENDER_OLD_CITY_ID) {
+            citySel.value = String(TENDER_OLD_CITY_ID);
+        }
+    } else {
+        stateWrap.classList.add('hidden');
+        stateSel.removeAttribute('required');
+        stateSel.disabled = true;
+        stateSel.innerHTML = '<option value="">—</option>';
+        tenderFillCityOptions(slug, null);
+        if (isInitial && TENDER_OLD_CITY_ID) {
+            citySel.value = String(TENDER_OLD_CITY_ID);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const countryEl = document.getElementById('tender-country');
+    const stateEl = document.getElementById('tender-state');
+    if (countryEl && window.SPANZ_LOCATION_DATA) {
+        countryEl.addEventListener('change', function() {
+            tenderSyncLocationFields(false);
+        });
+        if (stateEl) {
+            stateEl.addEventListener('change', function() {
+                const slug = countryEl.value;
+                tenderFillCityOptions(slug, stateEl.value);
+            });
+        }
+        tenderSyncLocationFields(true);
+    }
+});
+
 // Show company registration modal if company is not registered
 document.addEventListener('DOMContentLoaded', function() {
     @if(!$hasCompany)
@@ -459,29 +607,120 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
 });
 
-// Validate percentage total on form submit
-function validatePercentageTotal() {
+let percentageModalOnConfirm = null;
+
+function closePercentageSoftModal() {
+    const wrap = document.getElementById('percentageSoftModal');
+    if (!wrap) return;
+    wrap.classList.add('hidden');
+    wrap.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    percentageModalOnConfirm = null;
+}
+
+function openPercentageSoftModal(opts) {
+    const wrap = document.getElementById('percentageSoftModal');
+    const titleEl = document.getElementById('percentageSoftModalTitle');
+    const msgEl = document.getElementById('percentageSoftModalMessage');
+    const footConfirm = document.getElementById('percentageSoftModalFooterConfirm');
+    const footAlert = document.getElementById('percentageSoftModalFooterAlert');
+    if (!wrap || !titleEl || !msgEl || !footConfirm || !footAlert) return;
+
+    titleEl.textContent = opts.title || 'Notice';
+    msgEl.textContent = opts.message || '';
+
+    if (opts.variant === 'confirm') {
+        footConfirm.classList.remove('hidden');
+        footAlert.classList.add('hidden');
+        percentageModalOnConfirm = typeof opts.onConfirm === 'function' ? opts.onConfirm : null;
+    } else {
+        footConfirm.classList.add('hidden');
+        footAlert.classList.remove('hidden');
+        percentageModalOnConfirm = null;
+    }
+
+    wrap.classList.remove('hidden');
+    wrap.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function handleTenderFormSubmit(e) {
+    const form = e.target;
+    if (form.id !== 'tender-create-form') {
+        return true;
+    }
+
     const total = getTotalPercentage();
-    
+
     if (total > 100) {
-        alert(`Error: Total percentage is ${total}%, which exceeds 100%. Please adjust your selections.`);
+        e.preventDefault();
+        openPercentageSoftModal({
+            variant: 'alert',
+            title: 'Total exceeds 100%',
+            message: `Total percentage is ${total}%, which exceeds 100%. Please adjust your selections.`
+        });
         return false;
     }
-    
+
     if (total < 100) {
-        const confirmSubmit = confirm(`Total percentage is ${total}%. You have ${100 - total}% remaining. Do you want to submit anyway?`);
-        return confirmSubmit;
+        e.preventDefault();
+        const remaining = 100 - total;
+        openPercentageSoftModal({
+            variant: 'confirm',
+            title: 'Incomplete category allocation',
+            message: `Total percentage is ${total}%. You have ${remaining}% remaining. Do you want to submit anyway?`,
+            onConfirm: function () {
+                closePercentageSoftModal();
+                form.submit();
+            }
+        });
+        return false;
     }
-    
+
     return true;
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const backdrop = document.getElementById('percentageSoftModalBackdrop');
+    const btnCancel = document.getElementById('percentageSoftModalBtnCancel');
+    const btnSubmit = document.getElementById('percentageSoftModalBtnSubmit');
+    const btnOk = document.getElementById('percentageSoftModalBtnOk');
+
+    if (btnCancel) {
+        btnCancel.addEventListener('click', closePercentageSoftModal);
+    }
+    if (btnOk) {
+        btnOk.addEventListener('click', closePercentageSoftModal);
+    }
+    if (btnSubmit) {
+        btnSubmit.addEventListener('click', function () {
+            if (typeof percentageModalOnConfirm === 'function') {
+                percentageModalOnConfirm();
+            } else {
+                closePercentageSoftModal();
+            }
+        });
+    }
+    if (backdrop) {
+        backdrop.addEventListener('click', closePercentageSoftModal);
+    }
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && document.getElementById('percentageSoftModal') && !document.getElementById('percentageSoftModal').classList.contains('hidden')) {
+            closePercentageSoftModal();
+        }
+    });
+});
 
 function addCategoryRow() {
     const remaining = getRemainingPercentage();
     
     // Prevent adding if 100% is reached
     if (remaining <= 0) {
-        alert('Cannot add more lines. Total percentage has reached 100%.');
+        openPercentageSoftModal({
+            variant: 'alert',
+            title: '100% allocated',
+            message: 'Cannot add more lines. Total percentage has reached 100%.'
+        });
         return;
     }
     
@@ -575,95 +814,141 @@ function removeCategoryRow(button) {
     updatePercentageOptions();
 }
 
-// File handling functionality
-function handleFileSelect(input) {
-    const files = input.files;
-    const uploadedFilesSection = document.getElementById('uploadedFilesSection');
-    const uploadedFilesList = document.getElementById('uploadedFilesList');
-    
-    if (files.length > 0) {
-        // Show the uploaded files section
-        uploadedFilesSection.classList.remove('hidden');
-        uploadedFilesList.innerHTML = ''; // Clear previous files
-        
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileSize = (file.size / 1024 / 1024).toFixed(2); // Size in MB
-            const fileName = file.name;
-            const fileExtension = fileName.split('.').pop().toLowerCase();
-            const uploadTime = new Date().toLocaleString();
-            
-            // Create enhanced file display card
-            const fileItem = document.createElement('div');
-            fileItem.className = 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow';
-            fileItem.innerHTML = `
-                <div class="flex items-start justify-between">
-                    <div class="flex items-start space-x-3 flex-1">
-                        <!-- File type icon -->
-                        <div class="flex-shrink-0">
-                            ${getFileIcon(fileExtension)}
-                        </div>
-                        
-                        <!-- File details -->
+// --- Multiple file uploads: merged list synced to input for form submit ---
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ALLOWED_EXT = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+let tenderFileList = [];
+let tenderPreviewObjectUrls = [];
+
+function escHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function tenderFilesShowError(msg) {
+    const el = document.getElementById('tender-files-error');
+    if (!el) return;
+    if (msg) {
+        el.textContent = msg;
+        el.classList.remove('hidden');
+    } else {
+        el.textContent = '';
+        el.classList.add('hidden');
+    }
+}
+
+function syncTenderFilesToInput() {
+    const input = document.getElementById('tender-files-input');
+    if (!input) return;
+    const dt = new DataTransfer();
+    tenderFileList.forEach(function(f) { dt.items.add(f); });
+    input.files = dt.files;
+}
+
+function fileAllowed(file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!ALLOWED_EXT.includes(ext)) {
+        return 'Not allowed: ' + file.name + ' (use PDF, DOC/DOCX, or common images)';
+    }
+    if (file.size > MAX_FILE_BYTES) {
+        return 'Too large: ' + file.name + ' (max 10MB per file)';
+    }
+    return null;
+}
+
+function addTenderFiles(newFiles) {
+    tenderFilesShowError('');
+    for (let i = 0; i < newFiles.length; i++) {
+        const file = newFiles[i];
+        const err = fileAllowed(file);
+        if (err) {
+            tenderFilesShowError(err);
+            continue;
+        }
+        const dup = tenderFileList.some(function(f) {
+            return f.name === file.name && f.size === file.size;
+        });
+        if (!dup) {
+            tenderFileList.push(file);
+        }
+    }
+    syncTenderFilesToInput();
+    renderTenderFileListUI();
+}
+
+function renderTenderFileListUI() {
+    const wrap = document.getElementById('tender-files-list-wrap');
+    const list = document.getElementById('uploadedFilesList');
+    const countEl = document.getElementById('tender-files-count');
+    if (!wrap || !list) return;
+
+    tenderPreviewObjectUrls.forEach(function(u) {
+        try { URL.revokeObjectURL(u); } catch (e) {}
+    });
+    tenderPreviewObjectUrls = [];
+
+    if (tenderFileList.length === 0) {
+        wrap.classList.add('hidden');
+        list.innerHTML = '';
+        if (countEl) countEl.textContent = '0';
+        return;
+    }
+
+    wrap.classList.remove('hidden');
+    if (countEl) countEl.textContent = String(tenderFileList.length);
+    list.innerHTML = '';
+
+    tenderFileList.forEach(function(file, i) {
+        const fileSize = (file.size / 1024 / 1024).toFixed(2);
+        const fileName = escHtml(file.name);
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+
+        let thumbHtml = '';
+        if (isImageFile(fileExtension)) {
+            const objUrl = URL.createObjectURL(file);
+            tenderPreviewObjectUrls.push(objUrl);
+            thumbHtml = '<img src="' + objUrl + '" alt="" class="h-14 w-14 shrink-0 rounded-lg object-cover border border-gray-200 bg-white shadow-sm" />';
+        } else {
+            thumbHtml = '<div class="flex-shrink-0">' + getFileIcon(fileExtension) + '</div>';
+        }
+
+        const fileItem = document.createElement('div');
+        fileItem.className = 'bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow';
+        fileItem.innerHTML = `
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-start space-x-3 flex-1 min-w-0">
+                        ${thumbHtml}
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-medium text-gray-900 truncate" title="${fileName}">
-                                ${fileName}
-                            </h4>
-                            <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
-                                <span class="flex items-center space-x-1">
-                                    <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 110-2h4a1 1 0 011 1v4a1 1 0 11-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>${fileSize} MB</span>
-                                </span>
-                                <span class="flex items-center space-x-1">
-                                    <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>${uploadTime}</span>
-                                </span>
+                            <h4 class="text-sm font-medium text-gray-900 truncate" title="${fileName}">${fileName}</h4>
+                            <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                                <span>${fileSize} MB</span>
                                 <span class="uppercase font-semibold text-blue-600">${fileExtension}</span>
                             </div>
-                            
-                            <!-- Upload status -->
                             <div class="mt-2 flex items-center space-x-1">
-                                <svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="text-xs text-green-600 font-medium">Successfully Uploaded</span>
+                                <svg class="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                <span class="text-xs text-green-700 font-medium">Ready to upload with your request</span>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Actions -->
-                    <div class="flex items-center space-x-2 ml-4">
+                    <div class="flex items-center space-x-1 shrink-0">
                         ${isImageFile(fileExtension) ? `
                             <button type="button" onclick="previewFile(${i})" class="text-blue-500 hover:text-blue-700 p-2 rounded-md hover:bg-blue-50 transition-colors" title="Preview">
-                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
-                        ` : ''}
-                        <button type="button" onclick="downloadFile(${i})" class="text-green-500 hover:text-green-700 p-2 rounded-md hover:bg-green-50 transition-colors" title="Download">
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414L10 14.414 6.293 10.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
+                            </button>` : ''}
+                        <button type="button" onclick="downloadFile(${i})" class="text-green-600 hover:text-green-800 p-2 rounded-md hover:bg-green-50 transition-colors" title="Download copy">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414L10 14.414 6.293 10.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                         </button>
-                        <button type="button" onclick="removeFile(this, ${i})" class="text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Remove">
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                            </svg>
+                        <button type="button" onclick="removeFile(this, ${i})" class="text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Remove from list">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
-                </div>
-            `;
-            uploadedFilesList.appendChild(fileItem);
-        }
-    } else {
-        uploadedFilesSection.classList.add('hidden');
-    }
+                </div>`;
+        list.appendChild(fileItem);
+    });
 }
 
 function getFileIcon(extension) {
@@ -723,33 +1008,28 @@ function isImageFile(extension) {
 }
 
 function previewFile(index) {
-    const fileInput = document.getElementById('file');
-    const file = fileInput.files[index];
-    
+    const file = tenderFileList[index];
     if (file && isImageFile(file.name.split('.').pop().toLowerCase())) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            // Create modal for image preview
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
             modal.innerHTML = `
                 <div class="relative max-w-4xl max-h-full p-4">
-                    <button onclick="this.parentElement.parentElement.remove()" class="absolute -top-10 right-0 text-white hover:text-gray-300">
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="absolute -top-10 right-0 text-white hover:text-gray-300">
                         <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                         </svg>
                     </button>
-                    <img src="${e.target.result}" alt="${file.name}" class="max-w-full max-h-full rounded-lg shadow-2xl">
-                    <p class="text-white text-center mt-2">${file.name}</p>
+                    <img src="${e.target.result}" alt="" class="max-w-full max-h-full rounded-lg shadow-2xl">
+                    <p class="text-white text-center mt-2"></p>
                 </div>
             `;
+            modal.querySelector('p').textContent = file.name;
+            modal.querySelector('img').alt = file.name;
             document.body.appendChild(modal);
-            
-            // Close on click outside
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.remove();
-                }
+            modal.addEventListener('click', function(ev) {
+                if (ev.target === modal) modal.remove();
             });
         };
         reader.readAsDataURL(file);
@@ -757,9 +1037,7 @@ function previewFile(index) {
 }
 
 function downloadFile(index) {
-    const fileInput = document.getElementById('file');
-    const file = fileInput.files[index];
-    
+    const file = tenderFileList[index];
     if (file) {
         const url = URL.createObjectURL(file);
         const a = document.createElement('a');
@@ -773,57 +1051,78 @@ function downloadFile(index) {
 }
 
 function removeFile(button, index) {
-    const fileInput = document.getElementById('file');
-    const dt = new DataTransfer();
-    const files = fileInput.files;
-    
-    for (let i = 0; i < files.length; i++) {
-        if (i !== index) {
-            dt.items.add(files[i]);
-        }
-    }
-    
-    fileInput.files = dt.files;
-    handleFileSelect(fileInput);
+    tenderFileList.splice(index, 1);
+    syncTenderFilesToInput();
+    renderTenderFileListUI();
 }
-
-// Add drag and drop functionality
-const dropArea = document.querySelector('#file').parentElement;
-
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
-});
 
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
 }
 
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false);
-});
-
-function highlight(e) {
-    dropArea.classList.add('border-blue-400', 'bg-blue-50');
+function highlightDropZone(e) {
+    const dropArea = document.getElementById('tender-drop-zone');
+    if (dropArea) dropArea.classList.add('border-blue-400', 'bg-blue-50');
 }
 
-function unhighlight(e) {
-    dropArea.classList.remove('border-blue-400', 'bg-blue-50');
+function unhighlightDropZone(e) {
+    const dropArea = document.getElementById('tender-drop-zone');
+    if (dropArea) dropArea.classList.remove('border-blue-400', 'bg-blue-50');
 }
-
-dropArea.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
     const dt = e.dataTransfer;
-    const files = dt.files;
-    
-    const fileInput = document.getElementById('file');
-    fileInput.files = files;
-    handleFileSelect(fileInput);
+    if (dt.files && dt.files.length) {
+        addTenderFiles(Array.from(dt.files));
+    }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('tender-files-input');
+    const chooseBtn = document.getElementById('tender-files-choose-btn');
+    const dropArea = document.getElementById('tender-drop-zone');
+    if (chooseBtn && fileInput) {
+        chooseBtn.addEventListener('click', function(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            fileInput.click();
+        });
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length) {
+                addTenderFiles(Array.from(this.files));
+            }
+        });
+    }
+
+    const tenderForm = document.getElementById('tender-create-form');
+    if (tenderForm) {
+        tenderForm.addEventListener('reset', function() {
+            tenderFileList = [];
+            syncTenderFilesToInput();
+            renderTenderFileListUI();
+            tenderFilesShowError('');
+        });
+        tenderForm.addEventListener('submit', function() {
+            syncTenderFilesToInput();
+        });
+    }
+
+    if (dropArea) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function(eventName) {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        ['dragenter', 'dragover'].forEach(function(eventName) {
+            dropArea.addEventListener(eventName, highlightDropZone, false);
+        });
+        ['dragleave', 'drop'].forEach(function(eventName) {
+            dropArea.addEventListener(eventName, unhighlightDropZone, false);
+        });
+        dropArea.addEventListener('drop', handleDrop, false);
+    }
+});
 </script>
 @endpush
