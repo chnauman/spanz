@@ -307,21 +307,47 @@
             }
         }
 
-        /* Progress track/fill: explicit px height so bars show when Tailwind h-1.5/h-full are missing (live). */
+        /* Category allocation: survives missing Tailwind on live (backup if inline styles stripped). */
+        .tender-allocation-panel {
+            margin-top: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            background-color: #f8fafc;
+            padding: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .tender-allocation-panel {
+                padding: 1.25rem;
+            }
+        }
+
+        .tender-allocation-card {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #fff;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        }
+
         .tender-allocation-bar-track {
             margin-top: 0.75rem;
             width: 100%;
-            height: 6px;
+            height: 10px;
             border-radius: 9999px;
             background-color: #f3f4f6;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         .tender-allocation-bar-fill {
             display: block;
-            height: 6px;
+            height: 10px;
             max-width: 100%;
             border-radius: 9999px;
+            box-sizing: border-box;
         }
 
         .filter-content {

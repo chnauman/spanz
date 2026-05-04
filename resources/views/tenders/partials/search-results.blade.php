@@ -182,7 +182,7 @@
                 ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500', 'pctColor' => '#c2410c', 'barColor' => '#eab308'],
                 ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600', 'pctColor' => '#9333ea', 'barColor' => '#9333ea'],
             ])
-            <div class="mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4 sm:p-5">
+            <div class="tender-allocation-panel mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4 sm:p-5">
                 <div class="mb-4 flex gap-3">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-[#0d6aed] shadow-sm ring-1 ring-gray-100" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -198,8 +198,14 @@
                     @foreach($allocationCards as $card)
                         @php($ti = $loop->index % 3)
                         @php($th = $themes[$ti])
-                        @php($barW = min(100, max(0, (int) round($card['pct_num']))))
-                        <div class="flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                        @php
+                            $pn = (float) ($card['pct_num'] ?? 0);
+                            if ($pn > 0 && $pn < 1) {
+                                $pn *= 100;
+                            }
+                            $barW = (int) round(min(100, max(0, $pn)));
+                        @endphp
+                        <div class="tender-allocation-card flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0 pt-0.5">
                                     <div class="text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $card['main_name'] }}</div>
@@ -207,8 +213,9 @@
                                 </div>
                                 <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
                             </div>
-                            <div class="tender-allocation-bar-track h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                                <div class="tender-allocation-bar-fill {{ $th['bar'] }} h-full rounded-full" style="width: {{ $barW }}%; background-color: {{ $th['barColor'] }}"></div>
+                            {{-- Inline dimensions: live builds often lack Tailwind h-1.5/h-full so utility-only bars collapse to a hairline. --}}
+                            <div class="tender-allocation-bar-track" style="margin-top:0.75rem;width:100%;height:10px;border-radius:9999px;background-color:#f3f4f6;overflow:hidden;box-sizing:border-box;">
+                                <span class="tender-allocation-bar-fill {{ $th['bar'] }}" style="display:block;width:{{ $barW }}%;height:10px;border-radius:9999px;background-color:{{ $th['barColor'] }};max-width:100%;box-sizing:border-box;"></span>
                             </div>
                             @if($card['range'])
                                 <div class="mt-2 text-[11px] leading-snug text-gray-600">{{ $card['range'] }}</div>
