@@ -175,7 +175,7 @@
             </div>
         @endif
 
-        {{-- Categories panel: three allocation cards in one row from sm breakpoint --}}
+        {{-- Categories panel: avoid @if … @foreach … @elseif (Blade can emit invalid PHP); use two @if blocks. --}}
         @if($allocationCards->isNotEmpty())
             @php($themes = [
                 ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500', 'pctColor' => '#1d4ed8', 'barColor' => '#3b82f6'],
@@ -198,13 +198,9 @@
                     @foreach($allocationCards as $card)
                         @php($ti = $loop->index % 3)
                         @php($th = $themes[$ti])
-                        @php
-                            $pn = (float) ($card['pct_num'] ?? 0);
-                            if ($pn > 0 && $pn < 1) {
-                                $pn *= 100;
-                            }
-                            $barW = (int) round(min(100, max(0, $pn)));
-                        @endphp
+                        @php($pn = (float) ($card['pct_num'] ?? 0))
+                        @php($pn = ($pn > 0 && $pn < 1) ? $pn * 100 : $pn)
+                        @php($barW = (int) round(min(100, max(0, $pn))))
                         <div class="tender-allocation-card flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0 pt-0.5">
@@ -224,7 +220,8 @@
                     @endforeach
                 </div>
             </div>
-        @elseif($tender->category)
+        @endif
+        @if($allocationCards->isEmpty() && $tender->category)
             <div class="mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4">
                 <span class="text-sm font-semibold text-gray-900">{{ $tender->category->name }}</span>
             </div>
