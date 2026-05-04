@@ -235,6 +235,24 @@
             }
         }
 
+        /* Plain CSS: keep share CTA visibly blue even if output.css omits arbitrary Tailwind utilities (stale build). */
+        #open-share-docs-modal {
+            background-color: #0d6aed;
+            color: #fff;
+            border: 1px solid #0b5fd7;
+        }
+
+        #open-share-docs-modal:hover:not(:disabled) {
+            background-color: #0b5fd7;
+            border-color: #0a52c2;
+        }
+
+        #open-share-docs-modal:disabled {
+            background-color: #0d6aed;
+            color: #fff;
+            border-color: #0b5fd7;
+        }
+
         .filter-content {
             transition: all 0.3s ease;
         }
