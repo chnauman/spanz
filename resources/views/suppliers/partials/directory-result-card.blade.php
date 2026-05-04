@@ -10,8 +10,8 @@
 @endphp
 
 <div class="thomas-result-card font-sans p-5 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
-    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
-        <div class="flex min-w-0 flex-1 gap-3">
+    <div class="supplier-card-head flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+        <div class="supplier-card-head-main flex min-w-0 flex-1 gap-3">
             @if($canShareDocuments && auth()->check() && auth()->id() !== (int) $supplier->id)
                 <div class="shrink-0 pt-1">
                     <label class="sr-only">Select supplier for document share</label>
@@ -19,7 +19,7 @@
                         data-user-id="{{ $supplier->id }}" title="Select (max 3) to share documents">
                 </div>
             @endif
-            <div class="min-w-0 flex-1">
+            <div class="supplier-card-title-stack min-w-0 flex-1">
                 @if($supplier->isSubSupplier())
                     <span class="mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide sm:text-sm" style="background-color:#f3e8ff;color:#6b21a8;">
                         <span class="h-2 w-2 shrink-0 rounded-full" style="background-color:#6b21a8;" aria-hidden="true"></span>

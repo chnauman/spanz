@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Supplier Directory</title>
-    <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+    @php($directoryCssQuery = is_file(public_path('css/output.css')) ? filemtime(public_path('css/output.css')) : time())
+    <link rel="stylesheet" href="{{ asset('css/output.css') }}?v={{ $directoryCssQuery }}">
     <style>
         :root {
             --thomas-navy: #032747;
@@ -207,6 +208,56 @@
             #desktop-layout.is-sidebar-collapsed #desktop-sidebar {
                 display: none !important;
             }
+        }
+
+        /* Plain CSS fallbacks: fixes broken layout if live serves a stale/missing output.css (browser/CDN cache). */
+        #supplier-share-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 639.98px) {
+            #supplier-share-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .supplier-card-head {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 1024px) {
+            .supplier-card-head {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .supplier-card-head-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .supplier-card-title-stack {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .supplier-card-head-main .supplier-select-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
         }
 
         .filter-content {

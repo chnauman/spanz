@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Featured Tenders Search</title>
-    <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+    @php($tenderSearchCssQuery = is_file(public_path('css/output.css')) ? filemtime(public_path('css/output.css')) : time())
+    <link rel="stylesheet" href="{{ asset('css/output.css') }}?v={{ $tenderSearchCssQuery }}">
     <style>
         :root {
             --thomas-navy: #032747;
@@ -206,6 +207,87 @@
 
             #desktop-layout.is-sidebar-collapsed #desktop-sidebar {
                 display: none !important;
+            }
+        }
+
+        /* Plain CSS fallbacks: tender cards when output.css is stale/cached on live. */
+        .tender-card-head {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 1024px) {
+            .tender-card-head {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .tender-card-head-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: flex-start;
+        }
+
+        @media (min-width: 1024px) {
+            .tender-card-head-actions {
+                justify-content: flex-end;
+                flex-shrink: 0;
+            }
+        }
+
+        .tender-card-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .tender-card-meta-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        .tender-meta-cell {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .tender-desc-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 1024px) {
+            .tender-desc-row {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .tender-desc-row-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .tender-allocation-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .tender-allocation-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
 

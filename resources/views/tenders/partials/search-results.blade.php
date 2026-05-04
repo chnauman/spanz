@@ -47,7 +47,7 @@
 
     <div class="thomas-result-card font-sans p-5 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
         {{-- Header: type badge + title (left), actions (right), aligned on large screens --}}
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+        <div class="tender-card-head flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
             <div class="min-w-0 flex-1">
                 @if($typeLabel)
                     {{-- Request-type pill: pale blue field, blue dot, saturated blue label (inline colors = reliable) --}}
@@ -58,7 +58,7 @@
                 @endif
                 <a href="{{ route('tenders.detail', $tender->id) }}" class="block text-xl font-bold leading-snug tracking-tight text-gray-900 hover:text-[#0d6aed] sm:text-2xl break-words">{{ $tender->titleHeadline() }}</a>
             </div>
-            <div class="flex flex-wrap items-center justify-start gap-2 lg:justify-end lg:shrink-0">
+            <div class="tender-card-head-actions flex flex-wrap items-center justify-start gap-2 lg:justify-end lg:shrink-0">
                 @auth
                     <button type="button" class="thomas-outline-btn" onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}">
                         <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -92,8 +92,8 @@
 
         {{-- Budget / Posted / Deadline: 3 columns + faint vertical rules (desktop) --}}
         <div class="mt-5 border-t border-gray-100 pt-5">
-            <div class="grid grid-cols-1 sm:grid-cols-3">
-                <div class="flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:py-0 sm:pr-6">
+            <div class="tender-card-meta-grid grid grid-cols-1 sm:grid-cols-3">
+                <div class="tender-meta-cell flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:py-0 sm:pr-6">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -104,7 +104,7 @@
                         <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $tender->budget ? $tender->budgetRangeLabel() : '—' }}</div>
                     </div>
                 </div>
-                <div class="flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:px-6 sm:py-0">
+                <div class="tender-meta-cell flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:px-6 sm:py-0">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -115,7 +115,7 @@
                         <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ optional($tender->created_at)->format('d M, Y') ?? '—' }}</div>
                     </div>
                 </div>
-                <div class="flex gap-3 py-3 sm:py-0 sm:pl-6">
+                <div class="tender-meta-cell flex gap-3 py-3 sm:py-0 sm:pl-6">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -136,8 +136,8 @@
         </div>
 
         {{-- Project description + location --}}
-        <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-            <div class="flex min-w-0 flex-1 gap-3">
+        <div class="tender-desc-row mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+            <div class="tender-desc-row-main flex min-w-0 flex-1 gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -161,7 +161,7 @@
 
         @if(filled($tender->product_or_service))
             <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4">
-                <div class="flex min-w-0 flex-1 gap-3">
+                <div class="tender-desc-row-main flex min-w-0 flex-1 gap-3">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -194,7 +194,7 @@
                         <p class="mt-0.5 text-xs text-gray-500 sm:text-sm">Breakdown of budget by category</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div class="tender-allocation-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
                     @foreach($allocationCards as $card)
                         @php($ti = $loop->index % 3)
                         @php($th = $themes[$ti])

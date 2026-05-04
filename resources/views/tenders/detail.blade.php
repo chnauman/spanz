@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $tender->titleHeadline() }} - Tender Details</title>
-    <link rel="stylesheet" href="{{ asset('css/output.css') }}">
+    @php($tendersDetailCssQuery = is_file(public_path('css/output.css')) ? filemtime(public_path('css/output.css')) : time())
+    <link rel="stylesheet" href="{{ asset('css/output.css') }}?v={{ $tendersDetailCssQuery }}">
     <style>
         :root {
             --thomas-navy: #032747;
