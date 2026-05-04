@@ -207,8 +207,8 @@
                                 </div>
                                 <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
                             </div>
-                            <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                                <div class="{{ $th['bar'] }} h-full rounded-full" style="width: {{ $barW }}%; background-color: {{ $th['barColor'] }}"></div>
+                            <div class="tender-allocation-bar-track h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                                <div class="tender-allocation-bar-fill {{ $th['bar'] }} h-full rounded-full" style="width: {{ $barW }}%; background-color: {{ $th['barColor'] }}"></div>
                             </div>
                             @if($card['range'])
                                 <div class="mt-2 text-[11px] leading-snug text-gray-600">{{ $card['range'] }}</div>

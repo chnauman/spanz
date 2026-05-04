@@ -307,6 +307,23 @@
             }
         }
 
+        /* Progress track/fill: explicit px height so bars show when Tailwind h-1.5/h-full are missing (live). */
+        .tender-allocation-bar-track {
+            margin-top: 0.75rem;
+            width: 100%;
+            height: 6px;
+            border-radius: 9999px;
+            background-color: #f3f4f6;
+            overflow: hidden;
+        }
+
+        .tender-allocation-bar-fill {
+            display: block;
+            height: 6px;
+            max-width: 100%;
+            border-radius: 9999px;
+        }
+
         .filter-content {
             transition: all 0.3s ease;
         }
