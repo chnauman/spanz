@@ -263,11 +263,13 @@
             gap: 0.75rem;
         }
 
-        @media (min-width: 1024px) {
+        /* Grid keeps description + location on one row; text column wraps earlier than full card width. */
+        @media (min-width: 768px) {
             .tender-desc-row {
-                flex-direction: row;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
                 align-items: center;
-                justify-content: space-between;
+                column-gap: 1rem;
             }
         }
 
@@ -277,6 +279,20 @@
             gap: 0.75rem;
             flex: 1 1 auto;
             min-width: 0;
+        }
+
+        .tender-desc-text-col {
+            min-width: 0;
+        }
+
+        @media (min-width: 768px) {
+            .tender-desc-text-col {
+                max-width: min(100%, 33rem);
+            }
+        }
+
+        .tender-desc-row-badge {
+            flex-shrink: 0;
         }
 
         .tender-allocation-grid {

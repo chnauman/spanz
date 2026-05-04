@@ -136,20 +136,20 @@
         </div>
 
         {{-- Project description + location --}}
-        <div class="tender-desc-row mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+        <div class="tender-desc-row mt-4 border-t border-gray-100 pt-4">
             <div class="tender-desc-row-main flex min-w-0 flex-1 gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                 </div>
-                <div class="min-w-0">
+                <div class="tender-desc-text-col min-w-0">
                     <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Project description</div>
                     <p class="mt-0.5 text-sm leading-snug text-gray-900 line-clamp-2 sm:text-[15px]">{{ $tender->description }}</p>
                 </div>
             </div>
-            <div class="flex shrink-0 lg:self-center">
-                <span class="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-800 sm:text-sm">
+            <div class="tender-desc-row-badge flex shrink-0">
+                <span class="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-800 sm:text-sm" style="border-color:#bbf7d0;background-color:#f0fdf4;color:#166534;">
                     <svg class="h-4 w-4 shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -178,9 +178,9 @@
         {{-- Categories panel: three allocation cards in one row from sm breakpoint --}}
         @if($allocationCards->isNotEmpty())
             @php($themes = [
-                ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500'],
-                ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500'],
-                ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600'],
+                ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500', 'pctColor' => '#1d4ed8', 'barColor' => '#3b82f6'],
+                ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500', 'pctColor' => '#c2410c', 'barColor' => '#eab308'],
+                ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600', 'pctColor' => '#9333ea', 'barColor' => '#9333ea'],
             ])
             <div class="mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4 sm:p-5">
                 <div class="mb-4 flex gap-3">
@@ -205,10 +205,10 @@
                                     <div class="text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $card['main_name'] }}</div>
                                     <div class="mt-0.5 text-[11px] text-gray-500">{{ $card['sub_label'] }}</div>
                                 </div>
-                                <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}">{{ $card['pct'] }}</div>
+                                <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
                             </div>
                             <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                                <div class="{{ $th['bar'] }} h-full rounded-full" style="width: {{ $barW }}%"></div>
+                                <div class="{{ $th['bar'] }} h-full rounded-full" style="width: {{ $barW }}%; background-color: {{ $th['barColor'] }}"></div>
                             </div>
                             @if($card['range'])
                                 <div class="mt-2 text-[11px] leading-snug text-gray-600">{{ $card['range'] }}</div>
