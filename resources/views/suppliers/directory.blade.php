@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Featured Tenders Search</title>
+    <title>Supplier Directory</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
     <style>
         :root {
@@ -24,7 +24,7 @@
         }
 
         /* Tender listing: readable sans-serif for body copy */
-        #tenders-results {
+        #suppliers-results {
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
         }
 
@@ -374,7 +374,7 @@
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="thomas-nav-link">Tenders</a>
                         <a href="{{ route('products.search') }}" class="thomas-nav-link">Products</a>
-                        <a href="{{ route('suppliers.directory') }}" class="thomas-nav-link">Suppliers' Directory</a>
+                        <a href="{{ route('suppliers.directory') }}" class="thomas-nav-link @if(request()->routeIs('suppliers.directory')) underline decoration-2 underline-offset-4 @endif">Suppliers' Directory</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -443,8 +443,8 @@
     <div class="thomas-search-strip">
         <div class="w-full max-w-6xl mx-auto px-4 sm:px-8">
             <div class="thomas-search-shell flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0">
-                <form id="tenders-search-form" method="GET" action="{{ route('tenders.search') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full">
-                    <input id="tenders-search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Search by tender title, category, company or brand..."
+                <form id="suppliers-search-form" method="GET" action="{{ route('suppliers.directory') }}" class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 w-full">
+                    <input id="suppliers-search-input" type="search" name="search" value="{{ request('search') }}" placeholder="Search by company name, category, contact or keywords..."
                         class="w-full pl-5 pr-3 py-3 sm:py-2 text-gray-700 focus:outline-none text-sm" />
 
                     @foreach((array) request('category', []) as $cat)
@@ -453,11 +453,6 @@
                     @foreach((array) request('location', []) as $loc)
                         <input type="hidden" name="location[]" value="{{ $loc }}">
                     @endforeach
-                    @if(request('company_type'))
-                        @foreach((array) request('company_type') as $type)
-                            <input type="hidden" name="company_type[]" value="{{ $type }}">
-                        @endforeach
-                    @endif
 
                     <div class="w-full sm:w-auto">
                         <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-[#0D6AED] text-white text-sm font-medium">Search</button>
@@ -470,14 +465,50 @@
         class="thomas-breadcrumb flex flex-col md:flex-row justify-between items-start md:items-center p-4 sm:p-5 gap-4 md:gap-0">
         <div class="flex flex-wrap items-center text-sm flex-1">
             <span><a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-300">Home</a></span>
-            <span class="mx-1"><a href="#" class="text-blue-600 hover:text-blue-300">/</a></span>
-            <span><a href="#" class="text-blue-600 hover:text-blue-300">Tenders</a></span>
+            <span class="mx-1 text-gray-500">/</span>
+            <span class="text-gray-700">Suppliers' Directory</span>
         </div>
         <div class="flex space-x-3 items-center flex-shrink-0">
             <img src="{{ asset('spanz-img/printer.svg') }}" alt="Print" class="w-5 h-5 cursor-pointer hover:opacity-70" onclick="window.print()">
             <img src="{{ asset('spanz-img/share.svg') }}" alt="Share" class="w-5 h-5 cursor-pointer hover:opacity-70" onclick="copyCurrentUrl()">
         </div>
     </div>
+
+    @if(session('success'))
+        <div class="thomas-main-wrap">
+            <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-900" role="status">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="thomas-main-wrap">
+            <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900" role="alert">
+                <p class="font-semibold">Could not send documents</p>
+                <ul class="mt-2 list-disc pl-5">
+                    @foreach($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    @if(!empty($canShareDocuments))
+        <div class="thomas-main-wrap">
+            <div id="supplier-share-bar" class="mb-4 flex flex-col gap-3 rounded-lg border border-[#d8e2ee] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div class="text-sm text-[#032747]">
+                    <span class="font-semibold">Document share:</span>
+                    <span id="supplier-share-count">0</span> / 3 suppliers selected
+                </div>
+                <button type="button" id="open-share-docs-modal" disabled
+                    class="inline-flex items-center justify-center rounded-md bg-[#0d6aed] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+                    Share documents…
+                </button>
+            </div>
+        </div>
+    @endif
 
     <!-- Mobile Filter Button - Only visible on small screens -->
     <div class="lg:hidden bg-slate-50 p-4">
@@ -723,13 +754,17 @@
         </div>
         <!-- Content area for desktop -->
         <div id="desktop-results" class="w-full lg:col-span-9">
-            <div id="tenders-results">
-                @include('tenders.partials.search-results', ['tenders' => $tenders])
+            <div id="suppliers-results">
+                @include('suppliers.partials.directory-results', ['suppliers' => $suppliers, 'canShareDocuments' => $canShareDocuments ?? false])
             </div>
         </div>
     </div>
     </div>
     @include('components.mainfooter')
+
+    @if(!empty($canShareDocuments))
+        @include('suppliers.partials.share-documents-modal')
+    @endif
 
     <script>
         // Copy current URL to clipboard
@@ -788,79 +823,11 @@
             });
         }
 
-        // Save/Unsave functionality
-        function toggleSave(tenderId) {
-            const saveBtn = document.getElementById(`save-btn-${tenderId}`);
-            const saveText = document.getElementById(`save-text-${tenderId}`);
-
-            // Check if already saved
-            fetch(`/tenders/${tenderId}/saved-status`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.saved) {
-                        // Unsave
-                        fetch(`/tenders/${tenderId}/unsave`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            saveText.textContent = 'Save';
-                            saveBtn.classList.remove('text-green-600');
-                            saveBtn.classList.add('text-[#092C48]');
-                        })
-                        .catch(error => console.error('Error:', error));
-                    } else {
-                        // Save
-                        fetch(`/tenders/${tenderId}/save`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Content-Type': 'application/json',
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            saveText.textContent = 'Saved';
-                            saveBtn.classList.remove('text-[#092C48]');
-                            saveBtn.classList.add('text-green-600');
-                        })
-                        .catch(error => console.error('Error:', error));
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Check saved status on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            @auth
-            @foreach($tenders as $tender)
-            fetch(`/tenders/{{ $tender->id }}/saved-status`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.saved) {
-                        const saveText = document.getElementById(`save-text-{{ $tender->id }}`);
-                        const saveBtn = document.getElementById(`save-btn-{{ $tender->id }}`);
-                        if (saveText) saveText.textContent = 'Saved';
-                        if (saveBtn) {
-                            saveBtn.classList.remove('text-[#092C48]');
-                            saveBtn.classList.add('text-green-600');
-                        }
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            @endforeach
-            @endauth
-        });
-
         // Search functionality
         document.addEventListener('DOMContentLoaded', function() {
-            function handleTendersSearch(e) {
+            function handleSuppliersSearch(e) {
                 e.preventDefault();
-                const input = document.getElementById('tenders-search-input');
+                const input = document.getElementById('suppliers-search-input');
                 const query = input ? input.value : '';
                 if (input) {
                     input.value = query;
@@ -869,10 +836,9 @@
                 return false;
             }
 
-            // Add form submit handler
-            const tendersSearchForm = document.getElementById('tenders-search-form');
-            if (tendersSearchForm) {
-                tendersSearchForm.addEventListener('submit', handleTendersSearch);
+            const suppliersSearchForm = document.getElementById('suppliers-search-form');
+            if (suppliersSearchForm) {
+                suppliersSearchForm.addEventListener('submit', handleSuppliersSearch);
             }
 
             // Auto-submit search on Enter key
@@ -887,7 +853,7 @@
             });
 
             // Filter functionality
-            const resultsContainer = document.getElementById('tenders-results');
+            const resultsContainer = document.getElementById('suppliers-results');
             let abortController = null;
 
             async function fetchResults(url) {
@@ -914,6 +880,9 @@
                 } finally {
                     resultsContainer.removeAttribute('aria-busy');
                     resultsContainer.style.opacity = '1';
+                    if (typeof window.supplierShareUiSync === 'function') {
+                        window.supplierShareUiSync();
+                    }
                 }
             }
 
@@ -927,17 +896,12 @@
                 params.delete('category[]');
                 params.delete('location');
                 params.delete('location[]');
-                params.delete('company_type');
-                params.delete('company_type[]');
 
                 const selectedCategories = document.querySelectorAll('input[name="category[]"]:checked');
                 selectedCategories.forEach(cb => params.append('category[]', cb.value));
 
                 const selectedLocations = document.querySelectorAll('input[name="location[]"]:checked');
                 selectedLocations.forEach(cb => params.append('location[]', cb.value));
-
-                const selectedCompanyTypes = document.querySelectorAll('input[name="company_type[]"]:checked');
-                selectedCompanyTypes.forEach(cb => params.append('company_type[]', cb.value));
 
                 return params;
             }
@@ -951,7 +915,7 @@
             }
 
             // Add event listeners to filter checkboxes (AJAX)
-            document.querySelectorAll('.company-type-filter, .location-filter').forEach(checkbox => {
+            document.querySelectorAll('.location-filter').forEach(checkbox => {
                 checkbox.addEventListener('change', applyFiltersAjax);
             });
 
@@ -1113,7 +1077,7 @@
             document.getElementById('mobile-clear-all')?.addEventListener('click', function(e) {
                 e.preventDefault();
                 // Uncheck all filter checkboxes
-                document.querySelectorAll('#mobile-filter-modal .company-type-filter, #mobile-filter-modal .location-filter, #mobile-filter-modal .category-filter').forEach(cb => {
+                document.querySelectorAll('#mobile-filter-modal .location-filter, #mobile-filter-modal .category-filter').forEach(cb => {
                     cb.checked = false;
                 });
                 // Remove filter parameters from URL
@@ -1122,15 +1086,13 @@
                 currentUrl.searchParams.delete('category[]');
                 currentUrl.searchParams.delete('location');
                 currentUrl.searchParams.delete('location[]');
-                currentUrl.searchParams.delete('company_type');
-                currentUrl.searchParams.delete('company_type[]');
                 window.location.href = currentUrl.toString();
             });
 
             document.getElementById('desktop-clear-all')?.addEventListener('click', function(e) {
                 e.preventDefault();
                 // Uncheck all filter checkboxes
-                document.querySelectorAll('.lg\\:block .company-type-filter, .lg\\:block .location-filter, .lg\\:block .category-filter').forEach(cb => {
+                document.querySelectorAll('.lg\\:block .location-filter, .lg\\:block .category-filter').forEach(cb => {
                     cb.checked = false;
                 });
                 // Remove filter parameters from URL
@@ -1139,8 +1101,6 @@
                 currentUrl.searchParams.delete('category[]');
                 currentUrl.searchParams.delete('location');
                 currentUrl.searchParams.delete('location[]');
-                currentUrl.searchParams.delete('company_type');
-                currentUrl.searchParams.delete('company_type[]');
                 window.location.href = currentUrl.toString();
             });
 
@@ -1207,6 +1167,233 @@
                 window.addEventListener('resize', syncDesktopSidebar);
                 syncDesktopSidebar();
             }
+
+            (function setupSupplierDocumentShare() {
+                const bar = document.getElementById('supplier-share-bar');
+                const modal = document.getElementById('share-docs-modal');
+                const openBtn = document.getElementById('open-share-docs-modal');
+                const closeBtn = document.getElementById('close-share-docs-modal');
+                const cancelBtn = document.getElementById('cancel-share-docs-modal');
+                const recipientInputs = document.getElementById('share-recipient-inputs');
+                const countEl = document.getElementById('supplier-share-count');
+                const shareForm = document.getElementById('share-docs-form');
+                const fileInput = document.getElementById('share-docs-files');
+                const dropzone = document.getElementById('share-docs-dropzone');
+                const fileListEl = document.getElementById('share-docs-file-list');
+                const clearFilesBtn = document.getElementById('share-docs-clear-files');
+                if (!bar || !modal || !openBtn || !recipientInputs) return;
+
+                const MAX_SHARE_FILES = 10;
+                const MAX_FILE_BYTES = 15 * 1024 * 1024;
+                /** Keeps multi-file selection across repeated file-picker opens (browser replaces input.files each time). */
+                let shareDocFileStash = [];
+
+                function selectedCheckboxes() {
+                    return Array.from(document.querySelectorAll('.supplier-select-checkbox:checked'));
+                }
+
+                function syncSupplierShareUi() {
+                    const checked = selectedCheckboxes();
+                    if (countEl) countEl.textContent = String(checked.length);
+                    openBtn.disabled = checked.length === 0;
+                    const atMax = checked.length >= 3;
+                    document.querySelectorAll('.supplier-select-checkbox').forEach(cb => {
+                        if (!cb.checked) cb.disabled = atMax;
+                    });
+                }
+                window.supplierShareUiSync = syncSupplierShareUi;
+
+                document.addEventListener('change', function(e) {
+                    if (!e.target.classList.contains('supplier-select-checkbox')) return;
+                    const checked = selectedCheckboxes();
+                    if (checked.length > 3) {
+                        e.target.checked = false;
+                        alert('You can select at most 3 suppliers.');
+                    }
+                    syncSupplierShareUi();
+                });
+
+                function setFilesOnInput(fileArray) {
+                    shareDocFileStash = (fileArray || []).slice(0, MAX_SHARE_FILES);
+                    if (fileInput) {
+                        const dt = new DataTransfer();
+                        shareDocFileStash.forEach(f => dt.items.add(f));
+                        fileInput.files = dt.files;
+                    }
+                    renderShareFileList();
+                }
+
+                function getFilesArray() {
+                    return shareDocFileStash.slice();
+                }
+
+                function formatBytes(n) {
+                    if (n < 1024) return n + ' B';
+                    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+                    return (n / (1024 * 1024)).toFixed(1) + ' MB';
+                }
+
+                function renderShareFileList() {
+                    if (!fileListEl || !clearFilesBtn) return;
+                    const files = shareDocFileStash;
+                    fileListEl.innerHTML = '';
+                    if (files.length === 0) {
+                        fileListEl.classList.add('hidden');
+                        clearFilesBtn.classList.add('hidden');
+                        return;
+                    }
+                    fileListEl.classList.remove('hidden');
+                    clearFilesBtn.classList.remove('hidden');
+                    files.forEach((file, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm';
+                        const left = document.createElement('div');
+                        left.className = 'min-w-0 flex-1';
+                        const name = document.createElement('p');
+                        name.className = 'truncate font-medium text-gray-900';
+                        name.textContent = file.name;
+                        const meta = document.createElement('p');
+                        meta.className = 'text-xs text-gray-500';
+                        meta.textContent = formatBytes(file.size);
+                        left.appendChild(name);
+                        left.appendChild(meta);
+                        const rm = document.createElement('button');
+                        rm.type = 'button';
+                        rm.className = 'shrink-0 rounded px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50';
+                        rm.textContent = 'Remove';
+                        rm.addEventListener('click', () => {
+                            const next = getFilesArray().filter((_, i) => i !== index);
+                            setFilesOnInput(next);
+                        });
+                        li.appendChild(left);
+                        li.appendChild(rm);
+                        fileListEl.appendChild(li);
+                    });
+                }
+
+                function mergeNewFiles(incoming) {
+                    const existing = [...shareDocFileStash];
+                    const seen = new Set(existing.map(f => f.name + '|' + f.size + '|' + f.lastModified));
+                    const merged = [...existing];
+                    const skippedOversize = [];
+                    let hitMax = false;
+                    for (const f of incoming) {
+                        if (f.size > MAX_FILE_BYTES) {
+                            skippedOversize.push(f.name);
+                            continue;
+                        }
+                        const key = f.name + '|' + f.size + '|' + f.lastModified;
+                        if (seen.has(key)) continue;
+                        if (merged.length >= MAX_SHARE_FILES) {
+                            hitMax = true;
+                            break;
+                        }
+                        seen.add(key);
+                        merged.push(f);
+                    }
+                    if (skippedOversize.length) {
+                        alert('Each file must be 15 MB or smaller. Skipped: ' + skippedOversize.join(', '));
+                    }
+                    if (hitMax) {
+                        alert('Maximum ' + MAX_SHARE_FILES + ' files. Extra files were not added.');
+                    }
+                    setFilesOnInput(merged);
+                }
+
+                function resetShareFiles() {
+                    shareDocFileStash = [];
+                    if (fileInput) {
+                        fileInput.value = '';
+                        const dt = new DataTransfer();
+                        fileInput.files = dt.files;
+                    }
+                    renderShareFileList();
+                }
+
+                if (fileInput) {
+                    fileInput.addEventListener('change', () => {
+                        const picked = Array.from(fileInput.files || []);
+                        if (!picked.length) {
+                            renderShareFileList();
+                            return;
+                        }
+                        mergeNewFiles(picked);
+                    });
+                }
+
+                if (dropzone && fileInput) {
+                    dropzone.addEventListener('click', () => fileInput.click());
+                    dropzone.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            fileInput.click();
+                        }
+                    });
+                    ['dragenter', 'dragover'].forEach(ev => {
+                        dropzone.addEventListener(ev, e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dropzone.classList.add('border-[#0d6aed]', 'bg-blue-50');
+                        });
+                    });
+                    ['dragleave', 'drop'].forEach(ev => {
+                        dropzone.addEventListener(ev, e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dropzone.classList.remove('border-[#0d6aed]', 'bg-blue-50');
+                        });
+                    });
+                    dropzone.addEventListener('drop', e => {
+                        const dt = e.dataTransfer;
+                        if (!dt || !dt.files) return;
+                        mergeNewFiles(Array.from(dt.files));
+                    });
+                }
+
+                clearFilesBtn?.addEventListener('click', () => resetShareFiles());
+
+                shareForm?.addEventListener('submit', (e) => {
+                    if (!fileInput || !getFilesArray().length) {
+                        e.preventDefault();
+                        alert('Please add at least one file.');
+                    }
+                });
+
+                function openModal() {
+                    const checked = selectedCheckboxes();
+                    if (!checked.length) return;
+                    recipientInputs.innerHTML = '';
+                    checked.forEach(cb => {
+                        const inp = document.createElement('input');
+                        inp.type = 'hidden';
+                        inp.name = 'recipient_ids[]';
+                        inp.value = cb.getAttribute('data-user-id');
+                        recipientInputs.appendChild(inp);
+                    });
+                    resetShareFiles();
+                    modal.classList.remove('hidden');
+                    modal.style.display = 'flex';
+                    modal.style.alignItems = 'center';
+                    modal.style.justifyContent = 'center';
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeModal() {
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    resetShareFiles();
+                }
+
+                openBtn.addEventListener('click', openModal);
+                closeBtn?.addEventListener('click', closeModal);
+                cancelBtn?.addEventListener('click', closeModal);
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) closeModal();
+                });
+
+                syncSupplierShareUi();
+            })();
         });
     </script>
 

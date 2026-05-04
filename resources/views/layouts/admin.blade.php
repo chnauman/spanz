@@ -162,6 +162,7 @@
                         <div class="hidden md:flex items-center space-x-4">
                             <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400 text-lg font-bold">Tenders</a>
                             <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400 text-lg font-bold">Products</a>
+                            <a href="{{ route('suppliers.directory') }}" class="text-white hover:text-blue-400 text-lg font-bold">Suppliers' Directory</a>
                             @auth
                                 <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">Dashboard</a>
                                 <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -187,6 +188,7 @@
                 <div id="panel-top-mobile-menu" class="hidden md:hidden bg-[#092c47] text-white px-4 py-4 space-y-3">
                     <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
                     <a href="{{ route('products.search') }}" class="block hover:text-blue-300">Products</a>
+                    <a href="{{ route('suppliers.directory') }}" class="block hover:text-blue-300">Suppliers' Directory</a>
                     @auth
                         <a href="{{ route('dashboard') }}" class="block hover:text-blue-300">Dashboard</a>
                     @else

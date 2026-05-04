@@ -302,6 +302,7 @@
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="thomas-nav-link">Tenders</a>
                         <a href="{{ route('products.search') }}" class="thomas-nav-link">Products</a>
+                        <a href="{{ route('suppliers.directory') }}" class="thomas-nav-link">Suppliers' Directory</a>
                         @auth
                             <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
                                 Dashboard
@@ -343,6 +344,7 @@
                 <a href="#" class="block hover:text-blue-300">About</a>
                 <a href="{{ route('tenders.search') }}" class="block hover:text-blue-300">Tenders</a>
                 <a href="{{ route('products.search') }}" class="block hover:text-blue-300">Products</a>
+                <a href="{{ route('suppliers.directory') }}" class="block hover:text-blue-300">Suppliers' Directory</a>
                 <a href="{{ route('company.register') }}" class="block hover:text-blue-300">Claim Your Company</a>
                 <a href="#" class="block hover:text-blue-300">Start Advertising</a>
                 @auth

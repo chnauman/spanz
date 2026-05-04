@@ -10,6 +10,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\UserInterestController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\SupplierDirectoryController;
+use App\Http\Controllers\SupplierDocumentShareController;
+use App\Http\Controllers\SupplierReceivedDocumentsController;
 use App\Http\Controllers\CompanyRegistrationController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\ProductController as PublicProductController;
@@ -76,6 +79,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
 // Tender Routes
 Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index');
 Route::get('/tenders/search', [TenderController::class, 'search'])->name('tenders.search');
+Route::get('/suppliers/directory', [SupplierDirectoryController::class, 'index'])->name('suppliers.directory');
 Route::get('/tenders/{tender}/detail', [TenderController::class, 'detail'])->name('tenders.detail');
 // Tender creation and management routes (all authenticated users except admin)
 Route::middleware(['auth', 'email.verified'])->group(function () {
@@ -101,6 +105,10 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
 
     // Download attachment route
     Route::get('/tenders/{tender}/download/{filename}', [TenderController::class, 'downloadAttachment'])->name('tenders.download-attachment');
+
+    Route::post('/suppliers/directory/share-documents', [SupplierDocumentShareController::class, 'store'])->name('suppliers.documents.share');
+    Route::get('/supplier/received-documents', [SupplierReceivedDocumentsController::class, 'index'])->name('suppliers.received-documents');
+    Route::get('/supplier/received-documents/{share}/files/{file}/download', [SupplierReceivedDocumentsController::class, 'download'])->name('suppliers.received-documents.download');
 
     // Subscription Request Routes
     Route::get('/subscriptions', [\App\Http\Controllers\SubscriptionRequestController::class, 'index'])->name('subscriptions.index');

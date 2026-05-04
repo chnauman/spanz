@@ -146,6 +146,16 @@ class User extends Authenticatable
         return $this->hasMany(PurchaseRequest::class);
     }
 
+    public function sentSupplierDocumentShares()
+    {
+        return $this->hasMany(SupplierDocumentShare::class, 'sender_id');
+    }
+
+    public function supplierDocumentShareRecipients()
+    {
+        return $this->hasMany(SupplierDocumentShareRecipient::class, 'recipient_user_id');
+    }
+
     // Role-based methods
     public function isAdmin(): bool
     {

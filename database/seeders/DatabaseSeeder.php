@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             TenderSeeder::class,
             CountryLocationsSeeder::class,
+            // Demo suppliers for /suppliers/directory (optional): SupplierDirectoryDemoSeeder::class,
         ]);
     }
 }

@@ -199,6 +199,10 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Saved Tenders
             </a>
+            <a href="{{ route('suppliers.received-documents') }}"
+                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
+                Received documents
+            </a>
             {{--  <a href="{{ route('invitations.index') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Invitations
@@ -609,6 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '/user/interests',
             '/viewed-tenders',
             '/saved-tenders',
+            '/supplier/received-documents',
             '/suppliers/invite',
             '/suppliers/sub-suppliers'
         ],
