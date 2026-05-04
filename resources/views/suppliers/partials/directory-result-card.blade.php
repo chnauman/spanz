@@ -12,25 +12,18 @@
 
 <div class="thomas-result-card font-sans overflow-hidden {{ !$loop->first ? 'mt-5' : '' }}">
     <div class="border-b border-slate-100 bg-gradient-to-br from-slate-50/90 via-white to-white px-4 py-5 sm:px-6 sm:py-6">
-        <div class="flex gap-3 sm:gap-4">
-            @if($showSharePicker)
-                <div class="flex shrink-0 flex-col pt-0.5">
-                    <label class="group inline-flex cursor-pointer select-none"
+        {{-- Top bar: small share checkbox beside badge (left); compact Website (right) --}}
+        <div class="flex items-center justify-between gap-3">
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+                @if($showSharePicker)
+                    <label class="inline-flex shrink-0 cursor-pointer items-center rounded p-0.5 hover:bg-slate-100/80"
                         aria-label="Select this supplier for document sharing (up to 3)">
                         <input type="checkbox"
-                            class="peer supplier-select-checkbox sr-only"
+                            class="supplier-select-checkbox h-4 w-4 shrink-0 rounded border-slate-300 text-[#0d6aed] focus:ring-[#0d6aed] disabled:cursor-not-allowed disabled:opacity-40"
                             data-user-id="{{ $supplier->id }}">
-                        <span class="supplier-select-face flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-200 bg-white text-transparent shadow-sm transition-all duration-150 peer-checked:border-[#0d6aed] peer-checked:bg-[#0d6aed] peer-checked:text-white peer-disabled:cursor-not-allowed peer-disabled:opacity-35 group-hover:border-slate-300 peer-checked:group-hover:border-[#0b5fd7] peer-checked:group-hover:bg-[#0b5fd7]">
-                            <svg class="h-5 w-5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2.5" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </span>
                     </label>
-                </div>
-            @endif
-
-            <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
+                @endif
+                <div class="flex min-w-0 flex-wrap items-center gap-2">
                     @if($supplier->isSubSupplier())
                         <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-violet-800">
                             <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-violet-600" aria-hidden="true"></span>
@@ -43,36 +36,24 @@
                         </span>
                     @endif
                 </div>
-                <h2 class="mt-2 text-xl font-bold leading-tight tracking-tight text-slate-900 sm:text-2xl break-words">
-                    {{ $cd->company_name ?? $supplier->name }}
-                </h2>
-                <p class="mt-1 text-sm font-medium text-slate-600">{{ $supplier->name }}</p>
-                @if($supplier->isSubSupplier() && $supplier->parentSupplier?->companyDetail?->company_name)
-                    <p class="mt-1 text-xs text-slate-500 sm:text-sm">Network: <span class="font-semibold text-slate-600">{{ $supplier->parentSupplier->companyDetail->company_name }}</span></p>
-                @endif
             </div>
-
-            <div class="hidden shrink-0 self-start sm:flex sm:flex-col sm:items-end">
-                @if($cd->website)
-                    <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer" class="thomas-primary-btn whitespace-nowrap">
-                        Website
-                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                @endif
-            </div>
-        </div>
-
-        @if($cd->website)
-            <div class="mt-4 sm:hidden">
-                <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer" class="thomas-primary-btn w-full justify-center">
-                    Website
-                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            @if($cd->website)
+                <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer"
+                    class="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#0d6aed] shadow-sm transition hover:border-[#0d6aed]/40 hover:bg-blue-50/80">
+                    <span>Website</span>
+                    <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
-            </div>
+            @endif
+        </div>
+
+        <h2 class="mt-3 text-xl font-bold leading-tight tracking-tight text-slate-900 sm:text-2xl break-words">
+            {{ $cd->company_name ?? $supplier->name }}
+        </h2>
+        <p class="mt-1 text-sm font-medium text-slate-600">{{ $supplier->name }}</p>
+        @if($supplier->isSubSupplier() && $supplier->parentSupplier?->companyDetail?->company_name)
+            <p class="mt-1 text-xs text-slate-500 sm:text-sm">Network: <span class="font-semibold text-slate-600">{{ $supplier->parentSupplier->companyDetail->company_name }}</span></p>
         @endif
     </div>
 

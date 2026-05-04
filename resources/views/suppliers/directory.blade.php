@@ -93,9 +93,12 @@
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(3, 39, 71, 0.06);
         }
 
-        /* Document-share picker: focus ring on custom checkbox (input is sr-only). */
-        .supplier-select-checkbox:focus + .supplier-select-face,
-        .supplier-select-checkbox:focus-visible + .supplier-select-face {
+        /* Document-share picker: visible focus on directory cards */
+        .supplier-select-checkbox:focus {
+            outline: none;
+        }
+
+        .supplier-select-checkbox:focus-visible {
             box-shadow: 0 0 0 3px rgba(13, 106, 237, 0.35);
         }
 
