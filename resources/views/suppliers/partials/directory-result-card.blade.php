@@ -39,9 +39,9 @@
             </div>
             @if($cd->website)
                 <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer"
-                    class="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#0d6aed] shadow-sm transition hover:border-[#0d6aed]/40 hover:bg-blue-50/80">
+                    class="inline-flex shrink-0 items-center gap-1 rounded bg-blue-700 px-3 py-1 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                     <span>Website</span>
-                    <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <svg class="h-3.5 w-3.5 shrink-0 text-white" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
