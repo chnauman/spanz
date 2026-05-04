@@ -7,129 +7,156 @@
     ], fn ($v) => $v !== null && $v !== '' && strcasecmp((string) $v, 'Not provided') !== 0);
     $locationLine = $locationParts !== [] ? implode(', ', $locationParts) : ($cd->headquarter_location ?: 'Location not specified');
     $interestCategories = $supplier->interests->map(fn ($i) => $i->category)->filter()->unique('id');
+    $showSharePicker = $canShareDocuments && auth()->check() && auth()->id() !== (int) $supplier->id;
 @endphp
 
-<div class="thomas-result-card font-sans p-5 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
-    <div class="supplier-card-head flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
-        <div class="supplier-card-head-main flex min-w-0 flex-1 gap-3">
-            @if($canShareDocuments && auth()->check() && auth()->id() !== (int) $supplier->id)
-                <div class="shrink-0 pt-1">
-                    <label class="sr-only">Select supplier for document share</label>
-                    <input type="checkbox" class="supplier-select-checkbox mt-1 h-5 w-5 rounded border-gray-300 text-[#0d6aed] focus:ring-[#0d6aed]"
-                        data-user-id="{{ $supplier->id }}" title="Select (max 3) to share documents">
+<div class="thomas-result-card font-sans overflow-hidden {{ !$loop->first ? 'mt-5' : '' }}">
+    <div class="border-b border-slate-100 bg-gradient-to-br from-slate-50/90 via-white to-white px-4 py-5 sm:px-6 sm:py-6">
+        <div class="flex gap-3 sm:gap-4">
+            @if($showSharePicker)
+                <div class="flex shrink-0 flex-col pt-0.5">
+                    <label class="group inline-flex cursor-pointer select-none"
+                        aria-label="Select this supplier for document sharing (up to 3)">
+                        <input type="checkbox"
+                            class="peer supplier-select-checkbox sr-only"
+                            data-user-id="{{ $supplier->id }}">
+                        <span class="supplier-select-face flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-200 bg-white text-transparent shadow-sm transition-all duration-150 peer-checked:border-[#0d6aed] peer-checked:bg-[#0d6aed] peer-checked:text-white peer-disabled:cursor-not-allowed peer-disabled:opacity-35 group-hover:border-slate-300 peer-checked:group-hover:border-[#0b5fd7] peer-checked:group-hover:bg-[#0b5fd7]">
+                            <svg class="h-5 w-5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2.5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </span>
+                    </label>
                 </div>
             @endif
-            <div class="supplier-card-title-stack min-w-0 flex-1">
-                @if($supplier->isSubSupplier())
-                    <span class="mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide sm:text-sm" style="background-color:#f3e8ff;color:#6b21a8;">
-                        <span class="h-2 w-2 shrink-0 rounded-full" style="background-color:#6b21a8;" aria-hidden="true"></span>
-                        Sub-supplier
-                    </span>
-                @else
-                    <span class="mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide sm:text-sm" style="background-color:#e8f2ff;color:#0d6aed;">
-                        <span class="h-2 w-2 shrink-0 rounded-full" style="background-color:#0d6aed;" aria-hidden="true"></span>
-                        Supplier
-                    </span>
-                @endif
-                <p class="block text-xl font-bold leading-snug tracking-tight text-gray-900 sm:text-2xl break-words">
+
+            <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                    @if($supplier->isSubSupplier())
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-violet-800">
+                            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-violet-600" aria-hidden="true"></span>
+                            Sub-supplier
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#0b5fd7]">
+                            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0d6aed]" aria-hidden="true"></span>
+                            Supplier
+                        </span>
+                    @endif
+                </div>
+                <h2 class="mt-2 text-xl font-bold leading-tight tracking-tight text-slate-900 sm:text-2xl break-words">
                     {{ $cd->company_name ?? $supplier->name }}
-                </p>
-                <p class="mt-1 text-sm text-gray-600">{{ $supplier->name }}</p>
+                </h2>
+                <p class="mt-1 text-sm font-medium text-slate-600">{{ $supplier->name }}</p>
                 @if($supplier->isSubSupplier() && $supplier->parentSupplier?->companyDetail?->company_name)
-                    <p class="mt-1 text-sm text-gray-500">Network: {{ $supplier->parentSupplier->companyDetail->company_name }}</p>
+                    <p class="mt-1 text-xs text-slate-500 sm:text-sm">Network: <span class="font-semibold text-slate-600">{{ $supplier->parentSupplier->companyDetail->company_name }}</span></p>
+                @endif
+            </div>
+
+            <div class="hidden shrink-0 self-start sm:flex sm:flex-col sm:items-end">
+                @if($cd->website)
+                    <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer" class="thomas-primary-btn whitespace-nowrap">
+                        Website
+                        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
                 @endif
             </div>
         </div>
-        <div class="flex flex-wrap items-center justify-start gap-2 lg:justify-end lg:shrink-0">
-            @if($cd->website)
-                <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer" class="thomas-primary-btn">
+
+        @if($cd->website)
+            <div class="mt-4 sm:hidden">
+                <a href="{{ $cd->website }}" target="_blank" rel="noopener noreferrer" class="thomas-primary-btn w-full justify-center">
                     Website
                     <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
-            @endif
-        </div>
+            </div>
+        @endif
     </div>
 
-    <div class="mt-5 border-t border-gray-100 pt-5">
-        <div class="grid grid-cols-1 sm:grid-cols-3">
-            <div class="flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:py-0 sm:pr-6">
+    <div class="px-4 py-4 sm:px-6 sm:py-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-slate-100">
+            <div class="flex min-w-0 gap-3 lg:pr-4">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Contact</div>
-                    <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px] break-all">{{ $supplier->email }}</div>
+                    <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Email</div>
+                    <div class="mt-0.5 text-sm font-semibold leading-snug text-slate-900 break-all">{{ $supplier->email }}</div>
                 </div>
             </div>
-            <div class="flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:px-6 sm:py-0">
+            <div class="flex min-w-0 gap-3 lg:px-4">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Phone</div>
-                    <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">
-                        {{ $cd->phone && strcasecmp($cd->phone, 'Not provided') !== 0 ? $cd->phone : '—' }}
+                    <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Phone</div>
+                    <div class="mt-0.5 text-sm font-semibold leading-snug text-slate-700">
+                        @if($cd->phone && strcasecmp($cd->phone, 'Not provided') !== 0)
+                            {{ $cd->phone }}
+                        @else
+                            <span class="font-normal text-slate-400">Not listed</span>
+                        @endif
                     </div>
                 </div>
             </div>
-            <div class="flex gap-3 py-3 sm:py-0 sm:pl-6">
+            <div class="flex min-w-0 gap-3 lg:px-4">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Employees</div>
-                    <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $cd->employees_range ?: '—' }}</div>
+                    <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Employees</div>
+                    <div class="mt-0.5 text-sm font-semibold leading-snug text-slate-700">
+                        @if($cd->employees_range)
+                            {{ $cd->employees_range }}
+                        @else
+                            <span class="font-normal text-slate-400">Not listed</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="flex min-w-0 items-start gap-3 sm:col-span-2 lg:col-span-1 lg:pl-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700" aria-hidden="true">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Location</div>
+                    <div class="mt-0.5 text-sm font-semibold leading-snug text-slate-800">{{ $locationLine }}</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-        <div class="flex min-w-0 flex-1 gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-            </div>
-            <div class="min-w-0">
-                <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">About</div>
-                <p class="mt-0.5 text-sm leading-snug text-gray-900 line-clamp-3 sm:text-[15px]">{{ $cd->description ?: '—' }}</p>
-            </div>
-        </div>
-        <div class="flex shrink-0 lg:self-center">
-            <span class="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-800 sm:text-sm">
-                <svg class="h-4 w-4 shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                {{ $locationLine }}
-            </span>
+        <div class="mt-5 rounded-xl border border-slate-100 bg-slate-50/50 p-4">
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">About</div>
+            @if($cd->description)
+                <p class="mt-1.5 text-sm leading-relaxed text-slate-800 line-clamp-4 sm:text-[15px]">{{ $cd->description }}</p>
+            @else
+                <p class="mt-1.5 text-sm italic text-slate-400">No company description provided.</p>
+            @endif
         </div>
     </div>
 
     @if($interestCategories->isNotEmpty())
-        <div class="mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4 sm:p-5">
-            <div class="mb-3 flex gap-3">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-[#0d6aed] shadow-sm ring-1 ring-gray-100" aria-hidden="true">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                </div>
-                <div class="min-w-0 py-0.5">
-                    <h3 class="text-base font-bold leading-snug text-gray-900 sm:text-lg">Categories (registration interests)</h3>
-                    <p class="mt-0.5 text-xs text-gray-500 sm:text-sm">Used to match this supplier with relevant opportunities</p>
-                </div>
+        <div class="border-t border-slate-100 bg-slate-50/40 px-4 py-4 sm:px-6 sm:py-5">
+            <div class="mb-3 flex items-center gap-2">
+                <svg class="h-5 w-5 shrink-0 text-[#0d6aed]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <h3 class="text-sm font-bold text-slate-900 sm:text-base">Registration interests</h3>
             </div>
             <div class="flex flex-wrap gap-2">
-                {!! $interestCategories->map(fn ($c) => '<span class="inline-flex rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-800 sm:text-sm">'.e($c->name).'</span>')->implode('') !!}
+                {!! $interestCategories->map(fn ($c) => '<span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm sm:text-sm">'.e($c->name).'</span>')->implode('') !!}
             </div>
         </div>
     @endif

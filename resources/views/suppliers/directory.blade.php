@@ -88,9 +88,15 @@
 
         .thomas-result-card {
             background: #fff;
-            border: 1px solid #e8ecf1;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 14px rgba(15, 23, 42, 0.05);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(3, 39, 71, 0.06);
+        }
+
+        /* Document-share picker: focus ring on custom checkbox (input is sr-only). */
+        .supplier-select-checkbox:focus + .supplier-select-face,
+        .supplier-select-checkbox:focus-visible + .supplier-select-face {
+            box-shadow: 0 0 0 3px rgba(13, 106, 237, 0.35);
         }
 
         .thomas-outline-btn {
@@ -224,40 +230,6 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-        }
-
-        .supplier-card-head {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        @media (min-width: 1024px) {
-            .supplier-card-head {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-        }
-
-        .supplier-card-head-main {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        .supplier-card-title-stack {
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        .supplier-card-head-main .supplier-select-checkbox {
-            width: 1.25rem;
-            height: 1.25rem;
-            flex-shrink: 0;
-            margin-top: 0.25rem;
         }
 
         .filter-content {
@@ -554,6 +526,7 @@
                     <span id="supplier-share-count">0</span> / 3 suppliers selected
                 </div>
                 <button type="button" id="open-share-docs-modal" disabled
+                    title="Select one or more suppliers (up to 3) on the cards below, then click to attach files and send."
                     class="inline-flex items-center justify-center rounded-md bg-[#0d6aed] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
                     Share documents…
                 </button>
@@ -1247,6 +1220,10 @@
                     const checked = selectedCheckboxes();
                     if (countEl) countEl.textContent = String(checked.length);
                     openBtn.disabled = checked.length === 0;
+                    const n = checked.length;
+                    openBtn.title = n === 0
+                        ? 'Select one or more suppliers (up to 3) on the cards below, then click to attach files and send.'
+                        : 'Attach files and send to ' + n + ' selected supplier' + (n === 1 ? '' : 's') + '.';
                     const atMax = checked.length >= 3;
                     document.querySelectorAll('.supplier-select-checkbox').forEach(cb => {
                         if (!cb.checked) cb.disabled = atMax;
