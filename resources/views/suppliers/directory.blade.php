@@ -235,22 +235,25 @@
             }
         }
 
-        /* Plain CSS: keep share CTA visibly blue even if output.css omits arbitrary Tailwind utilities (stale build). */
+        /* Share-docs CTA: keep solid blue even if compiled Tailwind omits arbitrary bg-[#…] (live saw only hover:bg-* applying). */
         #open-share-docs-modal {
-            background-color: #0d6aed;
-            color: #fff;
+            background-color: var(--thomas-blue) !important;
+            color: #fff !important;
             border: 1px solid #0b5fd7;
         }
 
-        #open-share-docs-modal:hover:not(:disabled) {
-            background-color: #0b5fd7;
-            border-color: #0a52c2;
+        #open-share-docs-modal:hover {
+            background-color: #0b5fd7 !important;
+            color: #fff !important;
         }
 
         #open-share-docs-modal:disabled {
-            background-color: #0d6aed;
-            color: #fff;
-            border-color: #0b5fd7;
+            background-color: var(--thomas-blue) !important;
+            color: #fff !important;
+        }
+
+        #open-share-docs-modal:disabled:hover {
+            background-color: var(--thomas-blue) !important;
         }
 
         .filter-content {
@@ -548,7 +551,7 @@
                 </div>
                 <button type="button" id="open-share-docs-modal" disabled
                     title="Select one or more suppliers (up to 3) on the cards below, then click to attach files and send."
-                    class="inline-flex items-center justify-center rounded-md bg-[#0d6aed] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+                    class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600 disabled:hover:bg-blue-600 disabled:opacity-50">
                     Share documents…
                 </button>
             </div>
