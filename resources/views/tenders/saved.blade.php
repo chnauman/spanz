@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>My Saved Tenders - SPANZ</title>
-    @php($tendersSavedCssQuery = is_file(public_path('css/output.css')) ? filemtime(public_path('css/output.css')) : time())
+    @php
+        $tendersSavedCssQuery = is_file(public_path('css/output.css'))
+            ? filemtime(public_path('css/output.css'))
+            : time();
+    @endphp
     <link rel="stylesheet" href="{{ asset('css/output.css') }}?v={{ $tendersSavedCssQuery }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>

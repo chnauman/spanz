@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $tender->titleHeadline() }} - Tender Details</title>
-    @php($tendersDetailCssQuery = is_file(public_path('css/output.css')) ? filemtime(public_path('css/output.css')) : time())
+    @php
+        $tendersDetailCssQuery = is_file(public_path('css/output.css'))
+            ? filemtime(public_path('css/output.css'))
+            : time();
+    @endphp
     <link rel="stylesheet" href="{{ asset('css/output.css') }}?v={{ $tendersDetailCssQuery }}">
     <style>
         :root {
@@ -306,7 +310,9 @@
                 </div>
 
             </div>
-            @php($detailGroups = $tender->categoriesGroupedForDisplay())
+            @php
+                $detailGroups = $tender->categoriesGroupedForDisplay();
+            @endphp
             <div class="flex flex-col lg:flex-row lg:gap-8 mt-6 sm:mt-8">
                 <div class="flex-1">
                     <div class="mt-6 sm:mt-8">
