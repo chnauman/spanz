@@ -522,65 +522,69 @@
                                     </div>
                                 </div>
                             </div>
-                        @elseif($buyerDetailsError)
-                            <!-- Show Error Message -->
-                            <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
-                                <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
-                                    <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Access Buyer Details</h2>
-
-                                    <div class="text-center py-6">
-                                        <div class="mb-4">
-                                            <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-medium text-gray-900 mb-2">Access Restricted</h3>
-                                        <p class="text-sm text-gray-600 mb-4">
-                                            {{ $buyerDetailsError }}
-                                        </p>
-                                        @if($buyerDetailsAction === 'subscribe' || $buyerDetailsAction === 'renew' || $buyerDetailsAction === 'upgrade')
-                                        <button onclick="openSubscriptionModal()" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium">
-                                            @if($buyerDetailsAction === 'subscribe')
-                                                Subscribe Now
-                                            @elseif($buyerDetailsAction === 'renew')
-                                                Renew Subscription
-                                            @else
-                                                Upgrade Now
-                                            @endif
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
                         @else
-                            <!-- First-time view: Show Eye Icon Button -->
-                            <div id="buyer-details-section" class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
-                                <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
-                                    <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Access Buyer Details</h2>
+                            @if($buyerDetailsError)
+                                <!-- Show Error Message -->
+                                <div class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
+                                    <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
+                                        <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Access Buyer Details</h2>
 
-                                    <div class="text-center py-6">
-                                        <div class="mb-4">
-                                            <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
+                                        <div class="text-center py-6">
+                                            <div class="mb-4">
+                                                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-lg font-medium text-gray-900 mb-2">Access Restricted</h3>
+                                            <p class="text-sm text-gray-600 mb-4">
+                                                {{ $buyerDetailsError }}
+                                            </p>
+                                            @if($buyerDetailsAction === 'subscribe' || $buyerDetailsAction === 'renew' || $buyerDetailsAction === 'upgrade')
+                                                <button onclick="openSubscriptionModal()" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium">
+                                                    @if($buyerDetailsAction === 'subscribe')
+                                                        Subscribe Now
+                                                    @else
+                                                        @if($buyerDetailsAction === 'renew')
+                                                            Renew Subscription
+                                                        @else
+                                                            Upgrade Now
+                                                        @endif
+                                                    @endif
+                                                </button>
+                                            @endif
                                         </div>
-                                        <h3 class="text-lg font-medium text-gray-900 mb-2">View Buyer Details</h3>
-                                        <p class="text-sm text-gray-600 mb-4">
-                                            Click below to view buyer contact details and download project documents. This will use your credits.
-                                        </p>
-                                        <button onclick="viewBuyerDetails({{ $tender->id }})" id="view-buyer-btn-{{ $tender->id }}" class="w-full bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm">
-                                            <span id="view-buyer-text-{{ $tender->id }}">👁️ View Buyer Details</span>
-                                        </button>
-                                    </div>
-
-                                    <div class="mt-6 pt-4 border-t border-gray-200">
-                                        <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
-                                            <span id="save-text-{{ $tender->id }}">Save Tender</span>
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
+                            @else
+                                <!-- First-time view: Show Eye Icon Button -->
+                                <div id="buyer-details-section" class="w-full lg:w-96 lg:flex-shrink-0 mt-8 lg:mt-0">
+                                    <div class="border border-gray-300 rounded-sm p-4 sm:p-5 bg-white shadow-sm">
+                                        <h2 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-gray-800">Access Buyer Details</h2>
+
+                                        <div class="text-center py-6">
+                                            <div class="mb-4">
+                                                <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-lg font-medium text-gray-900 mb-2">View Buyer Details</h3>
+                                            <p class="text-sm text-gray-600 mb-4">
+                                                Click below to view buyer contact details and download project documents. This will use your credits.
+                                            </p>
+                                            <button onclick="viewBuyerDetails({{ $tender->id }})" id="view-buyer-btn-{{ $tender->id }}" class="w-full bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm">
+                                                <span id="view-buyer-text-{{ $tender->id }}">👁️ View Buyer Details</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="mt-6 pt-4 border-t border-gray-200">
+                                            <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
+                                                <span id="save-text-{{ $tender->id }}">Save Tender</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         @endif
                     @else
                         <!-- Subscription required section for free users -->
