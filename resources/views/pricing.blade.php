@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pricing Plans - Spanz</title>
-    <link rel="stylesheet" href="{{ asset('css/output.css') }}">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@extends('layouts.admin')
+
+@section('title', 'Pricing Plans - SPANZ')
+
+@push('styles')
     <style>
         @keyframes slideInUp {
             from {
@@ -63,27 +60,11 @@
             position: relative;
         }
 
-        .subscription-card.active {
-            z-index: 2;
-            transform: none;
-        }
-
-        .subscription-card.active .bg-white {
-            border-color: #d1d5db;
-            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
-            transform: none;
-        }
-
         /* Requested button styling - always visible */
         .subscription-card button.bg-yellow-500 {
             background-color: #eab308 !important;
             color: white !important;
             cursor: not-allowed !important;
-        }
-
-        .subscription-card.active button.bg-yellow-500 {
-            background-color: #eab308 !important;
-            color: white !important;
         }
 
         /* Current Plan button styling - always visible */
@@ -93,39 +74,20 @@
             cursor: not-allowed !important;
         }
 
-        .subscription-card.active button.bg-gray-400 {
-            background-color: #9ca3af !important;
-            color: white !important;
-        }
-
         /* Current Plan button styling for green variant */
         .subscription-card button.bg-green-500 {
             background-color: #10b981 !important;
             color: white !important;
             cursor: not-allowed !important;
         }
-
-        .subscription-card.active button.bg-green-500 {
-            background-color: #10b981 !important;
-            color: white !important;
-        }
     </style>
-</head>
-<body>
-    <div class="bg-image bg-cover bg-center" style="background-image:url('{{ asset('spanz-img/spanz-bg.jpg') }}')">
-        <!-- Sidebar -->
-        <div class="flex h-screen">
-            <!-- Sidebar -->
-            <div class="w-64 bg-gradient-to-b from-[#092C48] to-[#1b3963] shadow-lg">
-                @include('admin.partials.sidebar')
-            </div>
+@endpush
 
-            <!-- Main Content -->
-            <div class="flex-1 overflow-y-auto">
-                <div class="min-h-screen bg-[#f4f4f4]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="rounded-3xl border border-gray-200 bg-[#f8f8f8] px-4 py-8 shadow-sm sm:px-8 sm:py-10">
-                    @include('components.pricing-intro-banner')
+@section('content')
+    <div class="min-h-screen bg-[#f4f4f4]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="rounded-3xl border border-gray-200 bg-[#f8f8f8] px-4 py-8 shadow-sm sm:px-8 sm:py-10">
+                @include('components.pricing-intro-banner')
 
                     <!-- Pricing Cards -->
                     <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -139,7 +101,7 @@
                                 @endphp
 
                                 @if(!$shouldHideBasic)
-                                    <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
+                                    <div class="subscription-card relative group cursor-pointer"
                                          data-plan="{{ strtolower($subscription->name) }}"
                                          data-subscription-id="{{ $subscription->id }}">
                                         <div class="bg-white border-2 border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex h-full flex-col">
@@ -231,35 +193,15 @@
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- FAQ Section -->
-                <div class="mt-16 max-w-3xl mx-auto">
-                    <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Frequently Asked Questions</h2>
-                    <div class="space-y-6">
-                        <div class="bg-white rounded-lg p-6 shadow">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">What are credits used for?</h3>
-                            <p class="text-gray-600">Credits are used to view detailed tender information, contact buyers, and access premium features.</p>
-                        </div>
-                        <div class="bg-white rounded-lg p-6 shadow">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I change my plan later?</h3>
-                            <p class="text-gray-600">Yes, you can upgrade or downgrade your subscription at any time.</p>
-                        </div>
-                        <div class="bg-white rounded-lg p-6 shadow">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there a free trial?</h3>
-                            <p class="text-gray-600">Yes, the Basic plan is free and allows you to browse tenders. Premium features require a paid subscription.</p>
-                        </div>
-                    </div>
-                </div>
-                </div>
             </div>
         </div>
     </div>
+@endsection
 
+@push('scripts')
     <script>
         // Handle card selection and button clicks
         document.addEventListener('DOMContentLoaded', function() {
-            initializeSubscriptionCards();
             clearStaleLocalStorage();
             checkSubscriptionStatus();
             checkDowngradeRequestStatus();
@@ -281,25 +223,6 @@
             });
         }
 
-        function initializeSubscriptionCards() {
-            const cards = document.querySelectorAll('.subscription-card');
-
-            // Handle card clicks for selection
-            cards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Remove active class from all cards
-                    cards.forEach(c => c.classList.remove('active'));
-
-                    // Add active class to clicked card
-                    this.classList.add('active');
-
-                    // Hide "MOST POPULAR" badge on all cards
-                    const badges = document.querySelectorAll('.most-popular-badge');
-                    badges.forEach(badge => badge.style.display = 'none');
-                });
-            });
-        }
-
         function initializeSubscriptionSubmitControls() {
             const checkbox = document.getElementById('pricingTermsCheckbox');
             if (checkbox) {
@@ -314,12 +237,20 @@
             selectedSubscriptionId = String(subscriptionId);
             selectedPlanName = planName;
 
-            const cards = document.querySelectorAll('.subscription-card');
-            cards.forEach(card => card.classList.remove('active'));
-            const activeCard = button.closest('.subscription-card');
-            if (activeCard) {
-                activeCard.classList.add('active');
-            }
+            // Visual selection: only the clicked "Choose Plan" button changes color
+            const allButtons = document.querySelectorAll('.subscription-card button');
+            allButtons.forEach(btn => {
+                const label = (btn.textContent || '').trim().toLowerCase();
+                if (btn.disabled || label === 'requested' || label === 'current plan' || label === 'request pending') return;
+
+                btn.textContent = 'Choose Plan';
+                btn.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+                btn.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+            });
+
+            button.textContent = 'Selected';
+            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+            button.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
 
             updateSubmitRequestButtonState();
         }
@@ -830,5 +761,4 @@
         window.disableAllOtherSubscriptionCards = disableAllOtherSubscriptionCards;
         window.enableAllSubscriptionCards = enableAllSubscriptionCards;
     </script>
-</body>
-</html>
+@endpush

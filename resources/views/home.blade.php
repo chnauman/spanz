@@ -221,54 +221,11 @@
             flex: 0 0 3in;
         }
 
-        .subscription-card.active {
-            z-index: 10;
-        }
-
-        .subscription-card.active .bg-white {
-            background: linear-gradient(135deg, #092C48 0%, #0D6AED 100%);
-            border-color: #0D6AED;
-            color: white;
-            box-shadow: 0 8px 18px rgba(13, 106, 237, 0.2);
-            border-radius: 1rem;
-        }
-
-        .subscription-card.active .text-gray-900 {
-            color: white;
-        }
-
-        .subscription-card.active .text-gray-700 {
-            color: #e5e7eb;
-        }
-
-        .subscription-card.active .text-gray-600 {
-            color: #d1d5db;
-        }
-
-        .subscription-card.active .text-gray-500 {
-            color: #9ca3af;
-        }
-
-        .subscription-card.active button {
-            background: white;
-            color: #092C48;
-        }
-
-        .subscription-card.active button:hover {
-            background: #f3f4f6;
-            color: #092C48;
-        }
-
         /* Requested button styling - always visible */
         .subscription-card button.bg-yellow-500 {
             background-color: #eab308 !important;
             color: white !important;
             cursor: not-allowed !important;
-        }
-
-        .subscription-card.active button.bg-yellow-500 {
-            background-color: #eab308 !important;
-            color: white !important;
         }
 
         /* Current Plan button styling - always visible */
@@ -278,21 +235,11 @@
             cursor: not-allowed !important;
         }
 
-        .subscription-card.active button.bg-gray-400 {
-            background-color: #9ca3af !important;
-            color: white !important;
-        }
-
         /* Current Plan button styling for green variant */
         .subscription-card button.bg-green-500 {
             background-color: #10b981 !important;
             color: white !important;
             cursor: not-allowed !important;
-        }
-
-        .subscription-card.active button.bg-green-500 {
-            background-color: #10b981 !important;
-            color: white !important;
         }
     </style>
 </head>
@@ -637,7 +584,6 @@ class="w-full max-w-lg sm:max-w-2xl lg:w-[38rem]">
 
   // Pricing Cards Functionality
   document.addEventListener('DOMContentLoaded', function() {
-    initializeSubscriptionCards();
     clearStaleLocalStorage();
     checkSubscriptionStatus();
     checkDowngradeRequestStatus();
@@ -652,25 +598,6 @@ class="w-full max-w-lg sm:max-w-2xl lg:w-[38rem]">
         // We'll let the server response determine if localStorage should be cleared
         // This function is just a placeholder for future cleanup logic
       }
-    });
-  }
-
-  function initializeSubscriptionCards() {
-    const cards = document.querySelectorAll('.subscription-card');
-
-    // Handle card clicks for selection
-    cards.forEach(card => {
-      card.addEventListener('click', function() {
-        // Remove active class from all cards
-        cards.forEach(c => c.classList.remove('active'));
-
-        // Add active class to clicked card
-        this.classList.add('active');
-
-        // Hide "MOST POPULAR" badge on all cards
-        const badges = document.querySelectorAll('.most-popular-badge');
-        badges.forEach(badge => badge.style.display = 'none');
-      });
     });
   }
 

@@ -63,56 +63,11 @@
         position: relative;
     }
 
-    .subscription-card.active {
-        z-index: 10;
-        transform: translateZ(20px) scale(1.05);
-    }
-
-    .subscription-card.active .bg-white {
-        background: linear-gradient(135deg, #092C48 0%, #0D6AED 100%);
-        border-color: #0D6AED;
-        color: white;
-        box-shadow: 0 20px 40px rgba(13, 106, 237, 0.3);
-        transform: translateZ(20px) scale(1.05);
-        border-radius: 1rem;
-    }
-
-    .subscription-card.active .text-gray-900 {
-        color: white;
-    }
-
-    .subscription-card.active .text-gray-700 {
-        color: #e5e7eb;
-    }
-
-    .subscription-card.active .text-gray-600 {
-        color: #d1d5db;
-    }
-
-    .subscription-card.active .text-gray-500 {
-        color: #9ca3af;
-    }
-
-    .subscription-card.active button {
-        background: white;
-        color: #092C48;
-    }
-
-    .subscription-card.active button:hover {
-        background: #f3f4f6;
-        color: #092C48;
-    }
-
     /* Requested button styling - always visible */
     .subscription-card button.bg-yellow-500 {
         background-color: #eab308 !important;
         color: white !important;
         cursor: not-allowed !important;
-    }
-
-    .subscription-card.active button.bg-yellow-500 {
-        background-color: #eab308 !important;
-        color: white !important;
     }
 
     /* Current Plan button styling - always visible */
@@ -122,21 +77,11 @@
         cursor: not-allowed !important;
     }
 
-    .subscription-card.active button.bg-gray-400 {
-        background-color: #9ca3af !important;
-        color: white !important;
-    }
-
     /* Current Plan button styling for green variant */
     .subscription-card button.bg-green-500 {
         background-color: #10b981 !important;
         color: white !important;
         cursor: not-allowed !important;
-    }
-
-    .subscription-card.active button.bg-green-500 {
-        background-color: #10b981 !important;
-        color: white !important;
     }
 </style>
 @endpush
@@ -376,7 +321,6 @@
 <script>
     // Handle card selection and button clicks
     document.addEventListener('DOMContentLoaded', function() {
-        initializeSubscriptionCards();
         clearStaleLocalStorage();
         checkSubscriptionStatus();
         checkDowngradeRequestStatus();
@@ -398,25 +342,6 @@
         });
     }
 
-    function initializeSubscriptionCards() {
-        const cards = document.querySelectorAll('.subscription-card');
-
-        // Handle card clicks for selection
-        cards.forEach(card => {
-            card.addEventListener('click', function() {
-                // Remove active class from all cards
-                cards.forEach(c => c.classList.remove('active'));
-
-                // Add active class to clicked card
-                this.classList.add('active');
-
-                // Hide "MOST POPULAR" badge on all cards
-                const badges = document.querySelectorAll('.most-popular-badge');
-                badges.forEach(badge => badge.style.display = 'none');
-            });
-        });
-    }
-
     function initializeSubscriptionSubmitControls() {
         const checkbox = document.getElementById('pricingTermsCheckbox');
         if (checkbox) {
@@ -431,12 +356,20 @@
         selectedSubscriptionId = String(subscriptionId);
         selectedPlanName = planName;
 
-        const cards = document.querySelectorAll('.subscription-card');
-        cards.forEach(card => card.classList.remove('active'));
-        const activeCard = button.closest('.subscription-card');
-        if (activeCard) {
-            activeCard.classList.add('active');
-        }
+        // Visual selection: only the clicked "Choose Plan" button changes color
+        const allButtons = document.querySelectorAll('.subscription-card button');
+        allButtons.forEach(btn => {
+            const label = (btn.textContent || '').trim().toLowerCase();
+            if (btn.disabled || label === 'requested' || label === 'current plan' || label === 'request pending') return;
+
+            btn.textContent = 'Choose Plan';
+            btn.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+            btn.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+        });
+
+        button.textContent = 'Selected';
+        button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+        button.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
 
         updateSubmitRequestButtonState();
     }

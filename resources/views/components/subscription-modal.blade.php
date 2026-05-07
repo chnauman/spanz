@@ -57,61 +57,11 @@
     display: flex;
 }
 
-.subscription-plans-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1rem;
-    align-items: stretch;
-}
-
-.subscription-card.active {
-    z-index: 10;
-}
-
-.subscription-card.active .bg-white {
-    background: linear-gradient(135deg, #092C48 0%, #0D6AED 100%);
-    border-color: #0D6AED;
-    color: white;
-    box-shadow: 0 20px 40px rgba(13, 106, 237, 0.3);
-    border-radius: 1rem;
-}
-
-.subscription-card.active .text-gray-900 {
-    color: white;
-}
-
-.subscription-card.active .text-gray-700 {
-    color: #e5e7eb;
-}
-
-.subscription-card.active .text-gray-600 {
-    color: #d1d5db;
-}
-
-.subscription-card.active .text-gray-500 {
-    color: #9ca3af;
-}
-
-.subscription-card.active button {
-    background: white;
-    color: #092C48;
-}
-
-.subscription-card.active button:hover {
-    background: #f3f4f6;
-    color: #092C48;
-}
-
 /* Requested button styling - always visible */
 .subscription-card button.bg-yellow-500 {
     background-color: #eab308 !important;
     color: white !important;
-    cursor: not-allowed !important;
-}
-
-.subscription-card.active button.bg-yellow-500 {
-    background-color: #eab308 !important;
-    color: white !important;
+    /* Cursor/disabled handled via JS with cursor-not-allowed */
 }
 
 /* Current Plan button styling - always visible */
@@ -121,21 +71,11 @@
     cursor: not-allowed !important;
 }
 
-.subscription-card.active button.bg-gray-400 {
-    background-color: #9ca3af !important;
-    color: white !important;
-}
-
 /* Current Plan button styling for green variant */
 .subscription-card button.bg-green-500 {
     background-color: #10b981 !important;
     color: white !important;
     cursor: not-allowed !important;
-}
-
-.subscription-card.active button.bg-green-500 {
-    background-color: #10b981 !important;
-    color: white !important;
 }
 </style>
 
@@ -164,24 +104,31 @@
                     @include('components.pricing-intro-banner')
                 </div>
 
-                <div class="mt-3 subscription-plans-grid">
+                <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                     @foreach($subscriptions as $index => $subscription)
                         @if($subscription->is_active)
-                            <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
+                            <div class="subscription-card relative group cursor-pointer"
                                  data-plan="{{ strtolower($subscription->name) }}"
                                  data-subscription-id="{{ $subscription->id }}">
-                                <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 h-full min-h-[560px]">
+                                <div class="bg-white border-2 border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex h-full flex-col">
+                                    @if($subscription->name === 'Professional')
+                                        <div class="absolute -top-3 right-3 most-popular-badge z-20">
+                                            <div class="bg-gray-800 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg">
+                                                Most Popular
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="text-center h-full flex flex-col justify-between">
                                         <div>
-                                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                                            <div class="text-3xl font-bold text-gray-900 mb-2">
+                                            <h3 class="text-3xl font-extrabold text-gray-900 mb-1">{{ $subscription->name }}</h3>
+                                            <p class="text-sm text-gray-600 mb-1">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
+                                            <div class="text-4xl font-extrabold text-gray-900 leading-none mb-3">
                                                 AU${{ number_format((float) $subscription->price, 0) }}
-                                                <span class="text-sm text-gray-500">/mo.</span>
+                                                <span class="text-base font-semibold text-gray-500">/mo.</span>
                                             </div>
-                                            <p class="text-gray-600 text-base mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
 
                                              @if(!empty($subscription->features))
-                                                <ul class="text-left text-sm sm:text-base text-gray-700 space-y-1.5 mb-4">
+                                                <ul class="text-left text-sm text-gray-700 space-y-1.5 mb-4">
                                                     @foreach($subscription->features as $feature)
                                                         <li class="flex items-start gap-2">
                                                             <span class="mt-0.5 text-[#0D6AED]">✓</span>
@@ -192,8 +139,8 @@
                                             @endif
 
                                              <!-- Quota/Credits Display -->
-                                             <div class="bg-blue-50 rounded-lg p-3 mb-4">
-                                                 <div class="text-lg font-semibold text-[#0D6AED] mb-1">
+                                             <div class="bg-blue-50 rounded-lg p-3 mb-5">
+                                                 <div class="text-base font-semibold text-[#0D6AED] mb-1">
                                                      @if($subscription->credits_per_month < 0)
                                                          Unlimited Credits
                                                      @elseif($subscription->credits_per_month == 0)
@@ -202,11 +149,11 @@
                                                          {{ $subscription->credits_per_month }} Credits
                                                      @endif
                                                  </div>
-                                                 <p class="text-sm text-gray-800 font-medium">To view tenders and buyers</p>
+                                                 <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
                                              </div>
                                         </div>
 
-                                        <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
+                                        <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300"
                                                 onclick="selectSubscriptionPlan('{{ $subscription->id }}', '{{ strtolower($subscription->name) }}', this)">
                                             Choose Plan
                                         </button>
@@ -296,39 +243,11 @@ function closeModalOnBackdrop(event) {
 
 // Handle card selection and button clicks
 document.addEventListener('DOMContentLoaded', function() {
-    initializeSubscriptionCards();
     initializeSubscriptionSubmitControls();
 });
 
 let selectedSubscriptionId = null;
 let selectedPlanName = null;
-
-function initializeSubscriptionCards() {
-    const cards = document.querySelectorAll('.subscription-card');
-    const buttons = document.querySelectorAll('.subscription-card button');
-
-    // Handle card clicks for selection
-    cards.forEach(card => {
-        card.addEventListener('click', function() {
-            // Remove active class from all cards
-            cards.forEach(c => c.classList.remove('active'));
-
-            // Add active class to clicked card
-            this.classList.add('active');
-
-            // Hide "MOST POPULAR" badge on all cards
-            const badges = document.querySelectorAll('.most-popular-badge');
-            badges.forEach(badge => badge.style.display = 'none');
-        });
-    });
-
-    // Keep button click from selecting the whole card twice
-    buttons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent card click
-        });
-    });
-}
 
 function initializeSubscriptionSubmitControls() {
     const checkbox = document.getElementById('pricingTermsCheckboxModal');
@@ -344,10 +263,22 @@ function selectSubscriptionPlan(subscriptionId, planName, button) {
     selectedSubscriptionId = String(subscriptionId);
     selectedPlanName = planName;
 
-    const cards = document.querySelectorAll('.subscription-card');
-    cards.forEach(card => card.classList.remove('active'));
-    const activeCard = button.closest('.subscription-card');
-    if (activeCard) activeCard.classList.add('active');
+    // Visual selection: only the clicked "Choose Plan" button changes color
+    const allButtons = document.querySelectorAll('.subscription-card button');
+    allButtons.forEach(btn => {
+        // Don't touch buttons that are truly locked states
+        const label = (btn.textContent || '').trim().toLowerCase();
+        if (btn.disabled || label === 'requested' || label === 'current plan') return;
+
+        btn.textContent = 'Choose Plan';
+        btn.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+        btn.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+    });
+
+    // Mark clicked one as Selected (yellow, but still clickable)
+    button.textContent = 'Selected';
+    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+    button.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
 
     updateSubmitRequestButtonState();
 }
@@ -471,7 +402,7 @@ function requestSubscription(subscriptionId, planName, button, submitButton = nu
 
             // Update button state to "Requested" immediately (don't close modal)
             button.textContent = 'Requested';
-            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105');
+            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75');
             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
             button.disabled = true;
 
@@ -540,7 +471,7 @@ function checkLocalStorageStatus() {
 
             if (requestStatus === 'requested') {
                 button.textContent = 'Requested';
-                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                 button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                 button.disabled = true;
 
@@ -581,7 +512,7 @@ function checkSubscriptionStatus() {
 
                 if (status === 'pending') {
                     button.textContent = 'Requested';
-                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                     button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -594,7 +525,7 @@ function checkSubscriptionStatus() {
                     localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                 } else if (status === 'approved') {
                     button.textContent = 'Current Plan';
-                    button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                     button.classList.add('bg-green-500', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -608,7 +539,7 @@ function checkSubscriptionStatus() {
                 } else if (status === 'declined') {
                     button.textContent = 'Choose Plan';
                     button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                    button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                    button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                     button.disabled = false;
 
                     // Clear localStorage for declined requests
@@ -620,7 +551,7 @@ function checkSubscriptionStatus() {
                     // No status from server, reset button to default
                     button.textContent = 'Choose Plan';
                     button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                    button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                    button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                     button.disabled = false;
 
                     // Clear localStorage
@@ -661,7 +592,7 @@ function clearAllSubscriptionStates() {
     buttons.forEach(button => {
         button.textContent = 'Choose Plan';
         button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-        button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+        button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
         button.disabled = false;
     });
 
@@ -684,7 +615,7 @@ function disableAllOtherSubscriptionCards(requestedSubscriptionId) {
         // Disable all other cards
         if (button && !button.disabled) {
             button.textContent = 'Request Pending';
-            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
             button.classList.add('bg-gray-400', 'cursor-not-allowed');
             button.disabled = true;
 
@@ -713,7 +644,7 @@ function enableAllSubscriptionCards() {
         if (button && button.textContent === 'Request Pending') {
             button.textContent = 'Choose Plan';
             button.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
             button.disabled = false;
 
             // Reset inline styles

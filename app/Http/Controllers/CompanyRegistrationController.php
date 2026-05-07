@@ -4,16 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CompanyDetail;
+use App\Models\State;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyRegistrationController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
         // User must be logged in (route already has auth middleware)
         $user = Auth::user();
         $companyDetail = $user?->companyDetail;
+
+        // When arriving from "Edit Profile" we render the page in edit mode.
+        $isEditMode = $request->boolean('edit') || $request->get('mode') === 'edit';
 
         // Derive first / last name from user's name for convenience
         $firstName = '';
@@ -53,6 +57,20 @@ class CompanyRegistrationController extends Controller
             }
         }
 
+        $statesByCountry = State::with('cities:id,state_id,name')
+            ->orderBy('name')
+            ->get(['id', 'name', 'country_name'])
+            ->groupBy('country_name')
+            ->map(function ($states) {
+                return $states->map(function ($state) {
+                    return [
+                        'id' => $state->id,
+                        'name' => $state->name,
+                        'cities' => $state->cities->pluck('name')->values()->all(),
+                    ];
+                })->values()->all();
+            });
+
         // Always show the profile form so the user can create or update their business profile.
         return view('company_register', compact(
             'companyDetail',
@@ -63,15 +81,17 @@ class CompanyRegistrationController extends Controller
             'selectedCompanyTypes',
             'selectedCertifications',
             'selectedDeliveryRegions',
-            'selectedOfficeRegions'
+            'selectedOfficeRegions',
+            'statesByCountry',
+            'isEditMode'
         ));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'first' => 'required|string|max:255',
-            'last' => 'required|string|max:255',
+            'first' => 'nullable|string|max:255',
+            'last' => 'nullable|string|max:255',
             'company' => 'required|string|max:255',
             'comp' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
@@ -143,10 +163,12 @@ class CompanyRegistrationController extends Controller
             'office_locations' => $request->filled('office_locations') ? json_encode($request->office_locations) : null,
         ]);
 
-        // Update user's first and last name
-        Auth::user()->update([
-            'name' => $request->first . ' ' . $request->last,
-        ]);
+        // Name is managed in the profile section; only update here if explicitly sent.
+        if ($request->filled('first') && $request->filled('last')) {
+            Auth::user()->update([
+                'name' => trim($request->first . ' ' . $request->last),
+            ]);
+        }
 
         // For AJAX requests, return JSON so the frontend can show a toast
         if ($request->ajax()) {

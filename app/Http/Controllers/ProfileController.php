@@ -6,27 +6,65 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
     public function update(Request $request)
     {
         try {
-            $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+            $hasFirstLast = $request->filled('first') || $request->filled('last');
+
+            $rules = [
                 'photo' => ['nullable', 'image', 'max:2048'],
-            ]);
+                'remove_photo' => ['nullable', 'boolean'],
+                'phone' => ['nullable', 'string', 'max:255'],
+                'country' => ['nullable', 'string', 'max:255'],
+                'state' => ['nullable', 'string', 'max:255'],
+                'city' => ['nullable', 'string', 'max:255'],
+                'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            ];
+
+            if ($hasFirstLast) {
+                $rules['first'] = ['required', 'string', 'max:255'];
+                $rules['last'] = ['required', 'string', 'max:255'];
+            } else {
+                $rules['name'] = ['required', 'string', 'max:255'];
+            }
+
+            $request->validate($rules);
 
             /** @var \App\Models\User $user */
             $user = Auth::user();
 
             // Update name
-            $user->name = $request->input('name');
+            if ($hasFirstLast) {
+                $user->name = trim(($request->input('first') ?? '') . ' ' . ($request->input('last') ?? ''));
+            } else {
+                $user->name = $request->input('name');
+            }
+
+            $user->country = $request->input('country');
+            $user->state = $request->input('state');
+            $user->city = $request->input('city');
+            $user->phone = $request->input('phone');
+
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
             $user->save();
 
         // Handle photo upload (store original file under public disk)
         $photoUrl = null;
-        if ($request->hasFile('photo')) {
+        if ((bool) $request->boolean('remove_photo')) {
+            foreach (['jpg','jpeg','png','webp'] as $ext) {
+                $old = 'profile-photos/' . $user->id . '.' . $ext;
+                if (Storage::disk('public')->exists($old)) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+            $photoUrl = asset('spanz-img/profile.jpg');
+        } elseif ($request->hasFile('photo')) {
             // Validate user ID exists
             if (!$user->id) {
                 throw new \Exception('User ID is required for photo upload');
@@ -165,17 +203,47 @@ class ProfileController extends Controller
             }
         }
 
-            return response()->json([
-                'success' => true,
-                'name' => $user->name,
-                'photo_url' => $photoUrl,
-            ]);
+            // Update optional contact/location fields on company detail if it exists.
+            if ($user->companyDetail) {
+                $user->companyDetail->update([
+                    'phone' => $request->input('phone', $user->companyDetail->phone),
+                    'country' => $request->input('country', $user->companyDetail->country),
+                    'state' => $request->input('state', $user->companyDetail->state),
+                    'city' => $request->input('city', $user->companyDetail->city),
+                    'address' => $request->input('address', $user->companyDetail->address),
+                ]);
+            }
+
+            // Update password if provided
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->input('password'));
+                $user->save();
+            }
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'name' => $user->name,
+                    'photo_url' => $photoUrl,
+                ]);
+            }
+
+            return redirect()
+                ->back()
+                ->with('success', 'Your profile has been updated successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+
+            return redirect()
+                ->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
             Log::error('Profile update error: ' . $e->getMessage(), [
                 'user_id' => Auth::id(),
@@ -184,10 +252,16 @@ class ProfileController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating your profile: ' . $e->getMessage()
-            ], 500);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred while updating your profile: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', 'An error occurred while updating your profile.');
         }
     }
 }

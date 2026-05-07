@@ -8,14 +8,14 @@
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <h1 class="text-xl sm:text-2xl font-bold">My Profile</h1>
-                <button onclick="openEditModal()" 
+                <a href="{{ route('company.register', ['mode' => 'edit']) }}"
                         class="px-4 py-2 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200 flex items-center gap-2">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     Edit Profile
-                </button>
+                </a>
             </div>
 
             <div class="mt-6">
@@ -76,6 +76,35 @@
                             </div>
                         </div>
                         @endif
+
+                        <!-- Contact / Location (read-only) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                            <div class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900">
+                                {{ $user->country ?: 'Not provided' }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                            <div class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900">
+                                {{ $user->state ?: 'Not provided' }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <div class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900">
+                                {{ $user->city ?: 'Not provided' }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <div class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900">
+                                {{ $user->phone ?: 'Not provided' }}
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Notification Settings Section -->

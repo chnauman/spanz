@@ -3,7 +3,7 @@
         Best Plans To Go With
     </div>
 
-    <h1 class="mx-auto max-w-4xl text-3xl font-extrabold leading-tight text-[#092C48] sm:text-5xl">
+    <h1 class="mx-auto max-w-4xl text-2xl font-extrabold leading-tight text-[#092C48] sm:text-4xl">
         Tailored Packages for Every Business Stage and Size
     </h1>
 
@@ -11,7 +11,7 @@
         <p class="text-base sm:text-xl leading-snug text-[#21435E]">
             Save more than you spend. Get 20% off SPANZ drafting and contract risk review services with Professional or Enterprise packages.
         </p>
-        <p class="mt-3 text-2xl sm:text-3xl font-black text-[#092C48]">Limited time. Conditions apply.</p>
+        <p class="mt-3 text-xl sm:text-2xl font-black text-[#092C48]">Limited time. Conditions apply.</p>
         <p class="mt-2 text-sm sm:text-base text-[#21435E]">
             <span class="font-bold text-[#092C48]">See pricing</span> or call us +61 422 010 631.
         </p>
