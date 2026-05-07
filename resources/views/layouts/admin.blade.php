@@ -361,7 +361,7 @@
                 <!-- Name Input -->
                 <div>
                     <label for="profileNameInput" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input type="text" id="profileNameInput" name="name" value="{{ Auth::user()->name ?? 'Admin User' }}"
+                    <input type="text" id="profileNameInput" name="name" value="{{ Auth::user()?->name ?? 'Guest' }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0D6AED] focus:border-transparent">
                 </div>
 

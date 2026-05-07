@@ -1,5 +1,8 @@
 <!-- Sidebar Container -->
 <div class="flex flex-col h-full">
+    @php
+        $user = Auth::user();
+    @endphp
     <!-- Logo Section -->
     <div class="hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 h-20 transition-colors duration-300">
         <a href="{{ route('home') }}" class="text-4xl font-bold text-white h-20 flex items-center pl-5 hover:text-blue-300 transition-colors duration-300">SPANZ</a>
@@ -21,7 +24,7 @@
             }
         @endphp
         <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="" class="w-16 h-16 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity duration-200" id="profileImage" onclick="openProfileImageModal()">
-        <span class="text-white" id="profileName">{{ Auth::user()->name ?? 'Admin User' }}</span>
+        <span class="text-white" id="profileName">{{ $user?->name ?? 'Guest' }}</span>
         <!-- edit svg -->
         <svg onclick="openEditModal()" width="15px" height="15px" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +46,7 @@
         <h1>Dashboard</h1>
     </a>
     <hr class="border-[#657a9871]" />
-    @if( Auth::user()->isBuyer() || Auth::user()->isSupplier() || Auth::user()->isSubSupplier())
+    @if($user && ($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier()))
     <!-- Buyer Dropdown Menu -->
     <div>
         <button onclick="toggleDropdown()"
@@ -89,7 +92,7 @@
     <hr class="border-[#657a9871]" />
     @endif
 
-    @if(Auth::user()->isBuyer())
+    @if($user && $user->isBuyer())
     <!-- Supplier Menu for Buyers -->
     <div>
         <button onclick="toggleSupplierForBuyerDropdown()"
@@ -142,7 +145,7 @@
     </div>
     <hr class="border-[#657a9871]" />
     @endif
-    @if( Auth::user()->isSupplier() || Auth::user()->isSubSupplier())
+    @if($user && ($user->isSupplier() || $user->isSubSupplier()))
     <!-- Supplier Dropdown Menu -->
     <div>
         <button onclick="toggleSupplierDropdown()"
@@ -207,13 +210,13 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Invitations
             </a>  --}}
-            @if(Auth::user()->isSupplier())
+            @if($user && $user->isSupplier())
             <a href="{{ route('suppliers.invite') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Invite Sub Supplier
             </a>
             @endif
-            @if(Auth::user()->subSuppliers()->count() > 0)
+            @if($user && $user->subSuppliers()->count() > 0)
             <a href="{{ route('suppliers.sub-suppliers') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Sub Suppliers
@@ -224,7 +227,7 @@
     <hr class="border-[#657a9871]" />
     @endif
 
-    @if(Auth::user()->isAdmin())
+    @if($user && $user->isAdmin())
     <!-- Users Dropdown Menu -->
     <div>
         <button onclick="toggleUsersDropdown()"
@@ -334,7 +337,7 @@
     <hr class="border-[#657a9871]" />
     @endif
 
-    @if(Auth::user()->isAdmin())
+    @if($user && $user->isAdmin())
     <!-- Subscriptions Dropdown Menu -->
     <div>
         <button onclick="toggleSubscriptionsDropdown()"
@@ -408,7 +411,7 @@
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Profile
             </a>
-            @if(Auth::user()->isBuyer() || Auth::user()->isSupplier() || Auth::user()->isSubSupplier())
+            @if($user && ($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier()))
             <a href="{{ route('account.plan') }}"
                 class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
                 Update Plan
@@ -432,10 +435,14 @@
                 d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
                 stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <form method="POST" action="{{ route('logout') }}" class="inline">
-            @csrf
-            <button type="submit" class="text-white hover:text-blue-300 bg-transparent border-none cursor-pointer">Logout</button>
-        </form>
+        @if($user)
+            <form method="POST" action="{{ route('logout') }}" class="inline">
+                @csrf
+                <button type="submit" class="text-white hover:text-blue-300 bg-transparent border-none cursor-pointer">Logout</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="text-white hover:text-blue-300">Login</a>
+        @endif
     </div>
     <hr class="border-[#657a9871]" />
 </div>
