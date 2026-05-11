@@ -65,6 +65,12 @@
             margin: 3px;
             font-weight: 700;
             background: var(--thomas-blue) !important;
+            color: #fff !important;
+        }
+
+        .thomas-search-shell button:hover,
+        .thomas-search-shell button:focus {
+            color: #fff !important;
         }
 
         .thomas-breadcrumb {

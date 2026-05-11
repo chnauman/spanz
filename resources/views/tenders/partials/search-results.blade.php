@@ -192,11 +192,11 @@
                         <div class="tender-allocation-card flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0 pt-0.5 flex-1">
-                                    <div class="text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $card['main_name'] }}</div>
+                                    <div class="font-bold leading-snug text-gray-900" style="font-size:15px;line-height:1.25;">{{ $card['main_name'] }}</div>
                                     @if(!empty($card['sub_labels']))
                                         <div class="mt-1.5 flex flex-wrap gap-1.5">
                                             @foreach($card['sub_labels'] as $sub)
-                                                <span class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 ring-1 ring-inset ring-blue-100" style="background-color:#eff6ff;color:#1d4ed8;">
+                                                <span class="inline-flex items-center rounded-full font-medium" style="background-color:#eff6ff;color:#1d4ed8;font-size:11px;line-height:1.2;padding:2px 8px;border:1px solid #dbeafe;">
                                                     {{ $sub }}
                                                 </span>
                                             @endforeach

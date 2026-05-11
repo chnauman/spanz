@@ -2,6 +2,45 @@
 
 @section('title', 'Post a RFX - SPANZ')
 
+@push('styles')
+<style>
+    .subcategory-checkboxes {
+        gap: 0.6rem 1rem;
+    }
+
+    .subcategory-checkboxes label {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 0.25rem 0;
+        font-size: 0.875rem;
+        color: #374151;
+    }
+
+    .subcategory-checkboxes label span {
+        margin-left: 0.6rem;
+        line-height: 1.2;
+    }
+
+    .subcategory-checkbox {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px;
+        min-height: 18px;
+        cursor: pointer;
+        accent-color: #2563eb;
+        flex-shrink: 0;
+        border: 1px solid #9ca3af;
+        border-radius: 4px;
+    }
+
+    .subcategory-checkbox:focus {
+        outline: 2px solid #2563eb;
+        outline-offset: 1px;
+    }
+</style>
+@endpush
+
 @section('content')
             <!-- Include Company Registration Modal -->
             @include('components.company-registration-modal')
@@ -78,7 +117,7 @@
                             @enderror
                         </div>
                         <div>
-                            <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Approximate your project spent <span class="text-red-500">*</span></label>
+                            <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Budget Range <span class="text-red-500">*</span></label>
                 <select id="budget" name="budget" required
                                 class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('budget') border-red-300 @enderror">
                                 <option value="">Select amount</option>
@@ -202,7 +241,7 @@
                         <!-- product type / budget share -->
                         <div class="required flex items-end">
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Budget Share <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Approximate your project spend <span class="text-red-500">*</span></label>
                                 <select name="categories[0][product_type]" required
                                     class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
                                     data-row="0"
@@ -871,7 +910,7 @@ function addCategoryRow() {
             <!-- budget share -->
             <div class="required flex items-end">
                 <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Share <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Approximate your project spend <span class="text-red-500">*</span></label>
                     <select name="categories[${categoryRowCount}][product_type]" required
                         class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
                         data-row="${categoryRowCount}"

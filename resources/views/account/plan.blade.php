@@ -157,13 +157,14 @@
                 </div>
 
                 <!-- Available Plans Section -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Available Plans</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Available Plans</h2>
 
-                    @if($subscriptions->count() > 0)
+                @if($subscriptions->count() > 0)
+                    <div class="rounded-3xl border border-gray-200 bg-[#f8f8f8] px-4 py-8 shadow-sm sm:px-8 sm:py-10">
                         @include('components.pricing-intro-banner')
 
-                        <div class="flex flex-wrap justify-center gap-4 mt-3 xl:flex-nowrap xl:justify-between" style="min-height: 3.6in;">
+                        <!-- Pricing Cards -->
+                        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                             @foreach($subscriptions as $index => $subscription)
                                 @if($subscription->is_active)
                                     @php
@@ -174,33 +175,33 @@
                                     @endphp
 
                                     @if(!$shouldHideBasic)
-                                        <div class="subscription-card relative group cursor-pointer {{ $index === 0 ? 'active' : '' }}"
+                                        <div class="subscription-card relative group cursor-pointer"
                                              data-plan="{{ strtolower($subscription->name) }}"
                                              data-subscription-id="{{ $subscription->id }}">
-                                            <div class="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" style="width: 3in; min-height: 4.6in;">
+                                            <div class="bg-white border-2 border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex h-full flex-col">
                                                 @if($subscription->name === 'Professional')
                                                     <!-- Most Popular Badge -->
-                                                    <div class="absolute -top-2 right-2 most-popular-badge z-20">
-                                                        <div class="bg-[#0D6AED] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                                            MOST POPULAR
-                                            </div>
+                                                    <div class="absolute -top-3 right-3 most-popular-badge z-20">
+                                                        <div class="bg-gray-800 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg" style="font-size:10px;letter-spacing:0.05em;">
+                                                            Most Popular
+                                                        </div>
                                                     </div>
                                                 @endif
 
                                                 <div class="text-center h-full flex flex-col justify-between">
                                                     <div>
-                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $subscription->name }}</h3>
-                                                        <div class="text-3xl font-bold text-gray-900 mb-2">
+                                                        <h3 class="text-2xl font-medium text-gray-900 mb-1" style="font-family: Georgia, 'Times New Roman', serif;">{{ $subscription->name }}</h3>
+                                                        <p class="text-sm text-gray-600 mb-1">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
+                                                        <div class="text-3xl font-medium text-gray-900 leading-none mb-3" style="font-family: Georgia, 'Times New Roman', serif;">
                                                             AU${{ number_format((float) $subscription->price, 0) }}
-                                                            <span class="text-sm text-gray-500">/mo.</span>
+                                                            <span class="text-sm font-medium text-gray-500" style="font-family: ui-sans-serif, system-ui, sans-serif;">/mo.</span>
                                                         </div>
-                                                        <p class="text-gray-600 text-sm mb-3">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
 
                                                         @if(!empty($subscription->features))
-                                                            <ul class="text-left text-xs text-gray-700 space-y-1.5 mb-4">
+                                                            <ul class="text-left text-sm text-gray-700 space-y-1.5 mb-4">
                                                                 @foreach($subscription->features as $feature)
                                                                     <li class="flex items-start gap-2">
-                                                                        <span class="mt-0.5 text-[#0D6AED]">✓</span>
+                                                                        <span class="mt-0.5 text-[#0D6AED]" style="color:#0D6AED;">✓</span>
                                                                         <span>{{ $feature }}</span>
                                                                     </li>
                                                                 @endforeach
@@ -208,69 +209,69 @@
                                                         @endif
 
                                                          <!-- Quota/Credits Display -->
-                                                         <div class="bg-blue-50 rounded-lg p-3 mb-4">
-                                                             <div class="text-lg font-semibold text-[#0D6AED] mb-1">
+                                                         <div class="bg-blue-50 rounded-lg p-3 mb-5" style="background-color:#eff6ff;">
+                                                             <div class="text-base font-semibold text-[#0D6AED] mb-1" style="color:#0D6AED;">
                                                                  @if($subscription->credits_per_month < 0)
                                                                      Unlimited Credits
                                                                  @elseif($subscription->credits_per_month == 0)
                                                                      No Credits
                                                                  @else
                                                                      {{ $subscription->credits_per_month }} Credits
-                                            @endif
+                                                                 @endif
                                                              </div>
                                                              <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
                                                          </div>
-                                        </div>
+                                                    </div>
 
                                                     <div class="text-center">
                                                         @auth
                                                             @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
-                                                                <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
+                                                                <button class="btn-primary btn-block is-disabled" disabled>
                                                                     Current Plan
                                                                 </button>
                                                             @elseif($isBasicPlan && !$userHasActiveSubscription)
-                                                                <button class="w-full bg-gray-400 text-white px-4 py-3 rounded-lg text-base font-semibold cursor-not-allowed">
-                                                Current Plan
-                                            </button>
-                                        @else
-                                                                <button class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105"
+                                                                <button class="btn-primary btn-block is-disabled" disabled>
+                                                                    Current Plan
+                                                                </button>
+                                                            @else
+                                                                <button class="btn-primary btn-block"
                                                                         onclick="selectSubscriptionPlan({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
                                                                     Choose Plan
-                                            </button>
-                                        @endif
+                                                                </button>
+                                                            @endif
                                                         @else
-                                                            <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
-                                                               class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 inline-block text-center">
+                                                            <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="btn-primary btn-block">
                                                                 Choose Plan
                                                             </a>
                                                         @endauth
                                                     </div>
                                                 </div>
-                                    </div>
-                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                 @endif
                             @endforeach
                         </div>
 
                         @include('components.pricing-notes-footer')
+
                         <div id="subscriptionRequestConsentBox" class="mt-6 rounded-xl border border-gray-200 bg-white p-4">
                             <label class="flex items-start gap-3 text-sm text-gray-700">
-                                <input id="pricingTermsCheckbox" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#092C48] focus:ring-[#092C48]">
+                                <input id="pricingTermsCheckbox" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d4f8b] focus:ring-[#0d4f8b]">
                                 <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
                             </label>
                             <div class="mt-4">
-                                <button id="submitSubscriptionRequestBtn" type="button" class="w-full bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:transform-none" disabled onclick="submitSelectedSubscriptionRequest()">
+                                <button id="submitSubscriptionRequestBtn" type="button" class="btn-primary btn-block" disabled onclick="submitSelectedSubscriptionRequest()">
                                     Submit Request
                                 </button>
                             </div>
                         </div>
-                    @else
-                        <div class="text-center py-8">
-                            <p class="text-gray-500">No subscription plans available at the moment.</p>
-                        </div>
-                    @endif
-                </div>
+                    </div>
+                @else
+                    <div class="bg-white rounded-lg shadow p-6 text-center py-8">
+                        <p class="text-gray-500">No subscription plans available at the moment.</p>
+                    </div>
+                @endif
 
                 <!-- Subscription History -->
                 @if($user->subscriptions()->count() > 0)
@@ -364,11 +365,11 @@
 
             btn.textContent = 'Choose Plan';
             btn.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
-            btn.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+            btn.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
         });
 
         button.textContent = 'Selected';
-        button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+        button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
         button.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
 
         updateSubmitRequestButtonState();
@@ -499,7 +500,7 @@
 
                 // Update button state to "Requested" immediately (don't close modal)
                 button.textContent = 'Requested';
-                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105');
+                button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75');
                 button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                 button.disabled = true;
 
@@ -553,7 +554,7 @@
         button.textContent = 'Requested';
 
         // Remove all existing classes that might interfere
-        button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'opacity-75', 'hover:scale-105', 'bg-yellow-500', 'cursor-not-allowed');
+        button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75', 'bg-yellow-500', 'cursor-not-allowed');
 
         // Add new classes for requested state
         button.classList.add('bg-yellow-500', 'cursor-not-allowed');
@@ -589,7 +590,7 @@
                     button.textContent = originalText;
                     button.disabled = false;
         button.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-yellow-500', 'bg-green-500', 'bg-gray-400');
-        button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+        button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
 
         // Reset inline styles
         button.style.removeProperty('background-color');
@@ -688,7 +689,7 @@
                         pendingSubscriptionId = subscriptionId;
 
                         button.textContent = 'Requested';
-                        button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                        button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                         button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                         button.disabled = true;
 
@@ -701,7 +702,7 @@
                         localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                     } else if (status === 'approved') {
                         button.textContent = 'Current Plan';
-                        button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                        button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                         button.classList.add('bg-green-500', 'cursor-not-allowed');
                         button.disabled = true;
 
@@ -715,7 +716,7 @@
                     } else if (status === 'declined') {
                         button.textContent = 'Choose Plan';
                         button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                        button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                        button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                         button.disabled = false;
 
                         // Clear localStorage for declined requests
@@ -727,7 +728,7 @@
                         // No status from server, reset button to default
                         button.textContent = 'Choose Plan';
                         button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                        button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+                        button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                         button.disabled = false;
 
                         // Clear localStorage
@@ -765,7 +766,7 @@
                         const button = card.querySelector('button');
                         if (button && !button.disabled && button.textContent !== 'Current Plan') {
                             button.textContent = 'Request Pending';
-                            button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                             button.classList.add('bg-gray-400', 'cursor-not-allowed');
                             button.disabled = true;
 
@@ -812,7 +813,7 @@
         buttons.forEach(button => {
             button.textContent = 'Choose Plan';
             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-            button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]');
+            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
             button.disabled = false;
         });
 
@@ -835,7 +836,7 @@
             // Disable all other cards
             if (button && !button.disabled) {
                 button.textContent = 'Request Pending';
-                button.classList.remove('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                 button.classList.add('bg-gray-400', 'cursor-not-allowed');
                 button.disabled = true;
 
@@ -864,7 +865,7 @@
             if (button && button.textContent === 'Request Pending') {
                 button.textContent = 'Request Subscription';
                 button.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                button.classList.add('bg-[#092C48]', 'hover:bg-[#0D6AED]', 'hover:scale-105');
+                button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
                 button.disabled = false;
 
                 // Reset inline styles
