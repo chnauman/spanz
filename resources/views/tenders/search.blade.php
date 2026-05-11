@@ -167,6 +167,83 @@
             color: var(--thomas-blue);
         }
 
+        /* ----- Sidebar filter checkboxes: larger hit area + custom look ----- */
+        .filter-section input[type="checkbox"].category-filter,
+        .filter-section input[type="checkbox"].company-type-filter,
+        .filter-section input[type="checkbox"].location-filter {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            min-height: 20px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 5px;
+            background-color: #ffffff;
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+
+        .filter-section input[type="checkbox"].category-filter:hover,
+        .filter-section input[type="checkbox"].company-type-filter:hover,
+        .filter-section input[type="checkbox"].location-filter:hover {
+            border-color: #0d6aed;
+            box-shadow: 0 0 0 3px rgba(13, 106, 237, 0.08);
+        }
+
+        .filter-section input[type="checkbox"].category-filter:focus-visible,
+        .filter-section input[type="checkbox"].company-type-filter:focus-visible,
+        .filter-section input[type="checkbox"].location-filter:focus-visible {
+            outline: none;
+            border-color: #0d6aed;
+            box-shadow: 0 0 0 3px rgba(13, 106, 237, 0.25);
+        }
+
+        .filter-section input[type="checkbox"].category-filter:checked,
+        .filter-section input[type="checkbox"].company-type-filter:checked,
+        .filter-section input[type="checkbox"].location-filter:checked {
+            background-color: #0d6aed;
+            border-color: #0d6aed;
+        }
+
+        .filter-section input[type="checkbox"].category-filter:checked::after,
+        .filter-section input[type="checkbox"].company-type-filter:checked::after,
+        .filter-section input[type="checkbox"].location-filter:checked::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid #ffffff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* Slightly larger, more inviting labels next to those checkboxes */
+        .filter-section .category-label,
+        .filter-section label[for^="mobile-cat-"],
+        .filter-section label[for^="desktop-cat-"] {
+            font-size: 0.95rem;
+            line-height: 1.35;
+            padding: 4px 0;
+            cursor: pointer;
+        }
+
+        .filter-section li.category-group {
+            padding: 2px 0;
+        }
+
+        .filter-section li.category-group:hover > div > .category-label {
+            color: var(--thomas-blue);
+        }
+
         .thomas-sidebar-toggle {
             background: #fff;
             border: 1px solid var(--thomas-border);
@@ -601,7 +678,7 @@
                     @endif
 
                     <div class="w-full sm:w-auto">
-                        <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-[#0D6AED] text-white text-sm font-medium">Search</button>
+                        <button type="submit" class="btn-primary btn-primary-sm w-full sm:w-auto">Search</button>
                     </div>
                 </form>
             </div>

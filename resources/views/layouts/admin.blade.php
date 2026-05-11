@@ -165,6 +165,79 @@
             background: #eaf2ff !important;
             color: #0d6aed !important;
         }
+
+        /* ---------- Canonical SPANZ button system ---------- */
+        /* Primary CTA: matches the home page "Post RFX, its free" style */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #0D6AED;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.25;
+            border: 1px solid transparent;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+        }
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background-color: #0B5ED7;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .btn-primary:disabled,
+        .btn-primary.is-disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* Smaller primary for tight rows / inline actions */
+        .btn-primary-sm {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.875rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Secondary / outline action */
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #ffffff;
+            color: #0D6AED;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.25;
+            border: 1px solid #0D6AED;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+        }
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background-color: #EAF2FF;
+            color: #0B5ED7;
+            border-color: #0B5ED7;
+            text-decoration: none;
+        }
+        .btn-secondary-sm {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.875rem;
+        }
+
+        /* Block / full-width modifier */
+        .btn-block {
+            width: 100%;
+        }
     </style>
     @stack('styles')
 </head>
@@ -347,12 +420,12 @@
                                 }
                             }
                         @endphp
-                        <img id="modalProfileImage" src="{{ $profilePhotoUrlModal ?: asset('spanz-img/profile.jpg') }}" alt="Profile"
+                        <img id="modalProfileImage" src="{{ $profilePhotoUrlModal ?: asset('spanz-img/profile.jpg') }}" alt="Company Logo"
                             class="w-20 h-20 rounded-full object-cover mx-auto">
                     </div>
                     <label for="profileImageInput"
                         class="inline-block bg-[#0D6AED] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#0B5AC7] transition-colors duration-200">
-                        Change Photo
+                        Change Company Logo
                     </label>
                     <input type="file" id="profileImageInput" name="photo" accept="image/*" class="hidden"
                         onchange="previewImage(event)">

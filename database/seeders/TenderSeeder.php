@@ -33,7 +33,6 @@ class TenderSeeder extends Seeder
         $sampleTenders = [
             [
                 'title' => 'Industrial equipment maintenance RFQ',
-                'product_or_service' => 'Industrial Equipment Maintenance Services',
                 'description' => 'We are seeking qualified contractors to provide comprehensive maintenance services for our industrial equipment including pumps, valves, and electrical systems. The contractor must have experience with heavy machinery and be available for emergency repairs.',
                 'budget' => 50000,
                 'currency' => 'AUD',
@@ -45,7 +44,6 @@ class TenderSeeder extends Seeder
             ],
             [
                 'title' => 'Aerospace CNC machining RFP',
-                'product_or_service' => 'Custom CNC Machining Services',
                 'description' => 'Looking for precision CNC machining services for aerospace components. Must meet strict tolerances and quality standards. Project includes 1000+ parts with various materials including aluminum, titanium, and stainless steel.',
                 'budget' => 75000,
                 'currency' => 'AUD',
@@ -57,7 +55,6 @@ class TenderSeeder extends Seeder
             ],
             [
                 'title' => 'Environmental monitoring procurement',
-                'product_or_service' => 'Environmental Monitoring Equipment',
                 'description' => 'Procurement of advanced environmental monitoring systems for air quality, water quality, and soil contamination detection. Systems must be capable of real-time data transmission and remote monitoring.',
                 'budget' => 120000,
                 'currency' => 'AUD',
@@ -69,7 +66,6 @@ class TenderSeeder extends Seeder
             ],
             [
                 'title' => 'Commercial solar installation',
-                'product_or_service' => 'Renewable Energy System Installation',
                 'description' => 'Comprehensive solar panel installation project for commercial facility. Includes design, permitting, installation, and maintenance services. System capacity of 500kW with battery storage integration.',
                 'budget' => 200000,
                 'currency' => 'AUD',
@@ -81,7 +77,6 @@ class TenderSeeder extends Seeder
             ],
             [
                 'title' => 'Medical device contract manufacturing',
-                'product_or_service' => 'Medical Device Manufacturing',
                 'description' => 'Contract manufacturing services for medical devices including injection molding, assembly, and packaging. Must comply with FDA regulations and ISO 13485 standards. Production volume of 10,000 units per month.',
                 'budget' => 300000,
                 'currency' => 'AUD',
@@ -100,7 +95,6 @@ class TenderSeeder extends Seeder
                 'user_id' => $buyer->id,
                 'category_id' => $category->id,
                 'title' => $tenderData['title'],
-                'product_or_service' => $tenderData['product_or_service'],
                 'description' => $tenderData['description'],
                 'budget' => $tenderData['budget'],
                 'currency' => $tenderData['currency'],

@@ -464,6 +464,9 @@ class MultiStepRegistrationController extends Controller
         }
 
         // Update user with all registration data
+        // Note: country/state/city/phone are saved on the users table so they
+        // auto-populate on the View Profile and Edit Profile pages without
+        // requiring the user to re-enter them.
         $user->update([
             'name' => $progress->full_name,
             'password' => $progress->password, // Already hashed
@@ -471,6 +474,10 @@ class MultiStepRegistrationController extends Controller
             'is_approved' => $isApproved,
             'email_verified_at' => $progress->email_verified_at,
             'parent_supplier_id' => $parentSupplierId,
+            'country' => $progress->country,
+            'state' => $progress->state,
+            'city' => $progress->city,
+            'phone' => $progress->cell_mobile,
         ]);
 
         // Create company details

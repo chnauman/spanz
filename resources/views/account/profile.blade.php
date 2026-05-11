@@ -9,7 +9,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <h1 class="text-xl sm:text-2xl font-bold">My Profile</h1>
                 <a href="{{ route('company.register', ['mode' => 'edit']) }}"
-                        class="px-4 py-2 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200 flex items-center gap-2">
+                        class="btn-primary btn-primary-sm">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -21,9 +21,11 @@
             <div class="mt-6">
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Profile Photo Section -->
+                        <!-- Profile Photo / Company Logo Section -->
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-4">Profile Photo</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-4">
+                                {{ $user->companyDetail ? 'Company Logo' : 'Profile Photo' }}
+                            </label>
                             <div class="flex items-center space-x-6">
                                 @php
                                     $profilePhotoUrl = null;
@@ -36,7 +38,7 @@
                                     }
                                 @endphp
                                 <img id="profileImagePreview" src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}"
-                                     alt="Profile Photo" 
+                                     alt="{{ $user->companyDetail ? 'Company Logo' : 'Profile Photo' }}" 
                                      style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; cursor: pointer;"
                                      onclick="openProfileImageModal()"
                                      class="hover:opacity-80 transition-opacity duration-200">
@@ -142,8 +144,7 @@
                             </div>
                             
                             <div class="mt-6">
-                                <button type="submit" 
-                                        class="px-6 py-2 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200 font-medium">
+                                <button type="submit" class="btn-primary">
                                     Save Notification Settings
                                 </button>
                             </div>
@@ -171,7 +172,7 @@
             </svg>
         </button>
         <!-- Profile Image -->
-        <img id="profileImageModalImg" src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="Profile Picture" class="max-w-full max-h-[60vh] rounded-lg shadow-2xl object-contain">
+        <img id="profileImageModalImg" src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="{{ $user->companyDetail ? 'Company Logo' : 'Profile Picture' }}" class="max-w-full max-h-[60vh] rounded-lg shadow-2xl object-contain">
     </div>
 </div>
 

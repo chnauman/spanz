@@ -59,17 +59,17 @@
                         @csrf
                         <input type="hidden" id="removeAccountPhoto" name="remove_photo" value="0">
                         <div class="grid grid-cols-1 lg:grid-cols-[14rem_minmax(0,1fr)] gap-8 items-start">
-                            <!-- Photo column -->
+                            <!-- Company logo column -->
                             <div class="w-full lg:w-56 flex flex-col items-center lg:items-start gap-3">
                                 <div class="relative">
                                     <img id="accountProfilePhotoPreview"
                                          src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}"
-                                         alt="Profile Photo"
+                                         alt="Company Logo"
                                          class="w-24 h-24 rounded-full object-cover border border-gray-200 bg-white">
                                     <button type="button"
                                             onclick="window.__removeAccountPhoto && window.__removeAccountPhoto()"
                                             class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full p-1.5 hover:bg-gray-50 shadow-sm"
-                                            title="Remove photo">
+                                            title="Remove company logo">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                             <path d="M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -80,9 +80,8 @@
                                     </button>
                                 </div>
 
-                                <label for="accountProfilePhoto"
-                                       class="inline-block bg-[#0D6AED] text-white px-6 py-2 rounded-lg cursor-pointer hover:bg-[#0B5AC7] transition-colors duration-200 font-medium text-sm">
-                                    Change Photo
+                                <label for="accountProfilePhoto" class="btn-primary btn-primary-sm cursor-pointer">
+                                    Change Company Logo
                                 </label>
                                 <input id="accountProfilePhoto" name="photo" type="file" accept="image/*" class="hidden"
                                        onchange="window.__previewAccountPhoto && window.__previewAccountPhoto(event)">
@@ -113,7 +112,13 @@
 
                                         <div>
                                             <label for="accountPhone" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                            <input type="text" id="accountPhone" name="phone"
+                                            <input type="tel" id="accountPhone" name="phone"
+                                                   inputmode="numeric" pattern="[0-9]*" maxlength="20"
+                                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                   onkeypress="return /[0-9]/.test(event.key)"
+                                                   onpaste="setTimeout(() => { this.value = this.value.replace(/[^0-9]/g, ''); }, 0)"
+                                                   title="Phone number can contain digits only"
+                                                   placeholder="Digits only, e.g. 5683449613"
                                                    value="{{ old('phone', $authUser->phone ?? '') }}"
                                                    class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                         </div>
@@ -178,8 +183,7 @@
                                     </div>
 
                                     <div class="flex justify-end mt-6">
-                                        <button type="submit"
-                                                class="px-5 py-2.5 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200 font-medium text-sm">
+                                        <button type="submit" class="btn-primary btn-primary-sm">
                                             Save Account Details
                                         </button>
                                     </div>
@@ -654,8 +658,7 @@
                        class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 sm:px-7 py-3 text-sm sm:text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
                         Skip for now
                     </a>
-                    <button type="submit"
-                            class="inline-flex items-center justify-center rounded-lg bg-[#0D6AED] px-5 sm:px-8 py-3 text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button type="submit" class="btn-primary">
                         Save Profile
                     </button>
                 </div>
@@ -675,11 +678,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 websiteInput.value = '';
                 websiteInput.disabled = true;
-                websiteInput.required = false;
             } else {
                 websiteInput.disabled = false;
-                websiteInput.required = true;
             }
+            websiteInput.required = false;
         });
     }
 
@@ -691,7 +693,16 @@ document.addEventListener('DOMContentLoaded', function() {
             'Web Development',
             'Cybersecurity',
             'Cloud Services',
-            'IT Consulting'
+            'IT Consulting',
+            // extra (for testing > 6)
+            'DevOps & SRE',
+            'Data Engineering',
+            'AI / Machine Learning',
+            'QA & Testing',
+            'UI/UX Design',
+            'Network & Infrastructure',
+            'IT Support / Helpdesk',
+            'ERP / CRM Systems'
         ],
         'Retail / E-commerce': [
             'Online Store',
@@ -699,7 +710,14 @@ document.addEventListener('DOMContentLoaded', function() {
             'Wholesale',
             'Dropshipping',
             'Fashion Retail',
-            'Electronics Retail'
+            'Electronics Retail',
+            // extra (for testing > 6)
+            'Grocery Retail',
+            'Beauty & Personal Care',
+            'Home & Furniture',
+            'Sports & Outdoors',
+            'Logistics / Fulfillment',
+            'Customer Support'
         ],
         'Marketing & Advertising': [
             'Digital Marketing',
@@ -707,7 +725,14 @@ document.addEventListener('DOMContentLoaded', function() {
             'Social Media Marketing',
             'Branding & Design',
             'Advertising Agency',
-            'Content Marketing'
+            'Content Marketing',
+            // extra (for testing > 6)
+            'Email Marketing',
+            'Performance Marketing',
+            'PR & Communications',
+            'Influencer Marketing',
+            'Video Production',
+            'Event Marketing'
         ],
         'Healthcare': [
             'Hospitals & Clinics',
@@ -715,7 +740,13 @@ document.addEventListener('DOMContentLoaded', function() {
             'Pharmaceuticals',
             'Telemedicine',
             'Healthcare IT',
-            'Diagnostics'
+            'Diagnostics',
+            // extra (for testing > 6)
+            'Medical Billing',
+            'Lab Services',
+            'Healthcare Staffing',
+            'Health Insurance',
+            'EHR / EMR Systems'
         ],
         'Finance & Banking': [
             'Retail Banking',
@@ -723,7 +754,13 @@ document.addEventListener('DOMContentLoaded', function() {
             'Fintech',
             'Insurance',
             'Investment Services',
-            'Accounting & Audit'
+            'Accounting & Audit',
+            // extra (for testing > 6)
+            'Risk & Compliance',
+            'Tax Services',
+            'Payroll',
+            'Wealth Management',
+            'Treasury & Cash Management'
         ],
         'Manufacturing': [
             'Industrial Equipment',
@@ -731,7 +768,14 @@ document.addEventListener('DOMContentLoaded', function() {
             'Electronics Manufacturing',
             'Contract Manufacturing',
             'Packaging',
-            'Machinery'
+            'Machinery',
+            // extra (for testing > 6)
+            'CNC Machining',
+            'Injection Molding',
+            '3D Printing',
+            'Metal Fabrication',
+            'Quality Control',
+            'Supply Chain'
         ],
         'Logistics & Transportation': [
             'Freight Forwarding',
@@ -739,7 +783,38 @@ document.addEventListener('DOMContentLoaded', function() {
             'Last-mile Delivery',
             'Air Cargo',
             'Sea Freight',
-            'Road Transport'
+            'Road Transport',
+            // extra (for testing > 6)
+            'Customs Brokerage',
+            'Cold Chain Logistics',
+            'Fleet Management',
+            'Rail Freight',
+            'Reverse Logistics',
+            '3PL Services'
+        ],
+        // added extra categories (for broader testing)
+        'Construction': [
+            'General Contracting',
+            'Civil Works',
+            'MEP Services',
+            'Project Management',
+            'Fit-out & Interiors',
+            'Safety & Compliance',
+            'Architecture',
+            'Structural Engineering',
+            'Quantity Surveying',
+            'Building Materials'
+        ],
+        'Energy & Utilities': [
+            'Solar',
+            'Wind',
+            'Oil & Gas',
+            'Power Generation',
+            'Transmission & Distribution',
+            'Water & Wastewater',
+            'Energy Storage',
+            'Smart Grid',
+            'EV Charging'
         ]
     };
 
@@ -759,6 +834,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function enforceMaxSubcategories(container, maxAllowed = 6) {
+        if (!container) return;
+        const checkboxes = Array.from(container.querySelectorAll('input[type="checkbox"]'));
+        checkboxes.forEach(cb => {
+            if (cb.dataset.maxBound === '1') return;
+            cb.dataset.maxBound = '1';
+            cb.addEventListener('change', function () {
+                if (!this.checked) return;
+                const checkedCount = container.querySelectorAll('input[type="checkbox"]:checked').length;
+                if (checkedCount > maxAllowed) {
+                    this.checked = false;
+                    alert(`You can select a maximum of ${maxAllowed} subcategories for this industry.`);
+                }
+            });
+        });
+    }
+
+    function trimToMaxChecked(container, maxAllowed = 6) {
+        if (!container) return;
+        const checked = Array.from(container.querySelectorAll('input[type="checkbox"]:checked'));
+        if (checked.length <= maxAllowed) return;
+        checked.slice(maxAllowed).forEach(cb => { cb.checked = false; });
+    }
+
     function renderSubcategories(selectEl) {
         const targetId = selectEl.getAttribute('data-target');
         const container = document.getElementById(targetId);
@@ -771,8 +870,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const subs = INDUSTRY_SUBCATEGORIES[industry].slice(0, 6); // max 6
-        subs.forEach((label, index) => {
+        const subs = INDUSTRY_SUBCATEGORIES[industry]; // render all, enforce max selection via checkbox logic
+        subs.forEach((label) => {
             const wrapper = document.createElement('label');
             wrapper.className = 'inline-flex items-center text-xs sm:text-sm text-gray-700';
 
@@ -790,6 +889,9 @@ document.addEventListener('DOMContentLoaded', function() {
             wrapper.appendChild(span);
             container.appendChild(wrapper);
         });
+
+        // Enforce max 6 selections per industry group
+        enforceMaxSubcategories(container, 6);
     }
 
     populateIndustrySelects();
@@ -815,6 +917,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             cb.checked = true;
                         }
                     });
+                    // If old saved data contains > 6 checked, trim to 6 to match UI rule
+                    trimToMaxChecked(container, 6);
+                    enforceMaxSubcategories(container, 6);
                 }
             }
         }

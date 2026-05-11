@@ -30,13 +30,17 @@
         $typeKey = is_string($tender->request_type) ? strtolower($tender->request_type) : null;
         $typeLabel = in_array($typeKey, ['rfq', 'rft', 'rfp', 'eoi'], true) ? strtoupper($typeKey) : null;
         $categoryGroups = $tender->categoriesGroupedForDisplay();
+        // One allocation card per category bundle (main category + its 1-3
+        // subcategories + budget %). All selected subcategories for that
+        // category are listed inside a single card, not split across cards.
         $allocationCards = collect();
         foreach ($categoryGroups as $group) {
             foreach ($group['lines'] as $line) {
                 $pctNum = \App\Models\Tender::parsePctDisplayToNumber($line['pct']);
+                $subLabels = $line['sub_labels'] ?? (filled($line['sub_label']) && $line['sub_label'] !== '—' ? [$line['sub_label']] : []);
                 $allocationCards->push([
                     'main_name' => $group['main_name'],
-                    'sub_label' => $line['sub_label'],
+                    'sub_labels' => $subLabels,
                     'pct' => $line['pct'],
                     'pct_num' => $pctNum,
                     'range' => $tender->budget ? $tender->formatAllocatedBudgetRange($pctNum) : null,
@@ -159,22 +163,6 @@
             </div>
         </div>
 
-        @if(filled($tender->product_or_service))
-            <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4">
-                <div class="tender-desc-row-main flex min-w-0 flex-1 gap-3">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Product or service required</div>
-                        <p class="mt-0.5 text-sm leading-snug text-gray-900 line-clamp-2 sm:text-[15px]">{{ $tender->product_or_service }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
-
         {{-- Categories panel: avoid @if … @foreach … @elseif (Blade can emit invalid PHP); use two @if blocks. --}}
         @if($allocationCards->isNotEmpty())
             @php($themes = [
@@ -194,7 +182,7 @@
                         <p class="mt-0.5 text-xs text-gray-500 sm:text-sm">Breakdown of budget by category</p>
                     </div>
                 </div>
-                <div class="tender-allocation-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div class="tender-allocation-grid grid grid-cols-1 gap-3 sm:grid-cols-2">
                     @foreach($allocationCards as $card)
                         @php($ti = $loop->index % 3)
                         @php($th = $themes[$ti])
@@ -203,9 +191,17 @@
                         @php($barW = (int) round(min(100, max(0, $pn))))
                         <div class="tender-allocation-card flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                             <div class="flex items-start justify-between gap-2">
-                                <div class="min-w-0 pt-0.5">
+                                <div class="min-w-0 pt-0.5 flex-1">
                                     <div class="text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $card['main_name'] }}</div>
-                                    <div class="mt-0.5 text-[11px] text-gray-500">{{ $card['sub_label'] }}</div>
+                                    @if(!empty($card['sub_labels']))
+                                        <div class="mt-1.5 flex flex-wrap gap-1.5">
+                                            @foreach($card['sub_labels'] as $sub)
+                                                <span class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 ring-1 ring-inset ring-blue-100" style="background-color:#eff6ff;color:#1d4ed8;">
+                                                    {{ $sub }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
                             </div>
@@ -233,7 +229,7 @@
             @if(request('search'))
                 <h3 class="text-xl sm:text-2xl font-bold text-[#092C48] mb-2">No Tenders Found</h3>
                 <p class="text-gray-700 text-base sm:text-lg mb-4">No tenders found for "{{ request('search') }}". Try different keywords or browse all tenders.</p>
-                <a href="{{ route('tenders.search') }}" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-base font-semibold">
+                <a href="{{ route('tenders.search') }}" class="btn-primary">
                     View All Tenders
                 </a>
             @else

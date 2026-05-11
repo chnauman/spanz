@@ -12,8 +12,47 @@ class AccountController extends Controller
      */
     public function profile()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
+
+        // Backfill location/phone from company_details for accounts created
+        // before these fields started being saved on the users table at
+        // registration time. This is a one-time, automatic sync so the View
+        // Profile page can display the values the user already entered.
+        $this->backfillUserContactFromCompanyDetail($user);
+
         return view('account.profile', compact('user'));
+    }
+
+    /**
+     * Copy country/state/city/phone from the user's company_detail row onto
+     * the users table when the user-level columns are still empty. Values
+     * equal to the legacy placeholder "Not provided" are ignored.
+     */
+    protected function backfillUserContactFromCompanyDetail(\App\Models\User $user): void
+    {
+        $companyDetail = $user->companyDetail;
+        if (!$companyDetail) {
+            return;
+        }
+
+        $updates = [];
+        $map = [
+            'country' => $companyDetail->country,
+            'state' => $companyDetail->state,
+            'city' => $companyDetail->city,
+            'phone' => $companyDetail->phone,
+        ];
+
+        foreach ($map as $field => $value) {
+            if (empty($user->{$field}) && !empty($value) && $value !== 'Not provided') {
+                $updates[$field] = $value;
+            }
+        }
+
+        if (!empty($updates)) {
+            $user->update($updates);
+        }
     }
 
     /**

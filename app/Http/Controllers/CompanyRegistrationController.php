@@ -16,6 +16,29 @@ class CompanyRegistrationController extends Controller
         $user = Auth::user();
         $companyDetail = $user?->companyDetail;
 
+        // For accounts that registered before location/phone began being
+        // saved on the users table, backfill those values from the
+        // company_details row so the dropdowns and inputs are pre-selected
+        // in edit mode without forcing the user to re-enter them.
+        if ($user && $companyDetail) {
+            $contactMap = [
+                'country' => $companyDetail->country,
+                'state' => $companyDetail->state,
+                'city' => $companyDetail->city,
+                'phone' => $companyDetail->phone,
+            ];
+            $updates = [];
+            foreach ($contactMap as $field => $value) {
+                if (empty($user->{$field}) && !empty($value) && $value !== 'Not provided') {
+                    $updates[$field] = $value;
+                }
+            }
+            if (!empty($updates)) {
+                $user->update($updates);
+                $user->refresh();
+            }
+        }
+
         // When arriving from "Edit Profile" we render the page in edit mode.
         $isEditMode = $request->boolean('edit') || $request->get('mode') === 'edit';
 
@@ -94,7 +117,7 @@ class CompanyRegistrationController extends Controller
             'last' => 'nullable|string|max:255',
             'company' => 'required|string|max:255',
             'comp' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
+            'website' => 'nullable|string|max:255',
             'objective' => 'required|string|max:255',
 
             // New profile fields from client requirements

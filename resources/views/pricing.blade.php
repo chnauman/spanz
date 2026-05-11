@@ -116,11 +116,11 @@
 
                                             <div class="text-center h-full flex flex-col justify-between">
                                                 <div>
-                                                    <h3 class="text-3xl font-extrabold text-gray-900 mb-1">{{ $subscription->name }}</h3>
+                                                    <h3 class="text-2xl font-medium text-gray-900 mb-1" style="font-family: Georgia, 'Times New Roman', serif;">{{ $subscription->name }}</h3>
                                                     <p class="text-sm text-gray-600 mb-1">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
-                                                    <div class="text-4xl font-extrabold text-gray-900 leading-none mb-3">
+                                                    <div class="text-3xl font-medium text-gray-900 leading-none mb-3" style="font-family: Georgia, 'Times New Roman', serif;">
                                                         AU${{ number_format((float) $subscription->price, 0) }}
-                                                        <span class="text-base font-semibold text-gray-500">/mo.</span>
+                                                        <span class="text-sm font-medium text-gray-500" style="font-family: ui-sans-serif, system-ui, sans-serif;">/mo.</span>
                                                     </div>
 
                                                     @if(!empty($subscription->features))
@@ -152,22 +152,21 @@
                                                 <div class="text-center">
                                                     @auth
                                                         @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
-                                                            <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold cursor-not-allowed">
+                                                            <button class="btn-primary btn-block is-disabled" disabled>
                                                                 Current Plan
                                                             </button>
                                                         @elseif($isBasicPlan && !$userHasActiveSubscription)
-                                                            <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold cursor-not-allowed">
+                                                            <button class="btn-primary btn-block is-disabled" disabled>
                                                                 Current Plan
                                                             </button>
                                                         @else
-                                                            <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300"
+                                                            <button class="btn-primary btn-block"
                                                                     onclick="selectSubscriptionPlan({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
                                                                 Choose Plan
                                                             </button>
                                                         @endif
                                                     @else
-                                                        <a href="{{ route('register') }}"
-                                                           class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300 inline-block text-center">
+                                                        <a href="{{ route('register') }}" class="btn-primary btn-block">
                                                             Sign Up
                                                         </a>
                                                     @endauth
@@ -188,7 +187,7 @@
                             <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
                         </label>
                         <div class="mt-4">
-                            <button id="submitSubscriptionRequestBtn" type="button" class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed" disabled onclick="submitSelectedSubscriptionRequest()">
+                            <button id="submitSubscriptionRequestBtn" type="button" class="btn-primary btn-block" disabled onclick="submitSelectedSubscriptionRequest()">
                                 Submit Request
                             </button>
                         </div>

@@ -16,11 +16,11 @@
                     <div class="px-6 py-5">
                         <p id="percentageSoftModalMessage" class="text-gray-700 text-sm leading-relaxed"></p>
                         <div id="percentageSoftModalFooterConfirm" class="mt-6 flex flex-wrap justify-end gap-3 hidden">
-                            <button type="button" id="percentageSoftModalBtnCancel" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-800 text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
-                            <button type="button" id="percentageSoftModalBtnSubmit" class="px-4 py-2 rounded-lg bg-[#0D6AED] text-white text-sm font-semibold hover:bg-blue-700 transition-colors">Submit anyway</button>
+                            <button type="button" id="percentageSoftModalBtnCancel" class="btn-secondary btn-secondary-sm">Cancel</button>
+                            <button type="button" id="percentageSoftModalBtnSubmit" class="btn-primary btn-primary-sm">Submit anyway</button>
                         </div>
                         <div id="percentageSoftModalFooterAlert" class="mt-6 flex justify-end hidden">
-                            <button type="button" id="percentageSoftModalBtnOk" class="px-4 py-2 rounded-lg bg-[#0D6AED] text-white text-sm font-semibold hover:bg-blue-700 transition-colors">OK</button>
+                            <button type="button" id="percentageSoftModalBtnOk" class="btn-primary btn-primary-sm">OK</button>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                             @enderror
                         </div>
                         <div>
-                            <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Estimated Budget <span class="text-red-500">*</span></label>
+                            <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Approximate your project spent <span class="text-red-500">*</span></label>
                 <select id="budget" name="budget" required
                                 class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white @error('budget') border-red-300 @enderror">
                                 <option value="">Select amount</option>
@@ -158,14 +158,6 @@
                                 @enderror
                             </div>
                         </div>
-            <div>
-                <label for="product_or_service" class="block text-sm font-medium text-gray-700 mb-2">Product or service required <span class="text-red-500">*</span></label>
-                <input type="text" id="product_or_service" name="product_or_service" value="{{ old('product_or_service') }}" placeholder="What product or service you need (not the listing headline)" required
-                    class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 @error('product_or_service') border-red-300 @enderror">
-                @error('product_or_service')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
                         <div>
                             <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Describe your project <span class="text-red-500">*</span></label>
                             <textarea id="description" name="description" rows="4" required
@@ -175,68 +167,80 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+            @php
+                // Build a JS-friendly map of { mainCategoryId: [{id, name}, ...] }
+                // so subcategory checkboxes can be rendered client-side when
+                // the user picks a main category.
+                $subcategoriesByCategory = $categories->mapWithKeys(function ($cat) {
+                    return [
+                        $cat->id => $cat->subcategories->map(fn ($s) => [
+                            'id' => $s->id,
+                            'name' => $s->name,
+                        ])->values()->all(),
+                    ];
+                });
+            @endphp
+
             <!-- Dynamic Category Rows -->
             <div id="categoryRows">
-                <!-- First row with plus icon -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 category-row" data-row="0">
-                    <!-- main category -->
-                    <div class="mt-2 sm:mt-4 lg:mt-6 required">
-                        <select name="categories[0][main_category]" required
-                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
-                            <option value="">Select main category</option>
-                            @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('categories.0.main_category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <!-- sub category -->
-                    <div class="mt-2 sm:mt-4 lg:mt-6 required">
-                        <select name="categories[0][sub_category]" required
-                            class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
-                            <option value="">Select sub category</option>
-                            <option value="electrical" {{ old('categories.0.sub_category') == 'electrical' ? 'selected' : '' }}>Electrical</option>
-                            <option value="mechanical" {{ old('categories.0.sub_category') == 'mechanical' ? 'selected' : '' }}>Mechanical</option>
-                            <option value="engines" {{ old('categories.0.sub_category') == 'engines' ? 'selected' : '' }}>Engines</option>
-                            <option value="avionics" {{ old('categories.0.sub_category') == 'avionics' ? 'selected' : '' }}>Avionics</option>
-                            <option value="apus" {{ old('categories.0.sub_category') == 'apus' ? 'selected' : '' }}>Auxiliary Power Units (APUs)</option>
-                            <option value="navigation" {{ old('categories.0.sub_category') == 'navigation' ? 'selected' : '' }}>Navigation systems</option>
-                            <option value="communication" {{ old('categories.0.sub_category') == 'communication' ? 'selected' : '' }}>Communication systems (radio, satellite)</option>
-                        </select>
-                    </div>
-                    <!-- product type -->
-                    <div class="mt-2 sm:mt-4 lg:mt-6 required flex items-end">
-                        <div class="flex-1">
-                            <select name="categories[0][product_type]" required
-                                class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                <!-- First row -->
+                <div class="category-row border border-gray-200 rounded-md p-3 sm:p-4 mb-3" data-row="0">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- main category -->
+                        <div class="required">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Main Category <span class="text-red-500">*</span></label>
+                            <select name="categories[0][main_category]" required
+                                class="main-category-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
                                 data-row="0"
-                                onchange="updatePercentageOptions()">
-                                <option value="">Select product type</option>
-                                <option value="100" {{ old('categories.0.product_type') == '100' ? 'selected' : '' }}>100% of total budget</option>
-                                <option value="90" {{ old('categories.0.product_type') == '90' ? 'selected' : '' }}>90% of total budget</option>
-                                <option value="80" {{ old('categories.0.product_type') == '80' ? 'selected' : '' }}>80% of total budget</option>
-                                <option value="70" {{ old('categories.0.product_type') == '70' ? 'selected' : '' }}>70% of total budget</option>
-                                <option value="60" {{ old('categories.0.product_type') == '60' ? 'selected' : '' }}>60% of total budget</option>
-                                <option value="50" {{ old('categories.0.product_type') == '50' ? 'selected' : '' }}>50% of total budget</option>
-                                <option value="40" {{ old('categories.0.product_type') == '40' ? 'selected' : '' }}>40% of total budget</option>
-                                <option value="30" {{ old('categories.0.product_type') == '30' ? 'selected' : '' }}>30% of total budget</option>
-                                <option value="20" {{ old('categories.0.product_type') == '20' ? 'selected' : '' }}>20% of total budget</option>
-                                <option value="10" {{ old('categories.0.product_type') == '10' ? 'selected' : '' }}>10% of total budget</option>
-                                <option value="5" {{ old('categories.0.product_type') == '5' ? 'selected' : '' }}>Less than 10%</option>
+                                onchange="onMainCategoryChange(this)">
+                                <option value="">Select main category</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('categories.0.main_category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
                             </select>
-                            <div class="percentage-remaining text-xs text-gray-500 mt-1" data-row="0"></div>
                         </div>
-                        <button type="button" id="addCategoryRowBtnFirst" onclick="addCategoryRow()" class="ml-3 p-2 text-gray-500 hover:text-blue-500 transition-colors flex-shrink-0" title="Add another category">
-                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
+                        <!-- product type / budget share -->
+                        <div class="required flex items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Budget Share <span class="text-red-500">*</span></label>
+                                <select name="categories[0][product_type]" required
+                                    class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                                    data-row="0"
+                                    onchange="updatePercentageOptions()">
+                                    <option value="">Select product type</option>
+                                    <option value="100" {{ old('categories.0.product_type') == '100' ? 'selected' : '' }}>100% of total budget</option>
+                                    <option value="90" {{ old('categories.0.product_type') == '90' ? 'selected' : '' }}>90% of total budget</option>
+                                    <option value="80" {{ old('categories.0.product_type') == '80' ? 'selected' : '' }}>80% of total budget</option>
+                                    <option value="70" {{ old('categories.0.product_type') == '70' ? 'selected' : '' }}>70% of total budget</option>
+                                    <option value="60" {{ old('categories.0.product_type') == '60' ? 'selected' : '' }}>60% of total budget</option>
+                                    <option value="50" {{ old('categories.0.product_type') == '50' ? 'selected' : '' }}>50% of total budget</option>
+                                    <option value="40" {{ old('categories.0.product_type') == '40' ? 'selected' : '' }}>40% of total budget</option>
+                                    <option value="30" {{ old('categories.0.product_type') == '30' ? 'selected' : '' }}>30% of total budget</option>
+                                    <option value="20" {{ old('categories.0.product_type') == '20' ? 'selected' : '' }}>20% of total budget</option>
+                                    <option value="10" {{ old('categories.0.product_type') == '10' ? 'selected' : '' }}>10% of total budget</option>
+                                    <option value="5" {{ old('categories.0.product_type') == '5' ? 'selected' : '' }}>Less than 10%</option>
+                                </select>
+                                <div class="percentage-remaining text-xs text-gray-500 mt-1" data-row="0"></div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Subcategory checkboxes (rendered when a main category is picked) -->
+                    <div class="subcategory-wrapper mt-3 hidden" data-row="0">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Subcategories <span class="text-red-500">*</span>
+                            <span class="text-xs text-gray-500 font-normal">(select up to 3)</span>
+                        </label>
+                        <div class="subcategory-checkboxes grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 p-3 border border-gray-200 rounded-md bg-gray-50"
+                             data-row="0"></div>
+                        <p class="subcategory-hint text-xs text-gray-500 mt-1">Pick the subcategories that apply to this category.</p>
+                    </div>
+                </div>
             </div>
-            
+
             <div class="mt-4">
-                <button type="button" id="addCategoryRowBtn" onclick="addCategoryRow()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm sm:text-base">+ Add Another Line</button>
+                <button type="button" id="addCategoryRowBtn" onclick="addCategoryRow()" class="btn-primary btn-primary-sm">+ Add another category</button>
+                <p class="text-xs text-gray-500 mt-1">You can add up to 3 main categories. Each category supports up to 3 subcategories.</p>
                 <div id="percentageSummary" class="mt-2 text-sm text-gray-600"></div>
             </div>
                         
@@ -290,7 +294,7 @@
                                         </p>
                                         <p class="text-gray-500 text-xs sm:text-sm mb-3">PNG, JPG, PDF, DOC/DOCX — up to 10MB each · Multiple files allowed</p>
                                         <button type="button" id="tender-files-choose-btn"
-                                            class="pointer-events-auto bg-[#0D6AED] text-white px-4 sm:px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium text-sm sm:text-base">
+                                            class="btn-primary btn-primary-sm pointer-events-auto">
                                             Choose files
                                         </button>
                                     </div>
@@ -310,10 +314,10 @@
                         
                         <!-- Form Actions -->
                         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6 sm:pt-8 border-t border-gray-200">
-                <button type="reset" class="w-full sm:w-auto px-6 py-2 sm:py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors text-sm sm:text-base font-medium">
+                <button type="reset" class="btn-secondary w-full sm:w-auto">
                     Reset Form
                 </button>
-                            <button type="submit" class="w-full sm:w-auto px-6 py-2 sm:py-3 bg-[#0D6AED] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-sm sm:text-base font-medium">
+                            <button type="submit" class="btn-primary w-full sm:w-auto">
                                 Submit Request
                             </button>
                         </div>
@@ -542,66 +546,171 @@ function updatePercentageSummary() {
     }
 }
 
-// Update add button state
+// Maximum number of category rows allowed on a tender.
+const MAX_CATEGORY_ROWS = 3;
+// Maximum number of subcategory checkboxes that may be checked per row.
+const MAX_SUBCATEGORIES_PER_ROW = 3;
+
+// Subcategories grouped by main category id (rendered server-side).
+const SUBCATEGORIES_BY_CATEGORY = @json($subcategoriesByCategory ?? new \stdClass());
+
+// Update add button state. The "+ Add another category" button is hidden
+// entirely once 2 categories have been added (per business rule), and is
+// disabled when the running total has already reached 100% of the budget.
 function updateAddButtonState() {
     const addBtn = document.getElementById('addCategoryRowBtn');
-    const addBtnFirst = document.getElementById('addCategoryRowBtnFirst');
+    if (!addBtn) return;
+
     const remaining = getRemainingPercentage();
-    
-    const updateButton = (btn) => {
-        if (btn) {
-            if (remaining <= 0) {
-                btn.disabled = true;
-                if (btn.id === 'addCategoryRowBtn') {
-                    btn.className = 'px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed text-sm sm:text-base';
-                } else {
-                    btn.className = 'ml-3 p-2 text-gray-300 cursor-not-allowed flex-shrink-0';
-                }
-                btn.title = 'Cannot add more lines - 100% reached';
-            } else {
-                btn.disabled = false;
-                if (btn.id === 'addCategoryRowBtn') {
-                    btn.className = 'px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm sm:text-base';
-                } else {
-                    btn.className = 'ml-3 p-2 text-gray-500 hover:text-blue-500 transition-colors flex-shrink-0';
-                }
-                btn.title = 'Add another category';
-            }
-        }
-    };
-    
-    updateButton(addBtn);
-    updateButton(addBtnFirst);
+    const rowCount = document.querySelectorAll('#categoryRows .category-row').length;
+
+    if (rowCount >= MAX_CATEGORY_ROWS) {
+        // Hide the button completely — no further rows allowed.
+        addBtn.style.display = 'none';
+        addBtn.disabled = true;
+        return;
+    }
+
+    addBtn.style.display = '';
+
+    if (remaining <= 0) {
+        addBtn.disabled = true;
+        addBtn.className = 'btn-primary btn-primary-sm is-disabled';
+        addBtn.title = 'Cannot add more categories — 100% of budget already allocated';
+    } else {
+        addBtn.disabled = false;
+        addBtn.className = 'btn-primary btn-primary-sm';
+        addBtn.title = 'Add another category';
+    }
 }
 
-// Initialize with old input if available
+// Render subcategory checkboxes for a given row based on its selected main
+// category. If no main category is selected, the wrapper stays hidden.
+function renderSubcategoriesForRow(rowEl, preCheckedNames) {
+    if (!rowEl) return;
+    const rowIndex = rowEl.getAttribute('data-row');
+    const mainSelect = rowEl.querySelector('.main-category-select');
+    const wrapper = rowEl.querySelector('.subcategory-wrapper');
+    const container = rowEl.querySelector('.subcategory-checkboxes');
+    if (!mainSelect || !wrapper || !container) return;
+
+    const mainId = mainSelect.value;
+    container.innerHTML = '';
+
+    if (!mainId || !SUBCATEGORIES_BY_CATEGORY[mainId] || !SUBCATEGORIES_BY_CATEGORY[mainId].length) {
+        wrapper.classList.add('hidden');
+        return;
+    }
+
+    const subs = SUBCATEGORIES_BY_CATEGORY[mainId];
+    const checkedSet = new Set(Array.isArray(preCheckedNames) ? preCheckedNames : []);
+
+    subs.forEach(function (sub) {
+        const label = document.createElement('label');
+        label.className = 'inline-flex items-center text-xs sm:text-sm text-gray-700 cursor-pointer';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.name = `categories[${rowIndex}][sub_categories][]`;
+        cb.value = sub.name;
+        cb.className = 'subcategory-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded';
+        if (checkedSet.has(sub.name)) {
+            cb.checked = true;
+        }
+        cb.addEventListener('change', function () {
+            enforceMaxSubcategoriesForRow(rowEl, this);
+        });
+
+        const span = document.createElement('span');
+        span.className = 'ml-2';
+        span.textContent = sub.name;
+
+        label.appendChild(cb);
+        label.appendChild(span);
+        container.appendChild(label);
+    });
+
+    wrapper.classList.remove('hidden');
+}
+
+// Cap subcategory selections per row at MAX_SUBCATEGORIES_PER_ROW.
+function enforceMaxSubcategoriesForRow(rowEl, justChanged) {
+    if (!rowEl) return;
+    const checkboxes = rowEl.querySelectorAll('.subcategory-checkbox');
+    const checked = Array.from(checkboxes).filter(cb => cb.checked);
+    if (checked.length > MAX_SUBCATEGORIES_PER_ROW) {
+        if (justChanged && justChanged.checked) {
+            justChanged.checked = false;
+        }
+        openPercentageSoftModal({
+            variant: 'alert',
+            title: 'Subcategory limit reached',
+            message: `You can select a maximum of ${MAX_SUBCATEGORIES_PER_ROW} subcategories per category.`
+        });
+    }
+}
+
+// Triggered when a main category dropdown changes — re-render that row's
+// subcategory checkboxes.
+function onMainCategoryChange(selectEl) {
+    const row = selectEl.closest('.category-row');
+    renderSubcategoriesForRow(row, []);
+}
+
+// Initialize with old input if available (e.g. after validation failure).
 document.addEventListener('DOMContentLoaded', function() {
-    const oldCategories = @json(old('categories', []));
+    // Convert old() object (PHP) which Laravel may emit as an associative
+    // structure into a plain array indexed by integer keys.
+    const oldCategoriesRaw = @json(old('categories', []));
+    const oldCategories = Array.isArray(oldCategoriesRaw)
+        ? oldCategoriesRaw
+        : Object.keys(oldCategoriesRaw).sort((a, b) => Number(a) - Number(b)).map(k => oldCategoriesRaw[k]);
+
+    // Add additional rows for any beyond the first.
     if (oldCategories.length > 1) {
-        // Add additional rows for old input
-        for (let i = 1; i < oldCategories.length; i++) {
+        for (let i = 1; i < oldCategories.length && i < MAX_CATEGORY_ROWS; i++) {
             addCategoryRow();
-            // Fill the row with old data
-            const row = document.querySelector(`[data-row="${i}"]`);
-            if (row) {
-                const mainCategorySelect = row.querySelector('select[name*="main_category"]');
-                const subCategorySelect = row.querySelector('select[name*="sub_category"]');
-                const productTypeSelect = row.querySelector('select[name*="product_type"]');
-                
-                if (mainCategorySelect && oldCategories[i].main_category) {
-                    mainCategorySelect.value = oldCategories[i].main_category;
-                }
-                if (subCategorySelect && oldCategories[i].sub_category) {
-                    subCategorySelect.value = oldCategories[i].sub_category;
-                }
-                if (productTypeSelect && oldCategories[i].product_type) {
-                    productTypeSelect.value = oldCategories[i].product_type;
-                }
+            const row = document.querySelector(`.category-row[data-row="${i}"]`);
+            if (!row) continue;
+
+            const mainSelect = row.querySelector('select[name*="main_category"]');
+            const productTypeSelect = row.querySelector('select[name*="product_type"]');
+
+            if (mainSelect && oldCategories[i].main_category) {
+                mainSelect.value = oldCategories[i].main_category;
             }
+            if (productTypeSelect && oldCategories[i].product_type) {
+                productTypeSelect.value = oldCategories[i].product_type;
+            }
+
+            // Render subcategory checkboxes with the previously-checked items
+            // preserved.
+            const oldSubs = Array.isArray(oldCategories[i].sub_categories)
+                ? oldCategories[i].sub_categories
+                : (oldCategories[i].sub_categories
+                    ? Object.values(oldCategories[i].sub_categories)
+                    : []);
+            renderSubcategoriesForRow(row, oldSubs);
         }
     }
-    
-    // Initialize percentage options and summary after a short delay to ensure DOM is ready
+
+    // Render the FIRST row's subcategory checkboxes if a main category was
+    // pre-selected (either from old input or because the dropdown had a
+    // default value).
+    const firstRow = document.querySelector('.category-row[data-row="0"]');
+    if (firstRow) {
+        const firstMainSelect = firstRow.querySelector('.main-category-select');
+        if (firstMainSelect && firstMainSelect.value) {
+            const oldSubs = oldCategories[0] && Array.isArray(oldCategories[0].sub_categories)
+                ? oldCategories[0].sub_categories
+                : (oldCategories[0] && oldCategories[0].sub_categories
+                    ? Object.values(oldCategories[0].sub_categories)
+                    : []);
+            renderSubcategoriesForRow(firstRow, oldSubs);
+        }
+    }
+
+    // Initialize percentage options/summary and add-button visibility.
     setTimeout(function() {
         updatePercentageOptions();
     }, 100);
@@ -713,78 +822,92 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function addCategoryRow() {
     const remaining = getRemainingPercentage();
-    
-    // Prevent adding if 100% is reached
+    const existingRows = document.querySelectorAll('#categoryRows .category-row').length;
+
+    // Hard cap: a tender can have at most MAX_CATEGORY_ROWS categories.
+    if (existingRows >= MAX_CATEGORY_ROWS) {
+        openPercentageSoftModal({
+            variant: 'alert',
+            title: 'Category limit reached',
+            message: `You can add a maximum of ${MAX_CATEGORY_ROWS} categories per tender.`
+        });
+        return;
+    }
+
+    // Soft cap: don't allow adding more rows once the running total has hit 100%.
     if (remaining <= 0) {
         openPercentageSoftModal({
             variant: 'alert',
             title: '100% allocated',
-            message: 'Cannot add more lines. Total percentage has reached 100%.'
+            message: 'Cannot add more categories. Total percentage has reached 100%.'
         });
         return;
     }
-    
+
     categoryRowCount++;
     const categoryRows = document.getElementById('categoryRows');
     const newRow = document.createElement('div');
-    newRow.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 category-row';
+    newRow.className = 'category-row border border-gray-200 rounded-md p-3 sm:p-4 mb-3';
     newRow.setAttribute('data-row', categoryRowCount);
-    
+
     // Get available percentage options based on remaining
     const availableOptions = getAvailablePercentageOptions(remaining);
-    
+
     newRow.innerHTML = `
-        <!-- main category -->
-        <div class="mt-2 sm:mt-4 lg:mt-6 required">
-            <select name="categories[${categoryRowCount}][main_category]" required
-                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
-                <option value="">Select main category</option>
-                @foreach($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <!-- sub category -->
-        <div class="mt-2 sm:mt-4 lg:mt-6 required">
-            <select name="categories[${categoryRowCount}][sub_category]" required
-                class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
-                <option value="">Select sub category</option>
-                <option value="electrical">Electrical</option>
-                <option value="mechanical">Mechanical</option>
-                <option value="engines">Engines</option>
-                <option value="avionics">Avionics</option>
-                <option value="apus">Auxiliary Power Units (APUs)</option>
-                <option value="navigation">Navigation systems</option>
-                <option value="communication">Communication systems (radio, satellite)</option>
-            </select>
-        </div>
-        <!-- product type -->
-        <div class="mt-2 sm:mt-4 lg:mt-6 required flex items-end">
-            <div class="flex-1">
-                <select name="categories[${categoryRowCount}][product_type]" required
-                    class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <!-- main category -->
+            <div class="required">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Main Category <span class="text-red-500">*</span></label>
+                <select name="categories[${categoryRowCount}][main_category]" required
+                    class="main-category-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
                     data-row="${categoryRowCount}"
-                    onchange="updatePercentageOptions()">
-                    <option value="">Select product type</option>
-                    ${availableOptions}
+                    onchange="onMainCategoryChange(this)">
+                    <option value="">Select main category</option>
+                    @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
                 </select>
-                <div class="percentage-remaining text-xs text-gray-500 mt-1" data-row="${categoryRowCount}">${remaining}% remaining</div>
             </div>
-            <button type="button" onclick="removeCategoryRow(this)" class="ml-3 p-2 text-gray-500 hover:text-red-500 transition-colors flex-shrink-0" title="Remove category">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
+            <!-- budget share -->
+            <div class="required flex items-end">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Share <span class="text-red-500">*</span></label>
+                    <select name="categories[${categoryRowCount}][product_type]" required
+                        class="product-type-select w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                        data-row="${categoryRowCount}"
+                        onchange="updatePercentageOptions()">
+                        <option value="">Select product type</option>
+                        ${availableOptions}
+                    </select>
+                    <div class="percentage-remaining text-xs text-gray-500 mt-1" data-row="${categoryRowCount}">${remaining}% remaining</div>
+                </div>
+                <button type="button" onclick="removeCategoryRow(this)" class="ml-3 p-2 text-gray-500 hover:text-red-500 transition-colors flex-shrink-0" title="Remove category">
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Subcategory checkboxes -->
+        <div class="subcategory-wrapper mt-3 hidden" data-row="${categoryRowCount}">
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Subcategories <span class="text-red-500">*</span>
+                <span class="text-xs text-gray-500 font-normal">(select up to ${MAX_SUBCATEGORIES_PER_ROW})</span>
+            </label>
+            <div class="subcategory-checkboxes grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 p-3 border border-gray-200 rounded-md bg-gray-50"
+                 data-row="${categoryRowCount}"></div>
+            <p class="subcategory-hint text-xs text-gray-500 mt-1">Pick the subcategories that apply to this category.</p>
         </div>
     `;
-    
+
     categoryRows.appendChild(newRow);
-    
-    // Update all percentage options after adding new row
+
+    // Refresh button state (this may hide the add button if the new row was the 2nd one)
     updatePercentageOptions();
 }
 
@@ -809,8 +932,8 @@ function getAvailablePercentageOptions(remaining) {
 function removeCategoryRow(button) {
     const row = button.closest('.category-row');
     row.remove();
-    
-    // Recalculate percentages after removal
+
+    // Recalculate percentages and refresh add-button visibility after removal.
     updatePercentageOptions();
 }
 

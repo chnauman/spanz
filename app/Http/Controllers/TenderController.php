@@ -101,7 +101,6 @@ class TenderController extends Controller
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('title', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('product_or_service', 'like', '%' . $searchTerm . '%')
                   ->orWhere('description', 'like', '%' . $searchTerm . '%')
                   ->orWhere('location', 'like', '%' . $searchTerm . '%')
                   ->orWhere('requirements', 'like', '%' . $searchTerm . '%')
@@ -180,7 +179,17 @@ class TenderController extends Controller
         $user = auth()->user();
         $hasCompany = $user->companyDetail ? true : false;
 
-        $categories = Category::where('is_active', true)->get();
+        // Only top-level (parent) categories are shown as "Main Category".
+        // Their child rows (subcategories) are eager-loaded so the create
+        // form can render them as checkboxes when a main category is picked.
+        $categories = Category::where('is_active', true)
+            ->whereNull('parent_category_id')
+            ->with(['subcategories' => function ($q) {
+                $q->where('is_active', true)->orderBy('name');
+            }])
+            ->orderBy('name')
+            ->get();
+
         $locationData = $this->locationPayloadForCreateForm();
 
         return view('tenders.create', compact('categories', 'hasCompany', 'locationData'));
@@ -198,7 +207,6 @@ class TenderController extends Controller
             $request->validate([
                 'request_type' => 'required|string|in:rfq,rft,rfp,eoi',
                 'title' => 'required|string|max:255',
-                'product_or_service' => 'required|string|max:255',
                 'description' => 'required|string',
                 'budget' => 'required|string|in:1000,5000,10000,30000,50000,100000,500000,1000000,1000001',
                 'country_code' => ['required', 'string', Rule::in($countryKeys)],
@@ -209,9 +217,13 @@ class TenderController extends Controller
                 'requirements' => 'nullable|string',
                 'contact_email' => 'nullable|email',
                 'contact_phone' => 'nullable|string|max:20',
-                'categories' => 'required|array|min:1',
+                // A tender can target at most 3 main categories. Each
+                // category bundle requires 1-3 subcategories selected as
+                // checkboxes and a budget-share percentage.
+                'categories' => 'required|array|min:1|max:3',
                 'categories.*.main_category' => 'required|exists:categories,id',
-                'categories.*.sub_category' => 'required|string',
+                'categories.*.sub_categories' => 'required|array|min:1|max:3',
+                'categories.*.sub_categories.*' => 'required|string|max:255',
                 'categories.*.product_type' => 'required|string',
                 'files' => 'nullable|array',
                 'files.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif,webp|max:10240',
@@ -276,7 +288,6 @@ class TenderController extends Controller
                 'user_id' => $user->id,
                 'category_id' => $request->categories[0]['main_category'], // Use first category as primary
                 'title' => $request->title,
-                'product_or_service' => $request->product_or_service,
                 'description' => $request->description,
                 'budget' => $budgetValue,
                 'currency' => $request->currency,

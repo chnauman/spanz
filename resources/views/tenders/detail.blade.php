@@ -356,12 +356,30 @@
                             <div class="space-y-4">
                                 @foreach($detailGroups as $group)
                                     <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
-                                        <div class="font-semibold text-gray-900 text-base sm:text-lg">{{ $group['main_name'] }}</div>
-                                        <ul class="mt-2 space-y-1.5 text-sm sm:text-base text-gray-800 list-disc pl-5">
-                                            @foreach($group['lines'] as $line)
-                                                <li>{{ $line['sub_label'] }} – {{ $line['pct'] }}</li>
-                                            @endforeach
-                                        </ul>
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="font-semibold text-gray-900 text-base sm:text-lg">{{ $group['main_name'] }}</div>
+                                            @php
+                                                $firstLine = $group['lines']->first();
+                                                $groupPct = is_array($firstLine) ? ($firstLine['pct'] ?? null) : null;
+                                            @endphp
+                                            @if($groupPct)
+                                                <div class="text-sm sm:text-base font-semibold text-blue-700 shrink-0">{{ $groupPct }}</div>
+                                            @endif
+                                        </div>
+                                        @foreach($group['lines'] as $line)
+                                            @php
+                                                $subLabels = $line['sub_labels'] ?? (filled($line['sub_label']) && $line['sub_label'] !== '—' ? [$line['sub_label']] : []);
+                                            @endphp
+                                            @if(!empty($subLabels))
+                                                <div class="mt-2 flex flex-wrap gap-2">
+                                                    @foreach($subLabels as $sub)
+                                                        <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs sm:text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-100" style="background-color:#eff6ff;color:#1d4ed8;">
+                                                            {{ $sub }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        @endforeach
                                     </div>
                                 @endforeach
                             </div>
@@ -374,13 +392,6 @@
                             {!! nl2br(e($tender->description)) !!}
                         </div>
                     </div>
-
-                    @if(filled($tender->product_or_service))
-                    <div class="mt-6 sm:mt-8">
-                        <h3 class="font-semibold mb-3 text-base sm:text-lg">Product or service required</h3>
-                        <p class="text-sm sm:text-base">{{ $tender->product_or_service }}</p>
-                    </div>
-                    @endif
 
                     @if($tender->requirements)
                     <div class="mt-6 sm:mt-8">
@@ -507,7 +518,7 @@
                                                         </p>
                                                         <p class="text-xs text-gray-500 mt-1">{{ round($attachment['size'] / 1024) }} KB</p>
                                                         <a href="{{ route('tenders.download-attachment', ['tender' => $tender->id, 'filename' => $attachment['filename']]) }}"
-                                                           class="mt-3 bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors inline-block">
+                                                           class="btn-primary btn-primary-sm mt-3">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                             </svg>
@@ -547,7 +558,7 @@
                                             {{ $buyerDetailsError }}
                                         </p>
                                         @if($buyerDetailsAction === 'subscribe' || $buyerDetailsAction === 'renew' || $buyerDetailsAction === 'upgrade')
-                                            <button onclick="openSubscriptionModal()" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium">
+                                            <button onclick="openSubscriptionModal()" class="btn-primary">
                                                 @if($buyerDetailsAction === 'subscribe')
                                                     Subscribe Now
                                                 @else
@@ -581,13 +592,13 @@
                                         <p class="text-sm text-gray-600 mb-4">
                                             Click below to view buyer contact details and download project documents. This will use your credits.
                                         </p>
-                                        <button onclick="viewBuyerDetails({{ $tender->id }})" id="view-buyer-btn-{{ $tender->id }}" class="w-full bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm">
+                                        <button onclick="viewBuyerDetails({{ $tender->id }})" id="view-buyer-btn-{{ $tender->id }}" class="btn-primary btn-block">
                                             <span id="view-buyer-text-{{ $tender->id }}">👁️ View Buyer Details</span>
                                         </button>
                                     </div>
 
                                     <div class="mt-6 pt-4 border-t border-gray-200">
-                                        <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="w-full bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-sm text-sm">
+                                        <button onclick="toggleSave({{ $tender->id }})" id="save-btn-{{ $tender->id }}" class="btn-secondary btn-block">
                                             <span id="save-text-{{ $tender->id }}">Save Tender</span>
                                         </button>
                                     </div>
@@ -610,7 +621,7 @@
                                     <p class="text-sm text-gray-600 mb-4">
                                         Upgrade your subscription to view buyer contact details, download project documents, and access premium features.
                                     </p>
-                                    <button onclick="openSubscriptionModal()" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium">
+                                    <button onclick="openSubscriptionModal()" class="btn-primary">
                                         Upgrade Now
                                     </button>
                                 </div>
@@ -633,7 +644,7 @@
                                 <p class="text-sm text-gray-600 mb-4">
                                     Please login to view buyer details and contact information.
                                 </p>
-                                <a href="{{ route('login') }}" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium inline-block">
+                                <a href="{{ route('login') }}" class="btn-primary">
                                     Login
                                 </a>
                             </div>
@@ -941,7 +952,7 @@
                                                 </p>
                                                 <p class="text-xs text-gray-500 mt-1">${Math.round(attachment.size / 1024)} KB</p>
                                                 <button onclick="downloadAttachment('${attachment.path}', '${attachment.filename}')"
-                                                        class="mt-3 bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors">
+                                                        class="btn-primary btn-primary-sm mt-3">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                     </svg>

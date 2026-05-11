@@ -120,11 +120,11 @@
                                     @endif
                                     <div class="text-center h-full flex flex-col justify-between">
                                         <div>
-                                            <h3 class="text-3xl font-extrabold text-gray-900 mb-1">{{ $subscription->name }}</h3>
+                                            <h3 class="text-2xl font-medium text-gray-900 mb-1" style="font-family: Georgia, 'Times New Roman', serif;">{{ $subscription->name }}</h3>
                                             <p class="text-sm text-gray-600 mb-1">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
-                                            <div class="text-4xl font-extrabold text-gray-900 leading-none mb-3">
+                                            <div class="text-3xl font-medium text-gray-900 leading-none mb-3" style="font-family: Georgia, 'Times New Roman', serif;">
                                                 AU${{ number_format((float) $subscription->price, 0) }}
-                                                <span class="text-base font-semibold text-gray-500">/mo.</span>
+                                                <span class="text-sm font-medium text-gray-500" style="font-family: ui-sans-serif, system-ui, sans-serif;">/mo.</span>
                                             </div>
 
                                              @if(!empty($subscription->features))
@@ -153,7 +153,7 @@
                                              </div>
                                         </div>
 
-                                        <button class="w-full bg-[#0d4f8b] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#0b3f6f] transition-all duration-300"
+                                        <button class="w-full bg-[#0d6aed] text-white px-6 py-3 rounded-lg text-base font-semibold hover:bg-[#0b5ed7] transition-all duration-300"
                                                 onclick="selectSubscriptionPlan('{{ $subscription->id }}', '{{ strtolower($subscription->name) }}', this)">
                                             Choose Plan
                                         </button>
@@ -172,7 +172,7 @@
                         <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
                     </label>
                     <div class="mt-4 flex justify-start">
-                        <button id="submitSubscriptionRequestBtnModal" type="button" class="w-[170px] bg-[#092C48] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0D6AED] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:transform-none" disabled onclick="submitSelectedSubscriptionRequest()">
+                        <button id="submitSubscriptionRequestBtnModal" type="button" class="w-[170px] bg-[#0d6aed] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0b5ed7] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:transform-none" disabled onclick="submitSelectedSubscriptionRequest()">
                             Submit Request
                         </button>
                     </div>
@@ -272,12 +272,12 @@ function selectSubscriptionPlan(subscriptionId, planName, button) {
 
         btn.textContent = 'Choose Plan';
         btn.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
-        btn.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+        btn.classList.add('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
     });
 
     // Mark clicked one as Selected (yellow, but still clickable)
     button.textContent = 'Selected';
-    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+    button.classList.remove('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
     button.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
 
     updateSubmitRequestButtonState();
@@ -402,7 +402,7 @@ function requestSubscription(subscriptionId, planName, button, submitButton = nu
 
             // Update button state to "Requested" immediately (don't close modal)
             button.textContent = 'Requested';
-            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75');
+            button.classList.remove('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]', 'opacity-75');
             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
             button.disabled = true;
 
@@ -471,7 +471,7 @@ function checkLocalStorageStatus() {
 
             if (requestStatus === 'requested') {
                 button.textContent = 'Requested';
-                button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                button.classList.remove('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
                 button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                 button.disabled = true;
 
@@ -512,7 +512,7 @@ function checkSubscriptionStatus() {
 
                 if (status === 'pending') {
                     button.textContent = 'Requested';
-                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                    button.classList.remove('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
                     button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -525,7 +525,7 @@ function checkSubscriptionStatus() {
                     localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                 } else if (status === 'approved') {
                     button.textContent = 'Current Plan';
-                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                    button.classList.remove('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
                     button.classList.add('bg-green-500', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -539,7 +539,7 @@ function checkSubscriptionStatus() {
                 } else if (status === 'declined') {
                     button.textContent = 'Choose Plan';
                     button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                    button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                    button.classList.add('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
                     button.disabled = false;
 
                     // Clear localStorage for declined requests
@@ -551,7 +551,7 @@ function checkSubscriptionStatus() {
                     // No status from server, reset button to default
                     button.textContent = 'Choose Plan';
                     button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                    button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                    button.classList.add('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
                     button.disabled = false;
 
                     // Clear localStorage
@@ -592,7 +592,7 @@ function clearAllSubscriptionStates() {
     buttons.forEach(button => {
         button.textContent = 'Choose Plan';
         button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-        button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+        button.classList.add('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
         button.disabled = false;
     });
 
@@ -615,7 +615,7 @@ function disableAllOtherSubscriptionCards(requestedSubscriptionId) {
         // Disable all other cards
         if (button && !button.disabled) {
             button.textContent = 'Request Pending';
-            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+            button.classList.remove('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
             button.classList.add('bg-gray-400', 'cursor-not-allowed');
             button.disabled = true;
 
@@ -644,7 +644,7 @@ function enableAllSubscriptionCards() {
         if (button && button.textContent === 'Request Pending') {
             button.textContent = 'Choose Plan';
             button.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+            button.classList.add('bg-[#0d6aed]', 'hover:bg-[#0b5ed7]');
             button.disabled = false;
 
             // Reset inline styles

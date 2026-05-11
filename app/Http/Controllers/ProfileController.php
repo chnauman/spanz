@@ -15,14 +15,29 @@ class ProfileController extends Controller
         try {
             $hasFirstLast = $request->filled('first') || $request->filled('last');
 
+            // Strip any non-digit characters from phone before validation so
+            // we always store a clean digits-only value (the UI also enforces
+            // digits-only via inputmode/pattern/oninput handlers).
+            if ($request->filled('phone')) {
+                $request->merge([
+                    'phone' => preg_replace('/\D+/', '', (string) $request->input('phone')),
+                ]);
+            }
+
             $rules = [
                 'photo' => ['nullable', 'image', 'max:2048'],
                 'remove_photo' => ['nullable', 'boolean'],
-                'phone' => ['nullable', 'string', 'max:255'],
+                // Phone must be digits only (no letters/symbols/spaces).
+                'phone' => ['nullable', 'string', 'regex:/^[0-9]+$/', 'max:20'],
                 'country' => ['nullable', 'string', 'max:255'],
                 'state' => ['nullable', 'string', 'max:255'],
                 'city' => ['nullable', 'string', 'max:255'],
                 'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            ];
+
+            $messages = [
+                'phone.regex' => 'Phone number must contain digits only.',
+                'phone.max' => 'Phone number may not be longer than 20 digits.',
             ];
 
             if ($hasFirstLast) {
@@ -32,7 +47,7 @@ class ProfileController extends Controller
                 $rules['name'] = ['required', 'string', 'max:255'];
             }
 
-            $request->validate($rules);
+            $request->validate($rules, $messages);
 
             /** @var \App\Models\User $user */
             $user = Auth::user();

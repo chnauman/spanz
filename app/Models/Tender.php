@@ -16,7 +16,6 @@ class Tender extends Model
         'user_id',
         'category_id',
         'title',
-        'product_or_service',
         'description',
         'budget',
         'currency',
@@ -124,10 +123,6 @@ class Tender extends Model
         $t = trim((string) ($this->title ?? ''));
         if ($t !== '') {
             return $t;
-        }
-
-        if (filled($this->product_or_service)) {
-            return $this->product_or_service;
         }
 
         $desc = trim(strip_tags((string) $this->description));
@@ -260,9 +255,19 @@ class Tender extends Model
     }
 
     /**
-     * Category rows from JSON grouped by main category, with sub-lines and budget share %.
+     * Category rows from the JSON column grouped by main category. Each line
+     * represents one stored category bundle: a main category plus up to 3
+     * selected subcategories plus a single budget-share percentage.
      *
-     * @return Collection<int, array{main_name: string, lines: Collection<int, array{sub_label: string, pct: string}>}>
+     * - `sub_labels` (array<string>) holds every resolved subcategory name in
+     *   the bundle (preferred for new views that want to list them).
+     * - `sub_label` (string) is a comma-joined fallback string kept for
+     *   backwards compatibility with views that expected a single label.
+     *
+     * @return Collection<int, array{
+     *     main_name: string,
+     *     lines: Collection<int, array{sub_labels: array<int, string>, sub_label: string, pct: string}>
+     * }>
      */
     public function categoriesGroupedForDisplay(): Collection
     {
@@ -288,13 +293,8 @@ class Tender extends Model
                 $mainName = $names[$mainId] ?? ('Category #' . $mainId);
 
                 $lines = collect($items)->map(function ($row) use ($slugLabels) {
-                    $rawLabel = $row['sub_category'] ?? $row['work'] ?? $row['type'] ?? null;
-                    $label = null;
-                    if (is_string($rawLabel) && $rawLabel !== '') {
-                        $key = strtolower($rawLabel);
-                        $label = $slugLabels[$key] ?? ucwords(str_replace(['_', '-'], ' ', $rawLabel));
-                    }
-
+                    // Resolve percentage once per row (applies to the entire
+                    // subcategory bundle).
                     $pctRaw = $row['product_type'] ?? $row['percentage'] ?? $row['percent'] ?? null;
                     $pct = null;
                     if (is_numeric($pctRaw)) {
@@ -304,12 +304,43 @@ class Tender extends Model
                         $pct = trim($pctRaw);
                     }
 
-                    if (!$label && !$pct) {
+                    // New schema stores `sub_categories` (array of labels).
+                    // Legacy schema stored `sub_category` (single string).
+                    $rawLabels = [];
+                    if (isset($row['sub_categories']) && is_array($row['sub_categories'])) {
+                        $rawLabels = $row['sub_categories'];
+                    } else {
+                        $legacy = $row['sub_category'] ?? $row['work'] ?? $row['type'] ?? null;
+                        if (is_string($legacy) && $legacy !== '') {
+                            $rawLabels = [$legacy];
+                        }
+                    }
+
+                    $resolveLabel = function ($raw) use ($slugLabels) {
+                        if (!is_string($raw) || $raw === '') {
+                            return null;
+                        }
+                        $key = strtolower($raw);
+                        return $slugLabels[$key] ?? ucwords(str_replace(['_', '-'], ' ', $raw));
+                    };
+
+                    $resolvedLabels = collect($rawLabels)
+                        ->map(fn ($raw) => $resolveLabel($raw))
+                        ->filter()
+                        ->values()
+                        ->all();
+
+                    if (empty($resolvedLabels) && !$pct) {
                         return null;
                     }
 
+                    // `sub_labels` is the canonical list (array) of resolved
+                    // subcategory display names for this category bundle.
+                    // `sub_label` (singular) is a comma-joined string kept
+                    // around for backward compatibility with older views.
                     return [
-                        'sub_label' => $label ?: '—',
+                        'sub_labels' => $resolvedLabels,
+                        'sub_label' => $resolvedLabels ? implode(', ', $resolvedLabels) : '—',
                         'pct' => $pct ?: '—',
                     ];
                 })->filter()->values();

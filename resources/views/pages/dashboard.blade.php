@@ -182,9 +182,8 @@
                         <img id="modalProfileImage" src="{{ asset('spanz-img/profile.jpg') }}" alt="Profile"
                             class="w-20 h-20 rounded-full mx-auto object-cover">
                     </div>
-                    <label for="profileImageInput"
-                        class="inline-block bg-[#0D6AED] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#0B5AC7] transition-colors duration-200">
-                        Change Photo
+                    <label for="profileImageInput" class="btn-primary btn-primary-sm cursor-pointer">
+                        Change Company Logo
                     </label>
                     <input type="file" id="profileImageInput" accept="image/*" class="hidden"
                         onchange="previewImage(event)">
@@ -203,8 +202,7 @@
                         class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                         Cancel
                     </button>
-                    <button type="submit"
-                        class="flex-1 px-4 py-2 bg-[#0D6AED] text-white rounded-lg hover:bg-[#0B5AC7] transition-colors duration-200">
+                    <button type="submit" class="btn-primary btn-primary-sm flex-1">
                         Save Changes
                     </button>
                 </div>

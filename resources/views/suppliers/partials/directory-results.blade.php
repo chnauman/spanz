@@ -33,7 +33,7 @@
             @if(request('search'))
                 <h3 class="text-xl sm:text-2xl font-bold text-[#092C48] mb-2">No suppliers found</h3>
                 <p class="text-gray-700 text-base sm:text-lg mb-4">No suppliers matched "{{ request('search') }}". Try different keywords or adjust filters.</p>
-                <a href="{{ route('suppliers.directory') }}" class="bg-[#0D6AED] hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-base font-semibold">
+                <a href="{{ route('suppliers.directory') }}" class="btn-primary">
                     View all suppliers
                 </a>
             @else
