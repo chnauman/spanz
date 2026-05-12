@@ -4,12 +4,17 @@
 <div class="bg-gray-100 min-h-screen p-4 sm:p-6 lg:p-8">
     <div class="w-full">
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
-                <h1 class="text-xl sm:text-2xl font-bold">Dashboard</h1>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg bg-gradient-to-r from-[#092C48] to-[#0f4773] text-white px-5 py-4 sm:px-6 sm:py-5 space-y-2 sm:space-y-0 shadow-sm">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold leading-tight">Dashboard</h1>
+                    @auth
+                        <p class="text-xs sm:text-sm text-blue-100/80 mt-0.5">Welcome back, {{ auth()->user()->name }}</p>
+                    @endauth
+                </div>
             </div>
 
             <!-- Dashboard Content -->
-            <div class="mt-6">
+            <div class="mt-5">
 
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
@@ -258,84 +263,123 @@
 
                    
                 @else
-                    <!-- User Dashboard -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <a href="{{ route('tenders.my-tenders') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">My Tenders</p>
-                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{{ $my_tenders ?? 0 }}</p>
-                                </div>
+                    {{-- ============================================ --}}
+                    {{-- MANAGE BUSINESS - Compact card grid           --}}
+                    {{-- ============================================ --}}
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-1 h-5 bg-[#0D6AED] rounded-full"></span>
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Manage Business</h3>
                             </div>
-                        </a>
+                        </div>
+                        <div class="p-5 sm:p-6">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5">
+                                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                                {{-- Projects / RFXs I Posted --}}
+                                <a href="{{ route('tenders.my-tenders') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9 2h6a1 1 0 011 1v1h3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h3V3a1 1 0 011-1zm1 2v2h4V4h-4zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="#3B82F6"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Posted<br>Projects / RFXs</p>
+                                </a>
+                                @endif
 
-                        <a href="{{ route('account.plan') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">My Plan</p>
-                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
-                                        @if(isset($active_subscription) && $active_subscription)
-                                            {{ $active_subscription->subscription->name ?? 'Active' }}
-                                        @else
-                                            No Plan
-                                        @endif
-                                    </p>
-                                </div>
-                            </div>
-                        </a>
+                                @if($user->isSupplier() || $user->isSubSupplier())
+                                {{-- New Projects / RFXs Received --}}
+                                <a href="{{ route('user.interests') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
+                                            <path d="M12.5 14l1.5 3 3.3.3-2.5 2.2.8 3.2-2.6-1.7-2.6 1.7.8-3.2-2.5-2.2 3.3-.3 1.5-3z" fill="#FBBF24"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Received<br>Projects / RFXs</p>
+                                </a>
+                                @endif
 
-                        <a href="{{ route('account.profile') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-yellow-100 rounded-lg group-hover:bg-yellow-200 transition-colors">
-                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Profile</p>
-                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-yellow-600 transition-colors">View</p>
-                                </div>
-                            </div>
-                        </a>
+                                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                                {{-- My Saved Projects / RFXs --}}
+                                <a href="{{ route('tenders.saved') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" fill="#3B82F6"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Saved<br>Projects / RFXs</p>
+                                </a>
 
-                        <a href="{{ route('user.interests') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Interests Set</p>
-                                    <p class="text-2xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">{{ $user_interests_count ?? 0 }}</p>
-                                </div>
+                                {{-- Post New Project / RFX --}}
+                                <a href="{{ route('tenders.create') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
+                                            <path d="M12 11v6m-3-3h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Post New<br>Project / RFX</p>
+                                </a>
+                                @endif
+
+                                @if($user->isSupplier())
+                                {{-- Add Work Colleagues --}}
+                                <a href="{{ route('suppliers.invite') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h12v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
+                                            <path d="M19 10v-2h-2v2h-2v2h2v2h2v-2h2v-2h-2z" fill="#3B82F6"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Add Work<br>Colleagues</p>
+                                </a>
+                                @endif
+
+                                @if($user->isSupplier() || $user->isSubSupplier())
+                                {{-- Downloaded Documents --}}
+                                <a href="{{ route('suppliers.received-documents') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
+                                            <path d="M12 18l-3-3h2v-4h2v4h2l-3 3z" fill="#ffffff"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Downloaded<br>Documents</p>
+                                </a>
+                                @endif
+
+                                {{-- Edit / Strengthen Profile --}}
+                                <a href="{{ route('company.register') }}" class="flex flex-col items-center justify-center text-center p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[150px]">
+                                    <div class="flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
+                                            <circle cx="18" cy="6" r="3" fill="#10B981"/>
+                                            <path d="M16.5 5.5h3M18 4v3" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Edit / Strengthen<br>Profile</p>
+                                </a>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 </div>
             @endif
 
             <!-- Recent Activity Section -->
-            <div class="bg-white rounded-lg shadow">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900">
-                        @if(auth()->user()->isAdmin())
-                            Recent Activity
-                        @else
-                            Tenders Matching Your Interests
-                        @endif
-                    </h3>
-                        </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-1 h-5 bg-[#0D6AED] rounded-full"></span>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+                            @if(auth()->user()->isAdmin())
+                                Recent Activity
+                            @else
+                                Tenders Matching Your Interests
+                            @endif
+                        </h3>
+                    </div>
+                </div>
                         <div class="p-6">
                     @if($recent_tenders && $recent_tenders->count() > 0)
                             <div class="space-y-4">

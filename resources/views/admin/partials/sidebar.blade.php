@@ -25,7 +25,6 @@
         @endphp
         <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="" class="w-16 h-16 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity duration-200" id="profileImage" onclick="openProfileImageModal()">
         <span class="text-white" id="profileName">{{ $user?->name ?? 'Guest' }}</span>
-        <!-- edit svg -->
         <svg onclick="openEditModal()" width="15px" height="15px" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg"
             class="absolute right-5 top-5 transform -translate-y-1/2 transition-colors duration-300 hover:cursor-pointer group">
@@ -37,411 +36,250 @@
     <hr class="border-[#657a9871]" />
 
     <!-- Dashboard Link -->
-    <a href="{{ route('dashboard') }}" class="text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M16.5 7.063C16.5 10.258 14.57 13 12 13c-2.572 0-4.5-2.742-4.5-5.938C7.5 3.868 9.16 2 12 2s4.5 1.867 4.5 5.063zM4.102 20.142C4.487 20.6 6.145 22 12 22c5.855 0 7.512-1.4 7.898-1.857a.416.416 0 0 0 .09-.317C19.9 18.944 19.106 15 12 15s-7.9 3.944-7.989 4.826a.416.416 0 0 0 .091.317z"
-                fill="#ffffff" />
+    <a href="{{ route('dashboard') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="#3B82F6"/>
         </svg>
-        <h1>Dashboard</h1>
+        <span class="text-sm">Dashboard</span>
     </a>
     <hr class="border-[#657a9871]" />
-    @if($user && ($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier()))
-    <!-- Buyer Dropdown Menu -->
-    <div>
-        <button onclick="toggleDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg fill="#ffffff" width="20px" height="20px" viewBox="0 0 32 32" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M29.287 19.252c-0.486-0.206-1.052-0.326-1.646-0.326-0.65 0-1.267 0.144-1.82 0.402l0.027-0.011-5.121 2.301c-0.32-1.36-1.523-2.356-2.959-2.356-0.058 0-0.115 0.002-0.172 0.005l0.008-0h-3.711l-4.691-1.375c-0.104-0.032-0.225-0.051-0.349-0.051-0.001 0-0.002 0-0.003 0h-1.669v-0.257c0-0.69-0.56-1.25-1.25-1.25v0h-3.883c-0.69 0-1.25 0.56-1.25 1.25v0 12.208c0 0.69 0.56 1.25 1.25 1.25h3.883c0.69-0 1.25-0.56 1.25-1.25v-0.44c1.596 0.316 2.993 0.738 4.33 1.278l-0.159-0.057c1.209 0.432 2.603 0.682 4.056 0.682 1.676 0 3.274-0.332 4.732-0.934l-0.082 0.030c1.271-0.563 2.351-1.16 3.372-1.839l-0.083 0.052c0.334-0.207 0.668-0.412 1.004-0.611 1.648-0.977 2.973-1.832 4.17-2.699 0.595-0.424 1.115-0.843 1.608-1.29l-0.014 0.013c0.428-0.353 0.769-0.795 0.997-1.3l0.009-0.023c0.052-0.133 0.082-0.287 0.082-0.448 0-0.093-0.010-0.184-0.029-0.271l0.002 0.008c-0.176-1.17-0.885-2.144-1.868-2.68l-0.019-0.010zM4.681 28.541h-1.383v-9.709h1.383zM28.379 22.174c-0.398 0.356-0.831 0.702-1.283 1.024l-0.046 0.031c-1.131 0.818-2.395 1.635-3.975 2.57-0.352 0.209-0.697 0.424-1.045 0.639-0.833 0.557-1.791 1.091-2.793 1.547l-0.129 0.052c-1.096 0.451-2.369 0.712-3.703 0.712-1.137 0-2.229-0.19-3.247-0.54l0.070 0.021c-1.451-0.607-3.148-1.097-4.911-1.392l-0.137-0.019v-6.48h1.489l4.691 1.375c0.105 0.032 0.226 0.051 0.351 0.051h3.891c0.443 0 0.697 0.17 0.697 0.469s-0.254 0.469-0.697 0.469h-6.809c-0.69 0-1.25 0.56-1.25 1.25s0.56 1.25 1.25 1.25v0h7.781c0 0 0 0 0.001 0 0.185 0 0.361-0.040 0.519-0.113l-0.008 0.003 7.803-3.504c0.228-0.105 0.494-0.167 0.774-0.167 0.183 0 0.359 0.026 0.526 0.075l-0.013-0.003c0.185 0.113 0.326 0.282 0.4 0.484l0.002 0.007c-0.066 0.064-0.137 0.129-0.201 0.189zM16.99 18.265l0.010 0.003 0.010-0.003c4.821-0.006 8.728-3.915 8.728-8.737 0-4.825-3.912-8.737-8.737-8.737s-8.737 3.912-8.737 8.737c0 4.822 3.906 8.732 8.727 8.737h0.001zM17.001 3.729c0.51 0.579 0.933 1.251 1.238 1.985l0.018 0.048-2.505-0.012c0.323-0.776 0.744-1.444 1.257-2.029l-0.007 0.008zM18.883 8.264c0.047 0.378 0.075 0.818 0.076 1.263v0.002c0 0.077-0.009 0.145-0.010 0.221h-3.897c-0.001-0.076-0.010-0.143-0.010-0.221 0.002-0.454 0.030-0.9 0.084-1.337l-0.005 0.054zM23.236 9.529c0 0.076-0.020 0.146-0.022 0.221h-1.772c0.001-0.078 0.017-0.141 0.017-0.221 0-0.45-0.056-0.842-0.094-1.253l1.746 0.009c0.080 0.374 0.126 0.804 0.126 1.245v0zM15.395 12.25h3.21c-0.312 1.19-0.867 2.223-1.612 3.088l0.008-0.010c-0.738-0.854-1.294-1.888-1.594-3.025l-0.012-0.053zM12.558 9.75h-1.773c-0.003-0.075-0.022-0.145-0.022-0.221 0.001-0.463 0.053-0.912 0.15-1.345l-0.008 0.041 1.734 0.008c-0.051 0.377-0.086 0.825-0.097 1.279l-0 0.016c0 0.079 0.015 0.143 0.017 0.221zM11.414 12.25h1.435c0.196 0.961 0.484 1.811 0.863 2.61l-0.029-0.069c-0.974-0.626-1.748-1.487-2.252-2.504l-0.016-0.036zM20.318 14.791c0.35-0.73 0.637-1.58 0.821-2.468l0.013-0.073h1.434c-0.52 1.054-1.294 1.915-2.243 2.526l-0.025 0.015zM21.95 5.779l-1.041-0.005c-0.184-0.591-0.384-1.090-0.619-1.568l0.028 0.063c0.639 0.412 1.18 0.913 1.622 1.495l0.011 0.015zM13.682 4.269c-0.203 0.404-0.4 0.89-0.562 1.392l-0.021 0.076-1.011-0.005c0.445-0.576 0.972-1.061 1.569-1.448l0.024-0.015z">
-                    </path>
-                </svg>
-                <h1>Buyer</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="dropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </button>
 
-        <!-- Dropdown Menu -->
-        <div id="buyerDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('tenders.create') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Post a RFX
-            </a>
-            <a href="{{ route('company.register') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Strengthen Business Profile
-            </a>
-            <a href="{{ route('tenders.saved') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Saved RFXs
-            </a>
-            <a href="{{ route('tenders.search') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Browse Tenders
-            </a>
+    @if($user && !$user->isAdmin())
+        {{-- ============================================ --}}
+        {{-- MANAGE BUSINESS SECTION                       --}}
+        {{-- ============================================ --}}
+        <div class="px-5 pt-4 pb-2">
+            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Manage Business</span>
         </div>
-    </div>
-    <hr class="border-[#657a9871]" />
-    @endif
 
-    @if($user && $user->isBuyer())
-    <!-- Supplier Menu for Buyers -->
-    <div>
-        <button onclick="toggleSupplierForBuyerDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg fill="#ffffff" height="20px" width="20px" version="1.1" id="Capa_1"
-                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                    viewBox="0 0 297 297" xml:space="preserve">
-                    <path
-                        d="M276.955,114.128h-11.421c-3.076-53.545-42.247-97.577-93.496-108.064C170.499,2.498,166.953,0,162.822,0h-28.645
-                        c-4.131,0-7.676,2.498-9.216,6.064C73.714,16.551,34.543,60.583,31.467,114.128H20.045c-5.542,0-10.036,4.493-10.036,10.036v30.496
-                        c0,5.542,4.493,10.036,10.036,10.036h16.273v0.002c0,6.732,0.607,13.437,1.806,20.02l-15.4,8.892
-                        c-2.305,1.331-3.987,3.522-4.676,6.094c-0.689,2.571-0.328,5.31,1.003,7.615l27.171,47.06c2.772,4.799,8.908,6.446,13.709,3.673
-                        l15.421-8.903c10.251,8.723,22.029,15.534,34.656,20.038v17.778c0,5.542,4.493,10.036,10.036,10.036h54.341
-                        c5.542,0,10.036-4.493,10.036-10.036v-17.778c12.627-4.504,24.405-11.315,34.657-20.038l15.421,8.903
-                        c4.802,2.772,10.938,1.126,13.709-3.673l27.17-47.06c2.772-4.8,1.127-10.937-3.673-13.709l-15.4-8.892
-                        c1.201-6.583,1.807-13.288,1.807-20.02v-0.002h18.847c5.542,0,10.036-4.493,10.036-10.036v-30.496
-                        C286.991,118.622,282.497,114.128,276.955,114.128z M152.787,20.071v65.863h-8.573V20.071H152.787z M81.175,50.937V95.97
-                        c0,5.542,4.493,10.036,10.036,10.036s10.036-4.493,10.036-10.036V36.055c7.128-3.984,14.812-7.081,22.896-9.176V95.97
-                        c0,5.542,4.493,10.036,10.036,10.036h28.645c5.542,0,10.036-4.493,10.036-10.036V26.879c8.084,2.095,15.768,5.192,22.897,9.176
-                        V95.97c0,5.542,4.493,10.036,10.036,10.036c5.542,0,10.036-4.493,10.036-10.036V50.938c16.852,16.214,27.858,38.443,29.578,63.19
-                        H51.597C53.317,89.38,64.324,67.152,81.175,50.937z M238.037,164.697c0,7.638-0.95,15.229-2.823,22.562
-                        c-1.114,4.358,0.81,8.926,4.705,11.175l13.056,7.538l-17.134,29.678l-13.083-7.553c-3.899-2.25-8.819-1.631-12.036,1.517
-                        c-10.922,10.685-24.42,18.489-39.037,22.568c-4.338,1.21-7.338,5.163-7.338,9.666v15.079h-34.27V261.85c0-4.503-3-8.456-7.338-9.666
-                        c-14.617-4.079-28.115-11.883-39.036-22.567c-3.217-3.15-8.139-3.767-12.036-1.518l-13.083,7.553L41.45,205.973l13.057-7.538
-                        c3.896-2.249,5.819-6.816,4.705-11.175c-1.874-7.334-2.823-14.924-2.823-22.562v-0.002h30.86v0.002
-                        c0,33.064,26.899,59.964,59.964,59.964s59.964-26.899,59.964-59.964v-0.002h30.86V164.697z M159.243,164.697
-                        c0,6.634-5.397,12.031-12.031,12.031s-12.031-5.397-12.031-12.031l0-0.002h24.062L159.243,164.697z M147.212,196.799
-                        c17.701,0,32.102-14.401,32.102-32.102v-0.002h7.791v0.002c0,21.997-17.896,39.892-39.893,39.892s-39.892-17.895-39.892-39.892
-                        v-0.002h7.79v0.002C115.11,182.398,129.511,196.799,147.212,196.799z M266.92,144.624H30.08v-10.425H266.92V144.624z" />
+        @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+            {{-- Projects / RFXs I Posted --}}
+            <a href="{{ route('tenders.my-tenders') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 2h6a1 1 0 011 1v1h3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h3V3a1 1 0 011-1zm1 2v2h4V4h-4zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="#3B82F6"/>
                 </svg>
-                <h1>Supplier</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="supplierForBuyerDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </button>
-
-        <!-- Dropdown Menu -->
-        <div id="supplierForBuyerDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('pricing') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Become a Supplier
+                <span class="text-sm">My Posted Projects / RFXs</span>
             </a>
-        </div>
-    </div>
-    <hr class="border-[#657a9871]" />
-    @endif
-    @if($user && ($user->isSupplier() || $user->isSubSupplier()))
-    <!-- Supplier Dropdown Menu -->
-    <div>
-        <button onclick="toggleSupplierDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg fill="#ffffff" height="20px" width="20px" version="1.1" id="Capa_1"
-                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                    viewBox="0 0 297 297" xml:space="preserve">
-                    <path
-                        d="M276.955,114.128h-11.421c-3.076-53.545-42.247-97.577-93.496-108.064C170.499,2.498,166.953,0,162.822,0h-28.645
-                        c-4.131,0-7.676,2.498-9.216,6.064C73.714,16.551,34.543,60.583,31.467,114.128H20.045c-5.542,0-10.036,4.493-10.036,10.036v30.496
-                        c0,5.542,4.493,10.036,10.036,10.036h16.273v0.002c0,6.732,0.607,13.437,1.806,20.02l-15.4,8.892
-                        c-2.305,1.331-3.987,3.522-4.676,6.094c-0.689,2.571-0.328,5.31,1.003,7.615l27.171,47.06c2.772,4.799,8.908,6.446,13.709,3.673
-                        l15.421-8.903c10.251,8.723,22.029,15.534,34.656,20.038v17.778c0,5.542,4.493,10.036,10.036,10.036h54.341
-                        c5.542,0,10.036-4.493,10.036-10.036v-17.778c12.627-4.504,24.405-11.315,34.657-20.038l15.421,8.903
-                        c4.802,2.772,10.938,1.126,13.709-3.673l27.17-47.06c2.772-4.8,1.127-10.937-3.673-13.709l-15.4-8.892
-                        c1.201-6.583,1.807-13.288,1.807-20.02v-0.002h18.847c5.542,0,10.036-4.493,10.036-10.036v-30.496
-                        C286.991,118.622,282.497,114.128,276.955,114.128z M152.787,20.071v65.863h-8.573V20.071H152.787z M81.175,50.937V95.97
-                        c0,5.542,4.493,10.036,10.036,10.036s10.036-4.493,10.036-10.036V36.055c7.128-3.984,14.812-7.081,22.896-9.176V95.97
-                        c0,5.542,4.493,10.036,10.036,10.036h28.645c5.542,0,10.036-4.493,10.036-10.036V26.879c8.084,2.095,15.768,5.192,22.897,9.176
-                        V95.97c0,5.542,4.493,10.036,10.036,10.036c5.542,0,10.036-4.493,10.036-10.036V50.938c16.852,16.214,27.858,38.443,29.578,63.19
-                        H51.597C53.317,89.38,64.324,67.152,81.175,50.937z M238.037,164.697c0,7.638-0.95,15.229-2.823,22.562
-                        c-1.114,4.358,0.81,8.926,4.705,11.175l13.056,7.538l-17.134,29.678l-13.083-7.553c-3.899-2.25-8.819-1.631-12.036,1.517
-                        c-10.922,10.685-24.42,18.489-39.037,22.568c-4.338,1.21-7.338,5.163-7.338,9.666v15.079h-34.27V261.85c0-4.503-3-8.456-7.338-9.666
-                        c-14.617-4.079-28.115-11.883-39.036-22.567c-3.217-3.15-8.139-3.767-12.036-1.518l-13.083,7.553L41.45,205.973l13.057-7.538
-                        c3.896-2.249,5.819-6.816,4.705-11.175c-1.874-7.334-2.823-14.924-2.823-22.562v-0.002h30.86v0.002
-                        c0,33.064,26.899,59.964,59.964,59.964s59.964-26.899,59.964-59.964v-0.002h30.86V164.697z M159.243,164.697
-                        c0,6.634-5.397,12.031-12.031,12.031s-12.031-5.397-12.031-12.031l0-0.002h24.062L159.243,164.697z M147.212,196.799
-                        c17.701,0,32.102-14.401,32.102-32.102v-0.002h7.791v0.002c0,21.997-17.896,39.892-39.893,39.892s-39.892-17.895-39.892-39.892
-                        v-0.002h7.79v0.002C115.11,182.398,129.511,196.799,147.212,196.799z M266.92,144.624H30.08v-10.425H266.92V144.624z" />
+        @endif
+
+        @if($user->isSupplier() || $user->isSubSupplier())
+            {{-- New Projects / RFXs Received --}}
+            <a href="{{ route('user.interests') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
+                    <path d="M12.5 14l1.5 3 3.3.3-2.5 2.2.8 3.2-2.6-1.7-2.6 1.7.8-3.2-2.5-2.2 3.3-.3 1.5-3z" fill="#FBBF24"/>
                 </svg>
-                <h1>Supplier</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="supplierDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </button>
+                <span class="text-sm">My Received Projects / RFXs</span>
+            </a>
+        @endif
 
-        <!-- Dropdown Menu -->
-        <div id="supplierDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('user.interests') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                My Interests
+        @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+            {{-- My Saved Projects / RFXs --}}
+            <a href="{{ route('tenders.saved') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" fill="#3B82F6"/>
+                </svg>
+                <span class="text-sm">My Saved Projects / RFXs</span>
             </a>
-            <a href="{{ route('tenders.viewed') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Viewed Tenders
+
+            {{-- Post New Project / RFX --}}
+            <a href="{{ route('tenders.create') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
+                    <path d="M12 11v6m-3-3h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="text-sm">Post New Project / RFX</span>
             </a>
-            <a href="{{ route('tenders.saved') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Saved Tenders
+        @endif
+
+        @if($user->isSupplier())
+            {{-- Add Work Colleagues --}}
+            <a href="{{ route('suppliers.invite') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h12v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
+                    <path d="M19 10v-2h-2v2h-2v2h2v2h2v-2h2v-2h-2z" fill="#3B82F6"/>
+                </svg>
+                <span class="text-sm">Add Work Colleagues</span>
             </a>
-            <a href="{{ route('suppliers.received-documents') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Received documents
+        @endif
+
+        @if($user->isSupplier() && $user->subSuppliers()->count() > 0)
+            {{-- Sub Suppliers --}}
+            <a href="{{ route('suppliers.sub-suppliers') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="#3B82F6"/>
+                </svg>
+                <span class="text-sm">Sub Suppliers</span>
             </a>
-            {{--  <a href="{{ route('invitations.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Invitations
-            </a>  --}}
-            @if($user && $user->isSupplier())
-            <a href="{{ route('suppliers.invite') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Invite Sub Supplier
+        @endif
+
+        @if($user->isSupplier() || $user->isSubSupplier())
+            {{-- Downloaded Documents --}}
+            <a href="{{ route('suppliers.received-documents') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
+                    <path d="M12 18l-3-3h2v-4h2v4h2l-3 3z" fill="#ffffff"/>
+                </svg>
+                <span class="text-sm">Downloaded Documents</span>
             </a>
-            @endif
-            @if($user && $user->subSuppliers()->count() > 0)
-            <a href="{{ route('suppliers.sub-suppliers') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Sub Suppliers
-            </a>
-            @endif
+        @endif
+
+        {{-- Back to SPANZ --}}
+        <a href="{{ route('home') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Back to SPANZ</span>
+        </a>
+
+        <hr class="border-[#657a9871] my-2" />
+
+        {{-- ============================================ --}}
+        {{-- MANAGE MY ACCOUNT SECTION                     --}}
+        {{-- ============================================ --}}
+        <div class="px-5 pt-2 pb-2">
+            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Manage My Account</span>
         </div>
-    </div>
-    <hr class="border-[#657a9871]" />
+
+        {{-- My Messages --}}
+        <a href="{{ route('account.profile') }}#notifications" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300 relative">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">My Messages</span>
+        </a>
+
+        {{-- My Business Profile - Edit / Strengthen --}}
+        <a href="{{ route('company.register') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
+                <circle cx="18" cy="6" r="3" fill="#10B981"/>
+                <path d="M17 5h2M18 4v2" stroke="#ffffff" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <span class="text-sm">My Business Profile</span>
+        </a>
+
+        {{-- My Current Plan - Change --}}
+        <a href="{{ route('account.plan') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z" fill="#3B82F6"/>
+                <path d="M10.5 16.5l-3-3 1.41-1.41L10.5 13.67l4.59-4.58L16.5 10.5l-6 6z" fill="#ffffff"/>
+            </svg>
+            <span class="text-sm">My Current Plan</span>
+        </a>
+
+        {{-- My Credit Points - View History --}}
+        <a href="{{ route('account.credits') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
+                <path d="M12 9.5C13.38 9.5 14.5 8.38 14.5 7s-1.12-2.5-2.5-2.5S9.5 5.62 9.5 7s1.12 2.5 2.5 2.5z" fill="#ffffff"/>
+            </svg>
+            <span class="text-sm">My Credit Points</span>
+        </a>
     @endif
 
     @if($user && $user->isAdmin())
-    <!-- Users Dropdown Menu -->
-    <div>
-        <button onclick="toggleUsersDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h1>Users</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="usersDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </button>
-
-        <!-- Dropdown Menu -->
-        <div id="usersDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('admin.users.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                All Users
-            </a>
-            <a href="{{ route('admin.users.index', ['role' => 'buyer']) }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Buyers Only
-            </a>
-            <a href="{{ route('admin.users.index', ['role' => 'supplier']) }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Suppliers Only
-            </a>
+        {{-- ============================================ --}}
+        {{-- ADMIN MENU (flat, no dropdowns)               --}}
+        {{-- ============================================ --}}
+        <div class="px-5 pt-4 pb-2">
+            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Administration</span>
         </div>
-    </div>
-    <hr class="border-[#657a9871]" />
 
-    <!-- Categories Dropdown Menu -->
-    <div>
-        <button onclick="toggleCategoriesDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 6H20M4 12H20M4 18H20" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h1>Categories</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="categoriesDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
+        <a href="{{ route('admin.users.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="#3B82F6"/>
             </svg>
-        </button>
+            <span class="text-sm">Users</span>
+        </a>
 
-        <!-- Dropdown Menu -->
-        <div id="categoriesDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('admin.categories.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                View Categories
-            </a>
-            <a href="{{ route('admin.categories.create') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Add Category
-            </a>
-        </div>
-    </div>
-    <hr class="border-[#657a9871]" />
-
-    <!-- Products Dropdown Menu -->
-    <div>
-        <button onclick="toggleProductsDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V19C17 19.6 16.6 20 16 20H8C7.4 20 7 19.6 7 19V13M17 13H7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h1>Products</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="productsDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
+        <a href="{{ route('admin.categories.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h18v2H3v-2z" fill="#3B82F6"/>
             </svg>
-        </button>
+            <span class="text-sm">Categories</span>
+        </a>
 
-        <!-- Dropdown Menu -->
-        <div id="productsDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('admin.products.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                View Products
-            </a>
-            <a href="{{ route('admin.products.create') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Add Product
-            </a>
-            <a href="{{ route('admin.purchase-requests.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Purchase Requests
-            </a>
+        <a href="{{ route('admin.products.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Products</span>
+        </a>
+
+        <a href="{{ route('admin.purchase-requests.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Purchase Requests</span>
+        </a>
+
+        <hr class="border-[#657a9871] my-2" />
+
+        <div class="px-5 pt-2 pb-2">
+            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Subscriptions</span>
         </div>
-    </div>
-    <hr class="border-[#657a9871]" />
+
+        <a href="{{ route('admin.subscriptions.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Manage Plans</span>
+        </a>
+
+        <a href="{{ route('admin.tender-view-pricing.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Tender View Pricing</span>
+        </a>
+
+        <a href="{{ route('admin.subscription-requests') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Upgrade Requests</span>
+        </a>
+
+        <a href="{{ route('admin.downgrade-requests.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM12 19l-5-5h3v-4h4v4h3l-5 5z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">Downgrade Requests</span>
+        </a>
+
+        <hr class="border-[#657a9871] my-2" />
+
+        <div class="px-5 pt-2 pb-2">
+            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Account</span>
+        </div>
+
+        <a href="{{ route('account.profile') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
+            </svg>
+            <span class="text-sm">My Profile</span>
+        </a>
     @endif
 
-    @if($user && $user->isAdmin())
-    <!-- Subscriptions Dropdown Menu -->
-    <div>
-        <button onclick="toggleSubscriptionsDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1V23M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h1>Subscriptions</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="subscriptionsDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </button>
-
-        <!-- Dropdown Menu -->
-        <div id="subscriptionsDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('admin.subscriptions.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Manage Plans
-            </a>
-            <a href="{{ route('admin.tender-view-pricing.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Tender View Pricing
-            </a>
-            <a href="{{ route('admin.subscriptions.create') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Create Plan
-            </a>
-            <a href="{{ route('admin.subscription-requests') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Upgrade Requests
-            </a>
-            <a href="{{ route('admin.downgrade-requests.index') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Downgrade Requests
-            </a>
-
-        </div>
-    </div>
-    <hr class="border-[#657a9871]" />
-    @endif
-
-    <!-- Account Settings Dropdown Menu -->
-    <div>
-        <button onclick="toggleAccountSettingsDropdown()"
-            class="w-full text-white h-14 gap-2 flex items-center justify-between px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <div class="flex items-center gap-2">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h1>Account Settings</h1>
-            </div>
-            <!-- Dropdown Arrow -->
-            <svg id="accountSettingsDropdownArrow" width="12px" height="12px" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-200">
-                <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </button>
-
-        <!-- Dropdown Menu -->
-        <div id="accountSettingsDropdown"
-            class="hidden bg-gradient-to-l from-[#1b3963] to-[#092C48] border-t border-[#657a9871] transition-all duration-300 ease-in-out">
-            <a href="{{ route('account.profile') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Profile
-            </a>
-            @if($user && ($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier()))
-            <a href="{{ route('account.plan') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Update Plan
-            </a>
-            <a href="{{ route('account.credits') }}"
-                class="block px-12 py-3 text-white text-sm hover:bg-gradient-to-l from-[#092C48] to-[#1b3963] hover:bg-opacity-50 transition-colors duration-200">
-                Show Credits
-            </a>
-            @endif
-        </div>
-    </div>
-    <hr class="border-[#657a9871]" />
+    <hr class="border-[#657a9871] my-2" />
 
     <!-- Spacer to push logout to bottom -->
     <div class="flex-grow"></div>
 
     <!-- Logout Section -->
-    <div class="text-white h-14 gap-2 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-                d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
-                stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <div class="text-white h-14 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
+                stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         @if($user)
             <form method="POST" action="{{ route('logout') }}" class="inline">
                 @csrf
-                <button type="submit" class="text-white hover:text-blue-300 bg-transparent border-none cursor-pointer">Logout</button>
+                <button type="submit" class="text-white hover:text-blue-300 bg-transparent border-none cursor-pointer text-sm">Logout</button>
             </form>
         @else
-            <a href="{{ route('login') }}" class="text-white hover:text-blue-300">Login</a>
+            <a href="{{ route('login') }}" class="text-white hover:text-blue-300 text-sm">Login</a>
         @endif
     </div>
     <hr class="border-[#657a9871]" />
@@ -450,274 +288,26 @@
 <!-- Profile Image Popup Modal -->
 <div id="profileImageModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-75 transition-opacity duration-300" onclick="closeProfileImageModal()">
     <div class="relative max-w-4xl max-h-[90vh] p-4" onclick="event.stopPropagation()">
-        <!-- Close Button -->
         <button onclick="closeProfileImageModal()" class="absolute -top-3 -right-3 bg-white rounded-full p-1.5 hover:bg-gray-200 transition-colors duration-200 shadow-lg z-[10000] flex items-center justify-center" style="z-index: 10000;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 6L6 18M6 6L18 18" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-        <!-- Profile Image -->
         <img id="profileImageModalImg" src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="Profile Picture" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain">
     </div>
 </div>
 
 <script>
-// Helper function to open a dropdown
-function openDropdown(dropdownId, arrowId) {
-    const dropdown = document.getElementById(dropdownId);
-    const arrow = document.getElementById(arrowId);
-    if (dropdown && arrow) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    }
-}
-
-// Helper function to close a dropdown
-function closeDropdown(dropdownId, arrowId) {
-    const dropdown = document.getElementById(dropdownId);
-    const arrow = document.getElementById(arrowId);
-    if (dropdown && arrow) {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-// Dropdown functionality
-function toggleDropdown() {
-    const dropdown = document.getElementById('buyerDropdown');
-    const arrow = document.getElementById('dropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleSupplierDropdown() {
-    const dropdown = document.getElementById('supplierDropdown');
-    const arrow = document.getElementById('supplierDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleTenderDropdown() {
-    const dropdown = document.getElementById('tenderDropdown');
-    const arrow = document.getElementById('tenderDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleCategoriesDropdown() {
-    const dropdown = document.getElementById('categoriesDropdown');
-    const arrow = document.getElementById('categoriesDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleProductsDropdown() {
-    const dropdown = document.getElementById('productsDropdown');
-    const arrow = document.getElementById('productsDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleSubscriptionsDropdown() {
-    const dropdown = document.getElementById('subscriptionsDropdown');
-    const arrow = document.getElementById('subscriptionsDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleUsersDropdown() {
-    const dropdown = document.getElementById('usersDropdown');
-    const arrow = document.getElementById('usersDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleSupplierForBuyerDropdown() {
-    const dropdown = document.getElementById('supplierForBuyerDropdown');
-    const arrow = document.getElementById('supplierForBuyerDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function toggleAccountSettingsDropdown() {
-    const dropdown = document.getElementById('accountSettingsDropdown');
-    const arrow = document.getElementById('accountSettingsDropdownArrow');
-
-    if (dropdown.classList.contains('hidden')) {
-        dropdown.classList.remove('hidden');
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        dropdown.classList.add('hidden');
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-// Prevent dropdown from closing when clicking on submenu links
-document.addEventListener('DOMContentLoaded', function() {
-    // Get current URL path
-    const currentPath = window.location.pathname;
-    
-    // Define route patterns for each dropdown
-    const routePatterns = {
-        'buyerDropdown': [
-            '/tenders/create',
-            '/my-tenders',
-            '/tenders/search',
-            '/tenders/'
-        ],
-        'supplierForBuyerDropdown': [
-            '/pricing'
-        ],
-        'supplierDropdown': [
-            '/user/interests',
-            '/viewed-tenders',
-            '/saved-tenders',
-            '/supplier/received-documents',
-            '/suppliers/invite',
-            '/suppliers/sub-suppliers'
-        ],
-        'usersDropdown': [
-            '/admin/users'
-        ],
-        'categoriesDropdown': [
-            '/admin/categories'
-        ],
-        'productsDropdown': [
-            '/admin/products',
-            '/admin/purchase-requests'
-        ],
-        'subscriptionsDropdown': [
-            '/admin/subscriptions',
-            '/admin/tender-view-pricing',
-            '/admin/subscription-requests',
-            '/admin/downgrade-requests'
-        ],
-        'accountSettingsDropdown': [
-            '/account/profile',
-            '/account/plan',
-            '/account/credits'
-        ]
-    };
-    
-    // Open dropdowns based on current URL
-    Object.keys(routePatterns).forEach(dropdownId => {
-        const patterns = routePatterns[dropdownId];
-        const shouldOpen = patterns.some(pattern => {
-            // For patterns ending with '/', check if path starts with it
-            if (pattern.endsWith('/')) {
-                return currentPath.startsWith(pattern);
-            }
-            // For exact patterns, check if path starts with it (to handle paths like /tenders/create/123)
-            return currentPath.startsWith(pattern);
-        });
-        
-        if (shouldOpen) {
-            let arrowId = '';
-            switch(dropdownId) {
-                case 'buyerDropdown':
-                    arrowId = 'dropdownArrow';
-                    break;
-                case 'supplierForBuyerDropdown':
-                    arrowId = 'supplierForBuyerDropdownArrow';
-                    break;
-                case 'supplierDropdown':
-                    arrowId = 'supplierDropdownArrow';
-                    break;
-                case 'usersDropdown':
-                    arrowId = 'usersDropdownArrow';
-                    break;
-                case 'categoriesDropdown':
-                    arrowId = 'categoriesDropdownArrow';
-                    break;
-                case 'productsDropdown':
-                    arrowId = 'productsDropdownArrow';
-                    break;
-                case 'subscriptionsDropdown':
-                    arrowId = 'subscriptionsDropdownArrow';
-                    break;
-                case 'accountSettingsDropdown':
-                    arrowId = 'accountSettingsDropdownArrow';
-                    break;
-            }
-            openDropdown(dropdownId, arrowId);
-        }
-    });
-    
-    // Prevent dropdown from closing when clicking on submenu links
-    const dropdownMenus = document.querySelectorAll('[id$="Dropdown"]');
-    dropdownMenus.forEach(menu => {
-        const links = menu.querySelectorAll('a');
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Don't prevent navigation, just ensure dropdown stays open
-                // The dropdown will be reopened on page load based on URL
-                e.stopPropagation();
-            });
-        });
-    });
-});
-
 // Profile image popup modal functionality
 function openProfileImageModal() {
     const modal = document.getElementById('profileImageModal');
     const profileImage = document.getElementById('profileImage');
     const modalImage = document.getElementById('profileImageModalImg');
-    
+
     if (modal && profileImage && modalImage) {
-        // Set the modal image source to match the profile image
         modalImage.src = profileImage.src;
-        // Show the modal
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        // Prevent body scroll when modal is open
         document.body.style.overflow = 'hidden';
     }
 }
@@ -727,19 +317,16 @@ function closeProfileImageModal() {
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
-        // Restore body scroll
         document.body.style.overflow = 'auto';
     }
 }
 
-// Close modal on Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeProfileImageModal();
     }
 });
 
-// Profile modal functionality
 function openEditModal() {
     document.getElementById('editModal').classList.remove('hidden');
     document.getElementById('editModal').classList.add('flex');
@@ -763,7 +350,6 @@ function previewImage(event) {
 
 function saveProfile(event) {
     event.preventDefault();
-    // Add your save profile logic here
     closeEditModal();
 }
 </script>

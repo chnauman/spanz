@@ -16,7 +16,8 @@
                         <li><a href="#" class="hover:underline underline-offset-4">How it works &amp; FAQ</a></li>
                         <li><a href="#" class="hover:underline underline-offset-4">Buy Now Specials</a></li>
                         <li><a href="#" class="hover:underline underline-offset-4">Join the Panel</a></li>
-                        <li><a href="#" class="hover:underline underline-offset-4">Our Terms &amp; Conditions</a></li>
+                        <li><a href="{{ route('terms') }}" target="_blank" rel="noopener" class="hover:underline underline-offset-4">Terms &amp; Conditions</a></li>
+                        <li><a href="{{ route('privacy') }}" target="_blank" rel="noopener" class="hover:underline underline-offset-4">Privacy Policy</a></li>
                         <li><a href="{{ route('login') }}" class="hover:underline underline-offset-4">Login</a></li>
                     </ul>
                 </div>

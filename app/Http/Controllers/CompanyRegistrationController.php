@@ -116,9 +116,7 @@ class CompanyRegistrationController extends Controller
             'first' => 'nullable|string|max:255',
             'last' => 'nullable|string|max:255',
             'company' => 'required|string|max:255',
-            'comp' => 'nullable|string|max:255',
             'website' => 'nullable|string|max:255',
-            'objective' => 'required|string|max:255',
 
             // New profile fields from client requirements
             'headquarter_location' => 'nullable|string|max:255',
@@ -160,7 +158,6 @@ class CompanyRegistrationController extends Controller
             [
             'company_name' => $request->company,
             'website' => $request->website ?: null,
-            'description' => $request->objective,
             // Set default values for required fields that aren't in the form
             'address' => 'Not provided',
             'city' => 'Not provided',

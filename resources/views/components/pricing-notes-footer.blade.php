@@ -7,7 +7,7 @@
         <li>We offer <strong class="font-semibold text-gray-900">FREE</strong> 30-day trial, no question asked if you decide to cancel during trial or afterwards. A refund of the unused amount will be given. (20% administrative fee may apply)</li>
         <li>No credit card information is required. Accounts are invoiced every 3-months, GST, VAT or other government tax, if applicable, may apply.</li>
         <li>SPANZ reserves the right to refuse membership to anyone at its sole discretion.</li>
-        <li>You agree to SPANZ Terms and Conditions. See <a href="#" class="font-semibold text-blue-700 underline hover:text-blue-800">Terms &amp; Conditions</a>.</li>
+        <li>You agree to SPANZ Terms and Conditions. See <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="font-semibold text-blue-700 underline hover:text-blue-800">Terms &amp; Conditions</a>.</li>
         <li>Prices are subject to change.</li>
     </ul>
 </div>

@@ -28,6 +28,7 @@ class Tender extends Model
         'city_id',
         'contact_email',
         'contact_phone',
+        'point_of_contact',
         'request_type',
         'categories',
         'attachments',

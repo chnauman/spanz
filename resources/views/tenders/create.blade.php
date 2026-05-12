@@ -284,18 +284,27 @@
             </div>
                         
                         <!-- Additional fields for contact information -->
+            <div>
+                <label for="point_of_contact" class="block text-sm font-medium text-gray-700 mb-2">Point of Contact for this Project <span class="text-red-500">*</span></label>
+                <input type="text" id="point_of_contact" name="point_of_contact" value="{{ old('point_of_contact') }}" placeholder="Full name of the project contact person" required
+                       class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('point_of_contact') border-red-300 @enderror">
+                @error('point_of_contact')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div>
-                                <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
-                                <input type="email" id="contact_email" name="contact_email" value="{{ old('contact_email') }}"
+                                <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">Contact Email for this Project / RFX <span class="text-red-500">*</span></label>
+                                <input type="email" id="contact_email" name="contact_email" value="{{ old('contact_email') }}" required
                                        class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('contact_email') border-red-300 @enderror">
                                 @error('contact_email')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
-                                <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">Contact Phone</label>
-                                <input type="text" id="contact_phone" name="contact_phone" value="{{ old('contact_phone') }}"
+                                <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">Contact Phone for this Project <span class="text-red-500">*</span></label>
+                                <input type="text" id="contact_phone" name="contact_phone" value="{{ old('contact_phone') }}" required
                                        class="w-full px-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('contact_phone') border-red-300 @enderror">
                                 @error('contact_phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

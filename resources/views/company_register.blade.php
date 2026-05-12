@@ -343,34 +343,6 @@
                         </div>
 
                         <div>
-                            <label for="comp" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company's Main Industry (Optional)</label>
-                            <select id="comp" name="comp"
-                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
-                                <option value="">Select an industry</option>
-                                <option value="aerospace-defense" {{ old('comp', $companyDetail->comp ?? '') == 'aerospace-defense' ? 'selected' : '' }}>Aerospace & Defense</option>
-                                <option value="agriculture">Agriculture & Food</option>
-                                <option value="automotive">Automotive</option>
-                                <option value="chemicals">Chemicals & Materials</option>
-                                <option value="construction">Construction & Real Estate</option>
-                                <option value="consumer-goods">Consumer Goods</option>
-                                <option value="education">Education</option>
-                                <option value="electronics">Electronics & Technology</option>
-                                <option value="energy">Energy & Utilities</option>
-                                <option value="financial">Financial Services</option>
-                                <option value="healthcare">Healthcare & Medical</option>
-                                <option value="hospitality">Hospitality & Tourism</option>
-                                <option value="manufacturing">Manufacturing</option>
-                                <option value="media">Media & Entertainment</option>
-                                <option value="mining">Mining & Metals</option>
-                                <option value="retail">Retail & E-commerce</option>
-                                <option value="software">Software & IT Services</option>
-                                <option value="telecommunications">Telecommunications</option>
-                                <option value="transportation">Transportation & Logistics</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-
-                        <div>
                             <label for="website" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company Website</label>
                             <input type="text" id="website" name="website"
                                    value="{{ old('website', $companyDetail->website ?? '') }}"
@@ -385,31 +357,6 @@
                             </label>
                         </div>
 
-                        <div>
-                            <label for="objective" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">What is your main objective on SPANZ?</label>
-                            @php
-                                // We stored this in company_details.description originally
-                                $savedObjective = old('objective', $companyDetail->description ?? '');
-                            @endphp
-                            <select id="objective" name="objective" required
-                                class="w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white @error('objective') border-red-300 @enderror">
-                                <option value="">Select your main objective</option>
-                                <option value="buy-products" {{ $savedObjective === 'buy-products' ? 'selected' : '' }}>Buy products and materials for my business</option>
-                                <option value="sell-products" {{ $savedObjective === 'sell-products' ? 'selected' : '' }}>Sell my products and services</option>
-                                <option value="find-suppliers" {{ $savedObjective === 'find-suppliers' ? 'selected' : '' }}>Find reliable suppliers and vendors</option>
-                                <option value="expand-network" {{ $savedObjective === 'expand-network' ? 'selected' : '' }}>Expand my business network</option>
-                                <option value="source-materials" {{ $savedObjective === 'source-materials' ? 'selected' : '' }}>Source raw materials and components</option>
-                                <option value="market-research" {{ $savedObjective === 'market-research' ? 'selected' : '' }}>Conduct market research</option>
-                                <option value="find-customers" {{ $savedObjective === 'find-customers' ? 'selected' : '' }}>Find new customers and clients</option>
-                                <option value="compare-prices" {{ $savedObjective === 'compare-prices' ? 'selected' : '' }}>Compare prices and get quotes</option>
-                                <option value="partnership" {{ $savedObjective === 'partnership' ? 'selected' : '' }}>Establish business partnerships</option>
-                                <option value="export-import" {{ $savedObjective === 'export-import' ? 'selected' : '' }}>Explore export/import opportunities</option>
-                                <option value="other" {{ $savedObjective === 'other' ? 'selected' : '' }}>Other</option>
-                            </select>
-                            @error('objective')
-                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
                     </div>
 
                     <div class="border-t border-gray-200 pt-4 mt-2">

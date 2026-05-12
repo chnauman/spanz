@@ -184,7 +184,7 @@
                     <div id="subscriptionRequestConsentBox" class="mt-6 rounded-xl border border-gray-200 bg-white p-4">
                         <label class="flex items-start gap-3 text-sm text-gray-700">
                             <input id="pricingTermsCheckbox" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d4f8b] focus:ring-[#0d4f8b]">
-                            <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
+                            <span>I have read the SPANZ <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="font-semibold text-[#0D6AED] underline hover:text-[#0b54bd]">Terms &amp; Conditions</a> and fully agree with them.</span>
                         </label>
                         <div class="mt-4">
                             <button id="submitSubscriptionRequestBtn" type="button" class="btn-primary btn-block" disabled onclick="submitSelectedSubscriptionRequest()">

@@ -166,9 +166,9 @@
         {{-- Categories panel: avoid @if … @foreach … @elseif (Blade can emit invalid PHP); use two @if blocks. --}}
         @if($allocationCards->isNotEmpty())
             @php($themes = [
-                ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500', 'pctColor' => '#1d4ed8', 'barColor' => '#3b82f6'],
-                ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500', 'pctColor' => '#c2410c', 'barColor' => '#eab308'],
-                ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600', 'pctColor' => '#9333ea', 'barColor' => '#9333ea'],
+                ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500', 'pctColor' => '#1d4ed8', 'barColor' => '#3b82f6', 'cardBg' => '#dbeafe', 'cardBorder' => '#bfdbfe', 'trackBg' => '#bfdbfe'],
+                ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500', 'pctColor' => '#c2410c', 'barColor' => '#eab308', 'cardBg' => '#fefce8', 'cardBorder' => '#fef08a', 'trackBg' => '#fef9c3'],
+                ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600', 'pctColor' => '#9333ea', 'barColor' => '#9333ea', 'cardBg' => '#f3e8ff', 'cardBorder' => '#e9d5ff', 'trackBg' => '#e9d5ff'],
             ])
             <div class="tender-allocation-panel mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4 sm:p-5">
                 <div class="mb-4 flex gap-3">
@@ -189,14 +189,14 @@
                         @php($pn = (float) ($card['pct_num'] ?? 0))
                         @php($pn = ($pn > 0 && $pn < 1) ? $pn * 100 : $pn)
                         @php($barW = (int) round(min(100, max(0, $pn))))
-                        <div class="tender-allocation-card flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                        <div class="tender-allocation-card flex flex-col rounded-lg border p-4 shadow-sm" style="background-color:{{ $th['cardBg'] }};border-color:{{ $th['cardBorder'] }};">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0 pt-0.5 flex-1">
                                     <div class="font-bold leading-snug text-gray-900" style="font-size:15px;line-height:1.25;">{{ $card['main_name'] }}</div>
                                     @if(!empty($card['sub_labels']))
-                                        <div class="mt-1.5 flex flex-wrap gap-1.5">
+                                        <div class="mt-2 flex flex-wrap gap-1">
                                             @foreach($card['sub_labels'] as $sub)
-                                                <span class="inline-flex items-center rounded-full font-medium" style="background-color:#eff6ff;color:#1d4ed8;font-size:11px;line-height:1.2;padding:2px 8px;border:1px solid #dbeafe;">
+                                                <span class="inline-flex items-center rounded-full font-semibold" style="background:linear-gradient(180deg,#ffffff 0%,{{ $th['cardBg'] }} 100%);color:{{ $th['pctColor'] }};font-size:11.5px;line-height:1;padding:4px 10px;white-space:nowrap;border:1px solid {{ $th['cardBorder'] }};box-shadow:0 1px 2px rgba(15,23,42,0.05),inset 0 1px 0 rgba(255,255,255,0.6);">
                                                     {{ $sub }}
                                                 </span>
                                             @endforeach
@@ -206,7 +206,7 @@
                                 <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
                             </div>
                             {{-- Inline dimensions: live builds often lack Tailwind h-1.5/h-full so utility-only bars collapse to a hairline. --}}
-                            <div class="tender-allocation-bar-track" style="margin-top:0.75rem;width:100%;height:10px;border-radius:9999px;background-color:#f3f4f6;overflow:hidden;box-sizing:border-box;">
+                            <div class="tender-allocation-bar-track" style="margin-top:0.75rem;width:100%;height:10px;border-radius:9999px;background-color:{{ $th['trackBg'] }};overflow:hidden;box-sizing:border-box;">
                                 <span class="tender-allocation-bar-fill {{ $th['bar'] }}" style="display:block;width:{{ $barW }}%;height:10px;border-radius:9999px;background-color:{{ $th['barColor'] }};max-width:100%;box-sizing:border-box;"></span>
                             </div>
                             @if($card['range'])

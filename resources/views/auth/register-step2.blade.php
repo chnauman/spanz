@@ -120,8 +120,8 @@
                 <p class="text-white text-xs sm:text-sm leading-relaxed">
                     <span class="block sm:inline">©2025 SPANZ Publishing Company. All rights reserved.</span>
                     <span class="block sm:inline sm:ml-1 mt-1 sm:mt-0">
-                        See <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Terms & Conditions</a> and
-                        <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Privacy Statement</a>.
+                        See <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="text-blue-300 hover:text-blue-200 underline transition-colors">Terms & Conditions</a> and 
+                        <a href="{{ route('privacy') }}" target="_blank" rel="noopener" class="text-blue-300 hover:text-blue-200 underline transition-colors">Privacy Statement</a>.
                     </span>
                 </p>
             </div>

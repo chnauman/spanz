@@ -169,7 +169,7 @@
                 <div id="subscriptionRequestConsentBoxModal" class="mt-4 rounded-xl border border-gray-200 bg-white p-4">
                     <label class="flex items-start gap-3 text-sm text-gray-700">
                         <input id="pricingTermsCheckboxModal" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#092C48] focus:ring-[#092C48]">
-                        <span>I have read the SPANZ Terms &amp; Conditions and fully agree with them.</span>
+                        <span>I have read the SPANZ <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="font-semibold text-[#0D6AED] underline hover:text-[#0b54bd]">Terms &amp; Conditions</a> and fully agree with them.</span>
                     </label>
                     <div class="mt-4 flex justify-start">
                         <button id="submitSubscriptionRequestBtnModal" type="button" class="w-[170px] bg-[#0d6aed] text-white px-4 py-3 rounded-lg text-base font-semibold hover:bg-[#0b5ed7] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:transform-none" disabled onclick="submitSelectedSubscriptionRequest()">

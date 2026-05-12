@@ -215,8 +215,9 @@ class TenderController extends Controller
                 'currency' => 'required|string|in:AUD',
                 'deadline' => 'required|date|after:today',
                 'requirements' => 'nullable|string',
-                'contact_email' => 'nullable|email',
-                'contact_phone' => 'nullable|string|max:20',
+                'contact_email' => 'required|email',
+                'contact_phone' => 'required|string|max:20',
+                'point_of_contact' => 'required|string|max:255',
                 // A tender can target at most 3 main categories. Each
                 // category bundle requires 1-3 subcategories selected as
                 // checkboxes and a budget-share percentage.
@@ -299,6 +300,7 @@ class TenderController extends Controller
                 'city_id' => $city->id,
                 'contact_email' => $request->contact_email,
                 'contact_phone' => $request->contact_phone,
+                'point_of_contact' => $request->point_of_contact,
                 'request_type' => $request->request_type,
                 'categories' => json_encode($request->categories), // Manually convert to JSON string
                 'attachments' => json_encode($attachments), // Manually convert to JSON string
@@ -391,6 +393,7 @@ class TenderController extends Controller
                         $buyerDetails = [
                             'tender_id' => $tender->id,
                             'name' => $tender->user->name,
+                            'point_of_contact' => $tender->point_of_contact,
                             'email' => $tender->contact_email ?? $tender->user->email,
                             'phone' => $tender->contact_phone,
                             'location' => $tender->displayLocation(),
@@ -741,6 +744,7 @@ class TenderController extends Controller
         $buyerDetails = [
             'tender_id' => $tender->id,
             'name' => $tender->user->name,
+            'point_of_contact' => $tender->point_of_contact,
             'email' => $tender->contact_email ?? $tender->user->email,
             'phone' => $tender->contact_phone,
             'location' => $tender->displayLocation(),
