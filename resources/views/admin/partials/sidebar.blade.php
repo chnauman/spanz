@@ -1,288 +1,493 @@
 <!-- Sidebar Container -->
+<style>
+    /* ===== Clean & Minimal Sidebar ===== */
+    #sidebar {
+        font-family: inherit;
+    }
+
+    /* Brand */
+    #sidebar .sb-brand {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    #sidebar .sb-brand a {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #ffffff;
+        text-decoration: none;
+        transition: color .15s ease;
+    }
+    #sidebar .sb-brand a:hover { color: #7fb1ff; }
+
+    /* Profile */
+    #sidebar .sb-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    #sidebar .sb-profile-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        transition: border-color .15s ease, opacity .15s ease;
+    }
+    #sidebar .sb-profile-avatar:hover {
+        border-color: rgba(13, 106, 237, 0.6);
+        opacity: 0.9;
+    }
+    #sidebar .sb-profile-info {
+        flex: 1;
+        min-width: 0;
+    }
+    #sidebar .sb-profile-name {
+        display: block;
+        color: #ffffff;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    #sidebar .sb-profile-role {
+        display: block;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.72rem;
+        margin-top: 2px;
+        letter-spacing: 0.02em;
+    }
+    #sidebar .sb-profile-edit {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: background-color .15s ease, color .15s ease;
+    }
+    #sidebar .sb-profile-edit:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+
+    /* Navigation */
+    #sidebar .sb-nav {
+        padding: 8px 0;
+    }
+
+    /* Section header */
+    #sidebar .sb-section {
+        padding: 16px 20px 6px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Nav links */
+    #sidebar .sb-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 20px;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.2;
+        text-decoration: none;
+        transition: background-color .15s ease, color .15s ease;
+    }
+    #sidebar .sb-link > svg {
+        flex-shrink: 0;
+        width: 18px !important;
+        height: 18px !important;
+        opacity: 0.75;
+        transition: opacity .15s ease, color .15s ease;
+    }
+    #sidebar .sb-link > span {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    #sidebar .sb-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+    }
+    #sidebar .sb-link:hover > svg { opacity: 1; }
+
+    /* Active link */
+    #sidebar .sb-link.active {
+        background: rgba(13, 106, 237, 0.14);
+        color: #ffffff;
+        font-weight: 600;
+    }
+    #sidebar .sb-link.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 6px;
+        bottom: 6px;
+        width: 3px;
+        background: #0D6AED;
+        border-radius: 0 3px 3px 0;
+    }
+    #sidebar .sb-link.active > svg { opacity: 1; }
+
+    /* Logout */
+    #sidebar .sb-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 8px 0;
+    }
+    #sidebar .sb-logout {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 11px 20px;
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color .15s ease, color .15s ease;
+    }
+    #sidebar .sb-logout > svg {
+        flex-shrink: 0;
+        width: 18px !important;
+        height: 18px !important;
+        opacity: 0.75;
+        transition: opacity .15s ease;
+    }
+    #sidebar .sb-logout:hover {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ffffff;
+    }
+    #sidebar .sb-logout:hover > svg { opacity: 1; color: #ef4444; }
+
+    /* Scrollbar */
+    #sidebar .sb-scroll {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    #sidebar .sb-scroll::-webkit-scrollbar { width: 6px; }
+    #sidebar .sb-scroll::-webkit-scrollbar-track { background: transparent; }
+    #sidebar .sb-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 3px;
+    }
+    #sidebar .sb-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.16);
+    }
+</style>
+
+@php
+    $user = Auth::user();
+    $profilePhotoUrl = null;
+    if (Auth::check()) {
+        foreach (['jpg','jpeg','png','webp'] as $ext) {
+            $candidate = 'profile-photos/' . Auth::id() . '.' . $ext;
+            if (\Storage::disk('public')->exists($candidate)) {
+                $profilePhotoUrl = asset('storage/' . $candidate) . '?t=' . time();
+                break;
+            }
+        }
+    }
+
+    $userRole = 'Guest';
+    if ($user) {
+        if ($user->isAdmin()) {
+            $userRole = 'Administrator';
+        } elseif (method_exists($user, 'isSupplier') && $user->isSupplier()) {
+            $userRole = 'Supplier';
+        } elseif (method_exists($user, 'isSubSupplier') && $user->isSubSupplier()) {
+            $userRole = 'Sub Supplier';
+        } elseif (method_exists($user, 'isBuyer') && $user->isBuyer()) {
+            $userRole = 'Buyer';
+        }
+    }
+@endphp
+
 <div class="flex flex-col h-full">
-    @php
-        $user = Auth::user();
-    @endphp
-    <!-- Logo Section -->
-    <div class="hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 h-20 transition-colors duration-300">
-        <a href="{{ route('home') }}" class="text-4xl font-bold text-white h-20 flex items-center pl-5 hover:text-blue-300 transition-colors duration-300">SPANZ</a>
+    <!-- Brand -->
+    <div class="sb-brand">
+        <a href="{{ route('home') }}">SPANZ</a>
     </div>
-    <hr class="border-[#657a9871]" />
 
     <!-- Profile Section -->
-    <div class="h-32 relative flex items-center gap-5 px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-        @php
-            $profilePhotoUrl = null;
-            if (Auth::check()) {
-                foreach (['jpg','jpeg','png','webp'] as $ext) {
-                    $candidate = 'profile-photos/' . Auth::id() . '.' . $ext;
-                    if (\Storage::disk('public')->exists($candidate)) {
-                        $profilePhotoUrl = asset('storage/' . $candidate) . '?t=' . time();
-                        break;
-                    }
-                }
-            }
-        @endphp
-        <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="" class="w-16 h-16 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity duration-200" id="profileImage" onclick="openProfileImageModal()">
-        <span class="text-white" id="profileName">{{ $user?->name ?? 'Guest' }}</span>
-        <svg onclick="openEditModal()" width="15px" height="15px" viewBox="0 0 24 24" fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="absolute right-5 top-5 transform -translate-y-1/2 transition-colors duration-300 hover:cursor-pointer group">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M20.8477 1.87868C19.6761 0.707109 17.7766 0.707105 16.605 1.87868L2.44744 16.0363C2.02864 16.4551 1.74317 16.9885 1.62702 17.5692L1.03995 20.5046C0.760062 21.904 1.9939 23.1379 3.39334 22.858L6.32868 22.2709C6.90945 22.1548 7.44285 21.8693 7.86165 21.4505L22.0192 7.29289C23.1908 6.12132 23.1908 4.22183 22.0192 3.05025L20.8477 1.87868ZM18.0192 3.29289C18.4098 2.90237 19.0429 2.90237 19.4335 3.29289L20.605 4.46447C20.9956 4.85499 20.9956 5.48815 20.605 5.87868L17.9334 8.55027L15.3477 5.96448L18.0192 3.29289ZM13.9334 7.3787L3.86165 17.4505C3.72205 17.5901 3.6269 17.7679 3.58818 17.9615L3.00111 20.8968L5.93645 20.3097C6.13004 20.271 6.30784 20.1759 6.44744 20.0363L16.5192 9.96448L13.9334 7.3787Z"
-                fill="#ffffff" class="group-hover:fill-[#0D6AED]" />
-        </svg>
+    <div class="sb-profile">
+        <img src="{{ $profilePhotoUrl ?: asset('spanz-img/profile.jpg') }}" alt="Profile" class="sb-profile-avatar" id="profileImage" onclick="openProfileImageModal()">
+        <div class="sb-profile-info">
+            <span class="sb-profile-name" id="profileName">{{ $user?->name ?? 'Guest' }}</span>
+            <span class="sb-profile-role">{{ $userRole }}</span>
+        </div>
+        <div class="sb-profile-edit" onclick="openEditModal()" title="Edit Profile">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
     </div>
-    <hr class="border-[#657a9871]" />
 
-    <!-- Dashboard Link -->
-    <a href="{{ route('dashboard') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="#3B82F6"/>
-        </svg>
-        <span class="text-sm">Dashboard</span>
-    </a>
-    <hr class="border-[#657a9871]" />
-
-    @if($user && !$user->isAdmin())
-        {{-- ============================================ --}}
-        {{-- MANAGE BUSINESS SECTION                       --}}
-        {{-- ============================================ --}}
-        <div class="px-5 pt-4 pb-2">
-            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Manage Business</span>
-        </div>
-
-        @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
-            {{-- Projects / RFXs I Posted --}}
-            <a href="{{ route('tenders.my-tenders') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 2h6a1 1 0 011 1v1h3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h3V3a1 1 0 011-1zm1 2v2h4V4h-4zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="#3B82F6"/>
+    <!-- Scrollable Nav -->
+    <div class="sb-scroll">
+        <nav class="sb-nav">
+            <!-- Overview -->
+            <div class="sb-section">Overview</div>
+            <a href="{{ route('dashboard') }}" class="sb-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+                    <rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+                    <rect x="14" y="12" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+                    <rect x="3" y="16" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
                 </svg>
-                <span class="text-sm">My Posted Projects / RFXs</span>
-            </a>
-        @endif
-
-        @if($user->isSupplier() || $user->isSubSupplier())
-            {{-- New Projects / RFXs Received --}}
-            <a href="{{ route('user.interests') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
-                    <path d="M12.5 14l1.5 3 3.3.3-2.5 2.2.8 3.2-2.6-1.7-2.6 1.7.8-3.2-2.5-2.2 3.3-.3 1.5-3z" fill="#FBBF24"/>
-                </svg>
-                <span class="text-sm">My Received Projects / RFXs</span>
-            </a>
-        @endif
-
-        @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
-            {{-- My Saved Projects / RFXs --}}
-            <a href="{{ route('tenders.saved') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" fill="#3B82F6"/>
-                </svg>
-                <span class="text-sm">My Saved Projects / RFXs</span>
+                <span>Dashboard</span>
             </a>
 
-            {{-- Post New Project / RFX --}}
-            <a href="{{ route('tenders.create') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
-                    <path d="M12 11v6m-3-3h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span class="text-sm">Post New Project / RFX</span>
-            </a>
-        @endif
+            @if($user && !$user->isAdmin())
+                {{-- ============================================ --}}
+                {{-- MANAGE BUSINESS SECTION                       --}}
+                {{-- ============================================ --}}
+                <div class="sb-section">Manage Business</div>
 
-        @if($user->isSupplier())
-            {{-- Add Work Colleagues --}}
-            <a href="{{ route('suppliers.invite') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h12v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
-                    <path d="M19 10v-2h-2v2h-2v2h2v2h2v-2h2v-2h-2z" fill="#3B82F6"/>
-                </svg>
-                <span class="text-sm">Add Work Colleagues</span>
-            </a>
-        @endif
+                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('tenders.my-tenders') }}" class="sb-link {{ request()->routeIs('tenders.my-tenders') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <span>Posted RFXs</span>
+                    </a>
+                @endif
 
-        @if($user->isSupplier() && $user->subSuppliers()->count() > 0)
-            {{-- Sub Suppliers --}}
-            <a href="{{ route('suppliers.sub-suppliers') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="#3B82F6"/>
-                </svg>
-                <span class="text-sm">Sub Suppliers</span>
-            </a>
-        @endif
+                @if($user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('user.interests') }}" class="sb-link {{ request()->routeIs('user.interests') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 4 12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>My Received RFXs</span>
+                    </a>
+                @endif
 
-        @if($user->isSupplier() || $user->isSubSupplier())
-            {{-- Downloaded Documents --}}
-            <a href="{{ route('suppliers.received-documents') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
-                    <path d="M12 18l-3-3h2v-4h2v4h2l-3 3z" fill="#ffffff"/>
-                </svg>
-                <span class="text-sm">Downloaded Documents</span>
-            </a>
-        @endif
+                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('tenders.saved') }}" class="sb-link {{ request()->routeIs('tenders.saved') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Saved RFXs</span>
+                    </a>
 
-        {{-- Back to SPANZ --}}
-        <a href="{{ route('home') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Back to SPANZ</span>
-        </a>
+                    <a href="{{ route('tenders.create') }}" class="sb-link {{ request()->routeIs('tenders.create') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M14 2v6h6M12 18v-6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Post New RFX</span>
+                    </a>
+                @endif
 
-        <hr class="border-[#657a9871] my-2" />
+                @if($user->isSupplier())
+                    <a href="{{ route('suppliers.invite') }}" class="sb-link {{ request()->routeIs('suppliers.invite') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M19 8v6M22 11h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <span>Add Colleagues</span>
+                    </a>
+                @endif
 
-        {{-- ============================================ --}}
-        {{-- MANAGE MY ACCOUNT SECTION                     --}}
-        {{-- ============================================ --}}
-        <div class="px-5 pt-2 pb-2">
-            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Manage My Account</span>
-        </div>
+                @if($user->isSupplier() && $user->subSuppliers()->count() > 0)
+                    <a href="{{ route('suppliers.sub-suppliers') }}" class="sb-link {{ request()->routeIs('suppliers.sub-suppliers') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Sub Suppliers</span>
+                    </a>
+                @endif
 
-        {{-- My Messages --}}
-        <a href="{{ route('account.profile') }}#notifications" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300 relative">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">My Messages</span>
-        </a>
+                @if($user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('suppliers.received-documents') }}" class="sb-link {{ request()->routeIs('suppliers.received-documents') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Downloaded Documents</span>
+                    </a>
+                @endif
 
-        {{-- My Business Profile - Edit / Strengthen --}}
-        <a href="{{ route('company.register') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
-                <circle cx="18" cy="6" r="3" fill="#10B981"/>
-                <path d="M17 5h2M18 4v2" stroke="#ffffff" stroke-width="1" stroke-linecap="round"/>
-            </svg>
-            <span class="text-sm">My Business Profile</span>
-        </a>
+                <a href="{{ route('home') }}" class="sb-link">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Back to SPANZ</span>
+                </a>
 
-        {{-- My Current Plan - Change --}}
-        <a href="{{ route('account.plan') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z" fill="#3B82F6"/>
-                <path d="M10.5 16.5l-3-3 1.41-1.41L10.5 13.67l4.59-4.58L16.5 10.5l-6 6z" fill="#ffffff"/>
-            </svg>
-            <span class="text-sm">My Current Plan</span>
-        </a>
+                {{-- ============================================ --}}
+                {{-- MANAGE MY ACCOUNT SECTION                     --}}
+                {{-- ============================================ --}}
+                <div class="sb-section">My Account</div>
 
-        {{-- My Credit Points - View History --}}
-        <a href="{{ route('account.credits') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
-                <path d="M12 9.5C13.38 9.5 14.5 8.38 14.5 7s-1.12-2.5-2.5-2.5S9.5 5.62 9.5 7s1.12 2.5 2.5 2.5z" fill="#ffffff"/>
-            </svg>
-            <span class="text-sm">My Credit Points</span>
-        </a>
-    @endif
+                <a href="{{ route('account.profile') }}#notifications" class="sb-link {{ request()->routeIs('account.profile') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                    <span>View / Edit Profile</span>
+                </a>
 
-    @if($user && $user->isAdmin())
-        {{-- ============================================ --}}
-        {{-- ADMIN MENU (flat, no dropdowns)               --}}
-        {{-- ============================================ --}}
-        <div class="px-5 pt-4 pb-2">
-            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Administration</span>
-        </div>
+                <a href="{{ route('account.plan') }}" class="sb-link {{ request()->routeIs('account.plan') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M3 10h18M8 4V2M16 4V2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M8 15l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>My Current Plan</span>
+                </a>
 
-        <a href="{{ route('admin.users.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Users</span>
-        </a>
+                <a href="{{ route('account.credits') }}" class="sb-link {{ request()->routeIs('account.credits') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 7v10M9 9.5h4.5a1.5 1.5 0 0 1 0 3H10.5a1.5 1.5 0 0 0 0 3H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>My Credit Points</span>
+                </a>
+            @endif
 
-        <a href="{{ route('admin.categories.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h18v2H3v-2z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Categories</span>
-        </a>
+            @if($user && $user->isAdmin())
+                {{-- ============================================ --}}
+                {{-- ADMIN MENU                                    --}}
+                {{-- ============================================ --}}
+                <div class="sb-section">Administration</div>
 
-        <a href="{{ route('admin.products.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Products</span>
-        </a>
+                <a href="{{ route('admin.users.index') }}" class="sb-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Users</span>
+                </a>
 
-        <a href="{{ route('admin.purchase-requests.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Purchase Requests</span>
-        </a>
+                <a href="{{ route('admin.categories.index') }}" class="sb-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <circle cx="4" cy="6" r="1.2" fill="currentColor"/>
+                        <circle cx="4" cy="12" r="1.2" fill="currentColor"/>
+                        <circle cx="4" cy="18" r="1.2" fill="currentColor"/>
+                    </svg>
+                    <span>Categories</span>
+                </a>
 
-        <hr class="border-[#657a9871] my-2" />
+                <a href="{{ route('admin.products.index') }}" class="sb-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 7l-8-4-8 4 8 4 8-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 7v10l8 4 8-4V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 11v10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <span>Products</span>
+                </a>
 
-        <div class="px-5 pt-2 pb-2">
-            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Subscriptions</span>
-        </div>
+                <a href="{{ route('admin.purchase-requests.index') }}" class="sb-link {{ request()->routeIs('admin.purchase-requests.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 6h18M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Purchase Requests</span>
+                </a>
 
-        <a href="{{ route('admin.subscriptions.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Manage Plans</span>
-        </a>
+                <div class="sb-section">Subscriptions</div>
 
-        <a href="{{ route('admin.tender-view-pricing.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Tender View Pricing</span>
-        </a>
+                <a href="{{ route('admin.subscriptions.index') }}" class="sb-link {{ request()->routeIs('admin.subscriptions.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <span>Manage Plans</span>
+                </a>
 
-        <a href="{{ route('admin.subscription-requests') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Upgrade Requests</span>
-        </a>
+                <a href="{{ route('admin.tender-view-pricing.index') }}" class="sb-link {{ request()->routeIs('admin.tender-view-pricing.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                    <span>Tender View Pricing</span>
+                </a>
 
-        <a href="{{ route('admin.downgrade-requests.index') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM12 19l-5-5h3v-4h4v4h3l-5 5z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">Downgrade Requests</span>
-        </a>
+                <a href="{{ route('admin.subscription-requests') }}" class="sb-link {{ request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Upgrade Requests</span>
+                </a>
 
-        <hr class="border-[#657a9871] my-2" />
+                <a href="{{ route('admin.downgrade-requests.index') }}" class="sb-link {{ request()->routeIs('admin.downgrade-requests.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Downgrade Requests</span>
+                </a>
 
-        <div class="px-5 pt-2 pb-2">
-            <span class="text-xs text-blue-300 uppercase tracking-wider font-bold">Account</span>
-        </div>
+                <div class="sb-section">Account</div>
 
-        <a href="{{ route('account.profile') }}" class="text-white h-12 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
-            </svg>
-            <span class="text-sm">My Profile</span>
-        </a>
-    @endif
+                <a href="{{ route('account.profile') }}" class="sb-link {{ request()->routeIs('account.profile') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                    <span>My Profile</span>
+                </a>
+            @endif
+        </nav>
+    </div>
 
-    <hr class="border-[#657a9871] my-2" />
-
-    <!-- Spacer to push logout to bottom -->
-    <div class="flex-grow"></div>
-
-    <!-- Logout Section -->
-    <div class="text-white h-14 gap-3 flex items-center px-5 hover:bg-gradient-to-l from-[#1b3963] to-[#092C48] hover:bg-opacity-20 transition-colors duration-300">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
-                stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
+    <!-- Footer / Logout -->
+    <div class="sb-footer">
         @if($user)
-            <form method="POST" action="{{ route('logout') }}" class="inline">
+            <form method="POST" action="{{ route('logout') }}" class="m-0">
                 @csrf
-                <button type="submit" class="text-white hover:text-blue-300 bg-transparent border-none cursor-pointer text-sm">Logout</button>
+                <button type="submit" class="sb-logout">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Logout</span>
+                </button>
             </form>
         @else
-            <a href="{{ route('login') }}" class="text-white hover:text-blue-300 text-sm">Login</a>
+            <a href="{{ route('login') }}" class="sb-logout">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Login</span>
+            </a>
         @endif
     </div>
-    <hr class="border-[#657a9871]" />
 </div>
 
 <!-- Profile Image Popup Modal -->
@@ -298,7 +503,6 @@
 </div>
 
 <script>
-// Profile image popup modal functionality
 function openProfileImageModal() {
     const modal = document.getElementById('profileImageModal');
     const profileImage = document.getElementById('profileImage');
@@ -346,10 +550,5 @@ function previewImage(event) {
         };
         reader.readAsDataURL(file);
     }
-}
-
-function saveProfile(event) {
-    event.preventDefault();
-    closeEditModal();
 }
 </script>

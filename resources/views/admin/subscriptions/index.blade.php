@@ -47,7 +47,7 @@
                             </div>
                             <div class="text-sm text-gray-600 mt-1">
                                 <strong>Cost per View:</strong>
-                                {{ $subscription->credit_cost_per_view ?? 1 }} credit{{ ($subscription->credit_cost_per_view ?? 1) > 1 ? 's' : '' }}
+                                <a href="{{ route('admin.tender-view-pricing.index') }}" class="text-blue-600 hover:underline">Based on tender budget</a>
                             </div>
                             @if($subscription->description)
                             <div class="text-sm text-gray-600 mt-2">{{ $subscription->description }}</div>

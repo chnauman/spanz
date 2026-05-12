@@ -23,16 +23,15 @@ class SubscriptionController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'credits_per_month' => 'required|integer',
-            'credit_cost_per_view' => 'required|integer|min:1',
             'is_active' => 'boolean',
         ]);
 
-        Subscription::create($request->all());
+        Subscription::create($validated);
 
         return redirect()->route('admin.subscriptions.index')
             ->with('success', 'Subscription plan created successfully!');
@@ -45,16 +44,15 @@ class SubscriptionController extends Controller
 
     public function update(Request $request, Subscription $subscription)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'credits_per_month' => 'required|integer',
-            'credit_cost_per_view' => 'required|integer|min:1',
             'is_active' => 'boolean',
         ]);
 
-        $subscription->update($request->all());
+        $subscription->update($validated);
 
         return redirect()->route('admin.subscriptions.index')
             ->with('success', 'Subscription plan updated successfully!');

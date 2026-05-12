@@ -307,20 +307,20 @@ class User extends Authenticatable
         return $totalCredits >= $creditCostPerView;
     }
 
+    /**
+     * Legacy accessor retained for backwards compatibility.
+     * Per-view credit cost is now always determined by the tender's budget
+     * via {@see self::getTenderViewCreditCost()}.
+     */
     public function getCreditCostPerView()
     {
-        $activeSubscription = $this->getActiveSubscription();
-
-        if (!$activeSubscription) {
-            return 0;
-        }
-
-        return $activeSubscription->subscription->credit_cost_per_view ?? 1;
+        return $this->getTenderViewCreditCost();
     }
 
     /**
      * Resolve tender-view credit cost using admin-managed budget pricing rules.
-     * Returns null if tender budget is missing/invalid or pricing is not configured.
+     * Returns null if a tender id is required but its budget is missing/invalid
+     * or no pricing rule matches.
      */
     public function getTenderViewCreditCost($tenderId = null)
     {
@@ -335,9 +335,10 @@ class User extends Authenticatable
             return 0;
         }
 
-        // If no tender provided, fall back to subscription default (used by generic summary endpoints)
+        // Without a specific tender we cannot determine a budget-based cost.
+        // Generic summary endpoints should call this with the tender id.
         if (!$tenderId) {
-            return $activeSubscription->subscription->credit_cost_per_view ?? 1;
+            return null;
         }
 
         $tender = \App\Models\Tender::find($tenderId);
@@ -536,7 +537,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get comprehensive subscription and credit status
+     * Get comprehensive subscription and credit status.
+     *
+     * Per-view credit cost is resolved from the admin-managed tender view
+     * pricing rules based on the tender's budget range (no longer stored on
+     * the subscription plan).
      */
     public function getSubscriptionAndCreditStatus($tenderId = null)
     {
@@ -561,14 +566,12 @@ class User extends Authenticatable
                 'has_subscription' => true,
                 'subscription_expired' => true,
                 'total_credits' => $totalCredits,
-                'credit_cost_per_view' => $activeSubscription->subscription->credit_cost_per_view ?? 1,
+                'credit_cost_per_view' => 0,
                 'can_view' => false,
                 'message' => 'Your subscription has expired. Please renew to continue viewing tender details.',
                 'action' => 'renew'
             ];
         }
-
-        $creditCostPerView = $activeSubscription->subscription->credit_cost_per_view ?? 1;
 
         // Users with unlimited credits (credits_per_month < 0)
         if ($activeSubscription->subscription->credits_per_month < 0) {
@@ -614,21 +617,34 @@ class User extends Authenticatable
             ];
         }
 
-        // Resolve per-tender pricing rule (budget-based) for first-time/team unlock.
-        if ($tenderId) {
-            $resolved = $this->getTenderViewCreditCost($tenderId);
-            if ($resolved === null) {
-                return [
-                    'has_subscription' => true,
-                    'subscription_expired' => false,
-                    'total_credits' => $totalCredits,
-                    'credit_cost_per_view' => 0,
-                    'can_view' => false,
-                    'message' => 'Tender budget is missing or pricing is not configured for this budget.',
-                    'action' => null
-                ];
-            }
-            $creditCostPerView = $resolved;
+        // Generic (no tender) summary: subscription is active and not unlimited,
+        // but the per-view cost cannot be known without a specific tender's budget.
+        if (!$tenderId) {
+            return [
+                'has_subscription' => true,
+                'subscription_expired' => false,
+                'total_credits' => $totalCredits,
+                'credit_cost_per_view' => 0,
+                'can_view' => $totalCredits > 0,
+                'message' => $totalCredits > 0
+                    ? 'You have an active subscription. The cost per tender view depends on the tender budget.'
+                    : 'You have used all your credits. Please upgrade your subscription to get more credits.',
+                'action' => $totalCredits > 0 ? null : 'upgrade'
+            ];
+        }
+
+        // Resolve per-tender pricing rule (budget-based) for first-time unlock.
+        $creditCostPerView = $this->getTenderViewCreditCost($tenderId);
+        if ($creditCostPerView === null) {
+            return [
+                'has_subscription' => true,
+                'subscription_expired' => false,
+                'total_credits' => $totalCredits,
+                'credit_cost_per_view' => 0,
+                'can_view' => false,
+                'message' => 'Tender budget is missing or pricing is not configured for this budget.',
+                'action' => null
+            ];
         }
 
         // Check if user has enough credits
