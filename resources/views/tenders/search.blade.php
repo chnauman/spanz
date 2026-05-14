@@ -99,6 +99,20 @@
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 14px rgba(15, 23, 42, 0.05);
         }
 
+        .tender-card-title {
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1.0625rem;
+            line-height: 1.35;
+            letter-spacing: -0.015em;
+        }
+
+        @media (min-width: 640px) {
+            .tender-card-title {
+                font-size: 1.125rem;
+            }
+        }
+
         .thomas-outline-btn {
             display: inline-flex;
             align-items: center;
@@ -297,7 +311,7 @@
         .tender-card-head {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         @media (min-width: 1024px) {
@@ -337,13 +351,13 @@
         .tender-meta-cell {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
+            gap: 0.625rem;
         }
 
         .tender-desc-row {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         /* Grid keeps description + location on one row; text column wraps earlier than full card width. */
@@ -352,14 +366,14 @@
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) auto;
                 align-items: center;
-                column-gap: 1rem;
+                column-gap: 0.75rem;
             }
         }
 
         .tender-desc-row-main {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
+            gap: 0.625rem;
             flex: 1 1 auto;
             min-width: 0;
         }
@@ -381,7 +395,7 @@
         .tender-allocation-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 0.75rem;
+            gap: 0.625rem;
         }
 
         @media (min-width: 640px) {
@@ -398,16 +412,16 @@
 
         /* Category allocation: survives missing Tailwind on live (backup if inline styles stripped). */
         .tender-allocation-panel {
-            margin-top: 1rem;
+            margin-top: 0.75rem;
             border-radius: 0.75rem;
             border: 1px solid #e5e7eb;
             background-color: #f8fafc;
-            padding: 1rem;
+            padding: 0.75rem;
         }
 
         @media (min-width: 640px) {
             .tender-allocation-panel {
-                padding: 1.25rem;
+                padding: 1rem;
             }
         }
 
@@ -417,14 +431,14 @@
             border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
             background-color: #fff;
-            padding: 1rem;
+            padding: 0.75rem;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
         }
 
         .tender-allocation-bar-track {
-            margin-top: 0.75rem;
+            margin-top: 0.5rem;
             width: 100%;
-            height: 10px;
+            height: 8px;
             border-radius: 9999px;
             background-color: #f3f4f6;
             overflow: hidden;
@@ -433,7 +447,7 @@
 
         .tender-allocation-bar-fill {
             display: block;
-            height: 10px;
+            height: 8px;
             max-width: 100%;
             border-radius: 9999px;
             box-sizing: border-box;

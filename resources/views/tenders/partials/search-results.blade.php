@@ -49,18 +49,18 @@
         }
     @endphp
 
-    <div class="thomas-result-card font-sans p-5 sm:p-6 {{ !$loop->first ? 'mt-5' : '' }}">
+    <div class="thomas-result-card font-sans p-4 sm:p-5 {{ !$loop->first ? 'mt-4' : '' }}">
         {{-- Header: type badge + title (left), actions (right), aligned on large screens --}}
-        <div class="tender-card-head flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+        <div class="tender-card-head flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
             <div class="min-w-0 flex-1">
                 @if($typeLabel)
                     {{-- Request-type pill: pale blue field, blue dot, saturated blue label (inline colors = reliable) --}}
-                    <span class="mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide sm:text-sm" style="background-color:#e8f2ff;color:#0d6aed;">
+                    <span class="mb-1.5 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide sm:text-sm" style="background-color:#e8f2ff;color:#0d6aed;">
                         <span class="h-2 w-2 shrink-0 rounded-full" style="background-color:#0d6aed;" aria-hidden="true"></span>
                         {{ $typeLabel }}
                     </span>
                 @endif
-                <a href="{{ route('tenders.detail', $tender->id) }}" class="block text-xl font-bold leading-snug tracking-tight text-gray-900 hover:text-[#0d6aed] sm:text-2xl break-words">{{ $tender->titleHeadline() }}</a>
+                <a href="{{ route('tenders.detail', $tender->id) }}" class="tender-card-title block break-words text-gray-900 hover:text-[#0d6aed]">{{ $tender->titleHeadline() }}</a>
             </div>
             <div class="tender-card-head-actions flex flex-wrap items-center justify-start gap-2 lg:justify-end lg:shrink-0">
                 @auth
@@ -95,9 +95,9 @@
         </div>
 
         {{-- Budget / Posted / Deadline: 3 columns + faint vertical rules (desktop) --}}
-        <div class="mt-5 border-t border-gray-100 pt-5">
+        <div class="mt-3 border-t border-gray-100 pt-3">
             <div class="tender-card-meta-grid grid grid-cols-1 sm:grid-cols-3">
-                <div class="tender-meta-cell flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:py-0 sm:pr-6">
+                <div class="tender-meta-cell flex gap-2.5 border-b border-gray-100 py-2.5 sm:border-b-0 sm:border-r sm:py-0 sm:pr-5">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -108,7 +108,7 @@
                         <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ $tender->budget ? $tender->budgetRangeLabel() : '—' }}</div>
                     </div>
                 </div>
-                <div class="tender-meta-cell flex gap-3 border-b border-gray-100 py-3 sm:border-b-0 sm:border-r sm:px-6 sm:py-0">
+                <div class="tender-meta-cell flex gap-2.5 border-b border-gray-100 py-2.5 sm:border-b-0 sm:border-r sm:px-5 sm:py-0">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -119,7 +119,7 @@
                         <div class="mt-0.5 text-sm font-bold leading-snug text-gray-900 sm:text-[15px]">{{ optional($tender->created_at)->format('d M, Y') ?? '—' }}</div>
                     </div>
                 </div>
-                <div class="tender-meta-cell flex gap-3 py-3 sm:py-0 sm:pl-6">
+                <div class="tender-meta-cell flex gap-2.5 py-2.5 sm:py-0 sm:pl-5">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -140,8 +140,8 @@
         </div>
 
         {{-- Project description + location --}}
-        <div class="tender-desc-row mt-4 border-t border-gray-100 pt-4">
-            <div class="tender-desc-row-main flex min-w-0 flex-1 gap-3">
+        <div class="tender-desc-row mt-3 border-t border-gray-100 pt-3">
+            <div class="tender-desc-row-main flex min-w-0 flex-1 gap-2.5">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0d6aed]" aria-hidden="true">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -166,51 +166,51 @@
         {{-- Categories panel: avoid @if … @foreach … @elseif (Blade can emit invalid PHP); use two @if blocks. --}}
         @if($allocationCards->isNotEmpty())
             @php($themes = [
-                ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500', 'pctColor' => '#1d4ed8', 'barColor' => '#3b82f6', 'cardBg' => '#dbeafe', 'cardBorder' => '#bfdbfe', 'trackBg' => '#bfdbfe'],
-                ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500', 'pctColor' => '#c2410c', 'barColor' => '#eab308', 'cardBg' => '#fefce8', 'cardBorder' => '#fef08a', 'trackBg' => '#fef9c3'],
-                ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600', 'pctColor' => '#9333ea', 'barColor' => '#9333ea', 'cardBg' => '#f3e8ff', 'cardBorder' => '#e9d5ff', 'trackBg' => '#e9d5ff'],
+                ['txt' => 'text-blue-700', 'bar' => 'bg-blue-500', 'pctColor' => '#1d4ed8', 'barColor' => '#3b82f6', 'cardBg' => '#ffffff', 'cardBorder' => '#e5e7eb', 'trackBg' => '#f1f5f9', 'tagBg' => '#eff6ff', 'tagBorder' => '#bfdbfe'],
+                ['txt' => 'text-orange-700', 'bar' => 'bg-yellow-500', 'pctColor' => '#b45309', 'barColor' => '#eab308', 'cardBg' => '#ffffff', 'cardBorder' => '#e5e7eb', 'trackBg' => '#f1f5f9', 'tagBg' => '#fefce8', 'tagBorder' => '#fde047'],
+                ['txt' => 'text-purple-600', 'bar' => 'bg-purple-600', 'pctColor' => '#9333ea', 'barColor' => '#9333ea', 'cardBg' => '#ffffff', 'cardBorder' => '#e5e7eb', 'trackBg' => '#f1f5f9', 'tagBg' => '#faf5ff', 'tagBorder' => '#e9d5ff'],
             ])
-            <div class="tender-allocation-panel mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4 sm:p-5">
-                <div class="mb-4 flex gap-3">
+            <div class="tender-allocation-panel mt-3 rounded-xl border border-gray-200 bg-slate-50/80 p-3 sm:p-4">
+                <div class="mb-3 flex gap-2.5">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-[#0d6aed] shadow-sm ring-1 ring-gray-100" aria-hidden="true">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
                     </div>
                     <div class="min-w-0 py-0.5">
-                        <h3 class="text-base font-bold leading-snug text-gray-900 sm:text-lg">Categories &amp; budget allocation</h3>
-                        <p class="mt-0.5 text-xs text-gray-500 sm:text-sm">Breakdown of budget by category</p>
+                        <h3 class="text-sm font-semibold leading-snug text-gray-900 sm:text-base">Categories &amp; budget allocation</h3>
+                        <p class="mt-0.5 text-xs text-gray-500">Breakdown of budget by category</p>
                     </div>
                 </div>
-                <div class="tender-allocation-grid grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="tender-allocation-grid grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                     @foreach($allocationCards as $card)
                         @php($ti = $loop->index % 3)
                         @php($th = $themes[$ti])
                         @php($pn = (float) ($card['pct_num'] ?? 0))
                         @php($pn = ($pn > 0 && $pn < 1) ? $pn * 100 : $pn)
                         @php($barW = (int) round(min(100, max(0, $pn))))
-                        <div class="tender-allocation-card flex flex-col rounded-lg border p-4 shadow-sm" style="background-color:{{ $th['cardBg'] }};border-color:{{ $th['cardBorder'] }};">
+                        <div class="tender-allocation-card flex flex-col rounded-lg border bg-white p-3 shadow-sm" style="background-color:{{ $th['cardBg'] }};border-color:{{ $th['cardBorder'] }};">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0 pt-0.5 flex-1">
-                                    <div class="font-bold leading-snug text-gray-900" style="font-size:15px;line-height:1.25;">{{ $card['main_name'] }}</div>
+                                    <div class="font-semibold leading-snug text-gray-900" style="font-size:14px;line-height:1.3;font-family:ui-sans-serif,system-ui,sans-serif;">{{ $card['main_name'] }}</div>
                                     @if(!empty($card['sub_labels']))
-                                        <div class="mt-2 flex flex-wrap gap-1">
+                                        <div class="mt-1.5 flex flex-wrap gap-1">
                                             @foreach($card['sub_labels'] as $sub)
-                                                <span class="inline-flex items-center rounded-full font-semibold" style="background:linear-gradient(180deg,#ffffff 0%,{{ $th['cardBg'] }} 100%);color:{{ $th['pctColor'] }};font-size:11.5px;line-height:1;padding:4px 10px;white-space:nowrap;border:1px solid {{ $th['cardBorder'] }};box-shadow:0 1px 2px rgba(15,23,42,0.05),inset 0 1px 0 rgba(255,255,255,0.6);">
+                                                <span class="inline-flex items-center rounded-full font-semibold" style="background-color:{{ $th['tagBg'] }};color:{{ $th['pctColor'] }};font-size:11px;line-height:1;padding:3px 9px;white-space:nowrap;border:1px solid {{ $th['tagBorder'] }};">
                                                     {{ $sub }}
                                                 </span>
                                             @endforeach
                                         </div>
                                     @endif
                                 </div>
-                                <div class="shrink-0 pt-0.5 text-lg font-bold leading-none sm:text-xl {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
+                                <div class="shrink-0 pt-0.5 text-base font-semibold leading-none sm:text-lg {{ $th['txt'] }}" style="color: {{ $th['pctColor'] }}">{{ $card['pct'] }}</div>
                             </div>
                             {{-- Inline dimensions: live builds often lack Tailwind h-1.5/h-full so utility-only bars collapse to a hairline. --}}
-                            <div class="tender-allocation-bar-track" style="margin-top:0.75rem;width:100%;height:10px;border-radius:9999px;background-color:{{ $th['trackBg'] }};overflow:hidden;box-sizing:border-box;">
-                                <span class="tender-allocation-bar-fill {{ $th['bar'] }}" style="display:block;width:{{ $barW }}%;height:10px;border-radius:9999px;background-color:{{ $th['barColor'] }};max-width:100%;box-sizing:border-box;"></span>
+                            <div class="tender-allocation-bar-track" style="margin-top:0.5rem;width:100%;height:8px;border-radius:9999px;background-color:{{ $th['trackBg'] }};overflow:hidden;box-sizing:border-box;">
+                                <span class="tender-allocation-bar-fill {{ $th['bar'] }}" style="display:block;width:{{ $barW }}%;height:8px;border-radius:9999px;background-color:{{ $th['barColor'] }};max-width:100%;box-sizing:border-box;"></span>
                             </div>
                             @if($card['range'])
-                                <div class="mt-2 text-[11px] leading-snug text-gray-600">{{ $card['range'] }}</div>
+                                <div class="mt-1.5 text-[11px] leading-snug text-gray-600">{{ $card['range'] }}</div>
                             @endif
                         </div>
                     @endforeach
@@ -218,7 +218,7 @@
             </div>
         @endif
         @if($allocationCards->isEmpty() && $tender->category)
-            <div class="mt-4 rounded-xl border border-gray-200 bg-slate-50/80 p-4">
+            <div class="mt-3 rounded-xl border border-gray-200 bg-slate-50/80 p-3">
                 <span class="text-sm font-semibold text-gray-900">{{ $tender->category->name }}</span>
             </div>
         @endif
