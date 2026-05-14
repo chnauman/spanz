@@ -264,9 +264,9 @@
 
             @if($user && !$user->isAdmin())
                 {{-- ============================================ --}}
-                {{-- MANAGE BUSINESS SECTION                       --}}
+                {{-- MANAGE BUSINESS SETTINGS SECTION              --}}
                 {{-- ============================================ --}}
-                <div class="sb-section">Manage Business</div>
+                <div class="sb-section">Manage Business Settings</div>
 
                 @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
                     <a href="{{ route('tenders.my-tenders') }}" class="sb-link {{ request()->routeIs('tenders.my-tenders') ? 'active' : '' }}">

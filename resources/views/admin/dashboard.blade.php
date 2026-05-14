@@ -264,13 +264,13 @@
                    
                 @else
                     {{-- ============================================ --}}
-                    {{-- MANAGE BUSINESS - Compact card grid           --}}
+                    {{-- MANAGE BUSINESS SETTINGS - quick actions      --}}
                     {{-- ============================================ --}}
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8 overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-[#092C48] to-[#0f4773]">
                             <div class="flex items-center gap-2">
-                                <span class="inline-block w-1 h-5 bg-[#0D6AED] rounded-full"></span>
-                                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Manage Business</h3>
+                                <span class="inline-block w-1 h-5 bg-[#5aa9ff] rounded-full" aria-hidden="true"></span>
+                                <h3 class="text-base sm:text-lg font-semibold text-white">Manage Business Settings</h3>
                             </div>
                         </div>
                         <div class="p-5 sm:p-6">
@@ -354,10 +354,10 @@
 
             <!-- Recent Activity Section -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                <div class="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-[#092C48] to-[#0f4773]">
                     <div class="flex items-center gap-2">
-                        <span class="inline-block w-1 h-5 bg-[#0D6AED] rounded-full"></span>
-                        <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+                        <span class="inline-block w-1 h-5 bg-[#5aa9ff] rounded-full" aria-hidden="true"></span>
+                        <h3 class="text-base sm:text-lg font-semibold text-white">
                             @if(auth()->user()->isAdmin())
                                 Recent Activity
                             @else
