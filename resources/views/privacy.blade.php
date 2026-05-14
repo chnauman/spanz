@@ -159,6 +159,25 @@
         .legal-content a { color: #0D6AED; text-decoration: underline; }
         .legal-content a:hover { color: #0b54bd; }
 
+        .legal-page-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+            align-items: start;
+        }
+
+        .legal-page-toc { display: none; }
+
+        .legal-page-body { min-width: 0; }
+
+        @media (min-width: 1024px) {
+            .legal-page-grid {
+                grid-template-columns: minmax(260px, 22rem) minmax(0, 1fr);
+            }
+
+            .legal-page-toc { display: block; }
+        }
+
         .toc {
             position: sticky;
             top: 90px;
@@ -166,9 +185,11 @@
             border: 1px solid var(--thomas-border);
             border-radius: 12px;
             padding: 16px 18px;
-            max-height: calc(100vh - 110px);
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
             box-shadow: 0 4px 14px rgba(3, 39, 71, 0.04);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .toc h4 {
@@ -179,6 +200,7 @@
             text-transform: uppercase;
             letter-spacing: .1em;
             margin-bottom: .75rem;
+            line-height: 1.3;
         }
 
         .toc ol {
@@ -202,6 +224,7 @@
             padding: 4px 6px;
             border-radius: 6px;
             transition: background .15s ease, color .15s ease;
+            overflow-wrap: break-word;
         }
 
         .toc ol li a::before {
@@ -258,7 +281,8 @@
         }
 
         @media print {
-            .thomas-topbar, .toc, .back-to-top, footer { display: none !important; }
+            .thomas-topbar, .toc, .legal-page-toc, .back-to-top, footer { display: none !important; }
+            .legal-page-grid { grid-template-columns: 1fr !important; }
             .legal-card { box-shadow: none; border: 0; }
         }
     </style>
@@ -331,9 +355,9 @@
 
     <!-- Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="legal-page-grid">
             <!-- TOC -->
-            <aside class="hidden lg:block lg:col-span-3">
+            <aside class="legal-page-toc">
                 <div class="toc">
                     <h4>On this page</h4>
                     <ol>
@@ -354,7 +378,7 @@
                 </div>
             </aside>
 
-            <article class="lg:col-span-9 legal-content">
+            <article class="legal-page-body legal-content">
                 <div class="legal-card p-6 sm:p-10">
                     <h2 id="overview">1. Overview</h2>
                     <p>

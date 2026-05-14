@@ -7,12 +7,15 @@
         Tailored Packages for Every Business Stage and Size
     </h1>
 
-    {{-- Wider promo box + nowrap on last phrase avoids "packages." alone on a line; inline fallbacks for production CSS --}}
-    <div class="spanz-pricing-promo mx-auto mt-6 rounded-2xl border px-6 py-5 shadow-md sm:px-8"
-         style="border-radius: 1rem; max-width: 58rem; width: 100%; border-color: rgba(13, 106, 237, 0.25); background: linear-gradient(90deg, #F5F9FF 0%, #ECF4FF 100%); color: #21435E;">
-        <p class="text-sm sm:text-base leading-snug" style="color: #21435E;">
-            Save more than you spend. Get 20% off SPANZ drafting and contract risk review services with Professional or <span style="white-space: nowrap;">Enterprise packages.</span>
-        </p>
+    {{-- Single-line lead: nowrap + scroll on narrow screens; wide max-width on pricing --}}
+    <div class="spanz-pricing-promo mx-auto mt-6 rounded-2xl border px-4 py-5 shadow-md sm:px-8"
+         style="border-radius: 1rem; width: 100%; max-width: 100%; border-color: rgba(13, 106, 237, 0.25); background: linear-gradient(90deg, #F5F9FF 0%, #ECF4FF 100%); color: #21435E;">
+        <div style="overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;">
+            <p class="leading-snug text-sm sm:text-base"
+               style="color: #21435E; white-space: nowrap; display: inline-block; margin: 0; text-align: left;">
+                Save more than you spend. Get 20% off SPANZ drafting and contract risk review services with Professional or Enterprise packages.
+            </p>
+        </div>
         <p class="mt-2 text-base sm:text-lg font-semibold" style="color: #092C48;">Limited time. Conditions apply.</p>
         <p class="mt-2 text-sm" style="color: #21435E;">
             <span class="font-semibold" style="color: #092C48;">See pricing</span> or call us +61 422 010 631.
