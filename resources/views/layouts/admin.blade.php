@@ -300,10 +300,6 @@
                                                     <a href="{{ route('tenders.saved') }}">Saved Tenders</a>
                                                     <a href="{{ route('user.interests') }}">My Interests</a>
                                                     <a href="{{ route('tenders.viewed') }}">Viewed Tenders</a>
-                                                    @if(auth()->user()->isSupplier())
-                                                        <a href="{{ route('invite.sub-suppliers') }}">Invite Sub Supplier</a>
-                                                    @endif
-                                                    <a href="#" onclick="openSubscriptionModal(); return false;">Subscription Plans</a>
                                                 @else
                                                     <a href="#" onclick="openSubscriptionModal(); return false;">Become a Supplier</a>
                                                 @endif
