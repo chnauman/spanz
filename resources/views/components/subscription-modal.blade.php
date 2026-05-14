@@ -74,6 +74,42 @@
     color: white !important;
     cursor: not-allowed !important;
 }
+
+/* Match pricing page CTAs when global .btn-primary is missing or overridden (e.g. stale CSS on live) */
+#subscriptionModal .btn-primary,
+#subscriptionModal button.spanz-plan-selectable:not(.is-selected) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background-color: #0D6AED !important;
+    color: #ffffff !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    border: 1px solid transparent !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    transition: background-color 200ms ease, color 200ms ease !important;
+}
+#subscriptionModal .btn-primary:hover:not(:disabled):not(.is-disabled),
+#subscriptionModal button.spanz-plan-selectable:not(.is-selected):hover:not(:disabled) {
+    background-color: #0B5ED7 !important;
+    color: #ffffff !important;
+}
+#subscriptionModal .btn-primary:disabled,
+#subscriptionModal .btn-primary.is-disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+#subscriptionModal button.spanz-plan-selectable.is-selected {
+    background-color: #eab308 !important;
+    color: #ffffff !important;
+}
 </style>
 
 <div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full hidden z-[9999] backdrop-blur-sm flex items-start justify-center p-4 pt-8" onclick="closeModalOnBackdrop(event)">
@@ -170,8 +206,8 @@
                         <input id="pricingTermsCheckboxModal" type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#092C48] focus:ring-[#092C48]">
                         <span>I have read the SPANZ <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="font-semibold text-[#0D6AED] underline hover:text-[#0b54bd]">Terms &amp; Conditions</a> and fully agree with them.</span>
                     </label>
-                    <div class="mt-4 flex justify-start">
-                        <button id="submitSubscriptionRequestBtnModal" type="button" class="btn-primary" style="min-width: 170px;" disabled onclick="submitSelectedSubscriptionRequest()">
+                    <div class="mt-4 w-full">
+                        <button id="submitSubscriptionRequestBtnModal" type="button" class="btn-primary btn-block" disabled onclick="submitSelectedSubscriptionRequest()">
                             Submit Request
                         </button>
                     </div>
