@@ -274,89 +274,79 @@
                             </div>
                         </div>
                         <div class="p-5 sm:p-6">
-                            {{-- Always exactly 4 tiles; one row from md+ (matches buyer dashboard). Supplier extras stay in the sidebar. --}}
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
-                                @if($user->isBuyer())
-                                {{-- Projects / RFXs I Posted --}}
-                                <a href="{{ route('tenders.my-tenders') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            {{-- Plain CSS grid so layout survives stale Tailwind builds on production; same 4 tiles as local buyer dashboard for all roles. --}}
+                            <style>
+                                .spanz-manage-business-actions {
+                                    display: grid !important;
+                                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                                    gap: 1rem;
+                                    width: 100%;
+                                }
+                                @media (max-width: 767.98px) {
+                                    .spanz-manage-business-actions {
+                                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                                    }
+                                }
+                                .spanz-manage-business-actions > a {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    text-align: center;
+                                    text-decoration: none;
+                                    min-height: 130px;
+                                    padding: 1rem;
+                                    border-radius: 0.75rem;
+                                    color: #2563eb;
+                                    font-size: 0.8125rem;
+                                    font-weight: 600;
+                                    line-height: 1.35;
+                                    transition: background-color 0.2s ease, transform 0.2s ease;
+                                }
+                                .spanz-manage-business-actions > a:hover {
+                                    background-color: rgba(239, 246, 255, 0.85);
+                                    color: #1e40af;
+                                }
+                            </style>
+                            @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                            <div class="spanz-manage-business-actions">
+                                <a href="{{ route('tenders.my-tenders') }}">
+                                    <span class="mb-2 sm:mb-3 inline-flex transition-transform duration-200" style="transform-origin:center">
+                                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                             <path d="M9 2h6a1 1 0 011 1v1h3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h3V3a1 1 0 011-1zm1 2v2h4V4h-4zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="#3B82F6"/>
                                         </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Posted<br>Projects / RFXs</p>
+                                    </span>
+                                    My Posted<br>Projects / RFXs
                                 </a>
-                                {{-- My Saved Projects / RFXs --}}
-                                <a href="{{ route('tenders.saved') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <a href="{{ route('tenders.saved') }}">
+                                    <span class="mb-2 sm:mb-3 inline-flex">
+                                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                             <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" fill="#3B82F6"/>
                                         </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Saved<br>Projects / RFXs</p>
+                                    </span>
+                                    My Saved<br>Projects / RFXs
                                 </a>
-                                {{-- Post New Project / RFX --}}
-                                <a href="{{ route('tenders.create') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <a href="{{ route('tenders.create') }}">
+                                    <span class="mb-2 sm:mb-3 inline-flex">
+                                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
                                             <path d="M12 11v6m-3-3h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
                                         </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Post New<br>Project / RFX</p>
+                                    </span>
+                                    Post New<br>Project / RFX
                                 </a>
-                                {{-- Edit / Strengthen Profile --}}
-                                <a href="{{ route('company.register') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <a href="{{ route('company.register') }}">
+                                    <span class="mb-2 sm:mb-3 inline-flex">
+                                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#3B82F6"/>
                                             <circle cx="18" cy="6" r="3" fill="#10B981"/>
                                             <path d="M16.5 5.5h3M18 4v3" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
                                         </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Edit / Strengthen<br>Profile</p>
+                                    </span>
+                                    Edit / Strengthen<br>Profile
                                 </a>
-                                @elseif($user->isSupplier() || $user->isSubSupplier())
-                                {{-- Posted --}}
-                                <a href="{{ route('tenders.my-tenders') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9 2h6a1 1 0 011 1v1h3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h3V3a1 1 0 011-1zm1 2v2h4V4h-4zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="#3B82F6"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Posted<br>Projects / RFXs</p>
-                                </a>
-                                {{-- Received --}}
-                                <a href="{{ route('user.interests') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
-                                            <path d="M12.5 14l1.5 3 3.3.3-2.5 2.2.8 3.2-2.6-1.7-2.6 1.7.8-3.2-2.5-2.2 3.3-.3 1.5-3z" fill="#FBBF24"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Received<br>Projects / RFXs</p>
-                                </a>
-                                {{-- Saved --}}
-                                <a href="{{ route('tenders.saved') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M7 5.75h10a.75.75 0 0 1 .75.75v12.2a.3.3 0 0 1-.46.25L12 15.4l-5.29 3.55a.3.3 0 0 1-.46-.25V6.5A.75.75 0 0 1 7 5.75z" fill="#3B82F6"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">My Saved<br>Projects / RFXs</p>
-                                </a>
-                                {{-- Post New --}}
-                                <a href="{{ route('tenders.create') }}" class="flex flex-col items-center justify-center text-center p-4 sm:p-5 rounded-xl bg-white hover:bg-blue-50/40 hover:-translate-y-1 transition-all duration-200 group min-h-[130px]">
-                                    <div class="flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">
-                                        <svg width="56" height="56" class="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="#3B82F6"/>
-                                            <path d="M12 11v6m-3-3h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-xs sm:text-sm font-semibold text-blue-600 group-hover:text-blue-800 leading-snug">Post New<br>Project / RFX</p>
-                                </a>
-                                @endif
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
