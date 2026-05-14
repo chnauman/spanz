@@ -94,7 +94,7 @@
         font-weight: 600;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.92);
     }
 
     /* Nav links */

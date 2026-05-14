@@ -51,28 +51,25 @@
     box-shadow: 0 0 20px rgba(192, 192, 192, 0.3);
 }
 
-.subscription-card {
+/* Scoped to modal only — global .subscription-card rules break /pricing and /account/plan grid layout */
+#subscriptionModal .subscription-card {
     transition: all 0.3s ease;
     position: relative;
     display: flex;
 }
 
-/* Requested button styling - always visible */
-.subscription-card button.bg-yellow-500 {
+#subscriptionModal .subscription-card button.bg-yellow-500 {
     background-color: #eab308 !important;
     color: white !important;
-    /* Cursor/disabled handled via JS with cursor-not-allowed */
 }
 
-/* Current Plan button styling - always visible */
-.subscription-card button.bg-gray-400 {
+#subscriptionModal .subscription-card button.bg-gray-400 {
     background-color: #9ca3af !important;
     color: white !important;
     cursor: not-allowed !important;
 }
 
-/* Current Plan button styling for green variant */
-.subscription-card button.bg-green-500 {
+#subscriptionModal .subscription-card button.bg-green-500 {
     background-color: #10b981 !important;
     color: white !important;
     cursor: not-allowed !important;
@@ -104,7 +101,8 @@
                     @include('components.pricing-intro-banner')
                 </div>
 
-                <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                @include('components.pricing-plans-grid-once')
+                <div class="spanz-pricing-cards-grid mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                     @foreach($subscriptions as $index => $subscription)
                         @if($subscription->is_active)
                             <div class="subscription-card relative group cursor-pointer"

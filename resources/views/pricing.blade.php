@@ -89,8 +89,9 @@
             <div class="rounded-3xl border border-gray-200 bg-[#f8f8f8] px-4 py-8 shadow-sm sm:px-8 sm:py-10">
                 @include('components.pricing-intro-banner')
 
+                    @include('components.pricing-plans-grid-once')
                     <!-- Pricing Cards -->
-                    <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div class="spanz-pricing-cards-grid mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                         @foreach($subscriptions as $index => $subscription)
                             @if($subscription->is_active)
                                 @php
