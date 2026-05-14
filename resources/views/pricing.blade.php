@@ -105,21 +105,18 @@
                                     <div class="subscription-card relative group cursor-pointer"
                                          data-plan="{{ strtolower($subscription->name) }}"
                                          data-subscription-id="{{ $subscription->id }}">
-                                        <div class="bg-white border-2 border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-300 flex h-full flex-col">
+                                        <div class="spanz-plan-card-face bg-white border-2 border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
                                             @if($subscription->name === 'Professional')
-                                                <!-- Most Popular Badge -->
-                                                <div class="absolute -top-3 right-3 most-popular-badge z-20">
-                                                    <div class="bg-gray-800 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg">
-                                                        Most Popular
-                                                    </div>
+                                                <div class="mb-2 flex justify-end">
+                                                    <span class="inline-block bg-gray-800 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg">Most Popular</span>
                                                 </div>
                                             @endif
 
-                                            <div class="text-center h-full flex flex-col justify-between">
-                                                <div>
-                                                    <h3 class="text-2xl font-medium text-gray-900 mb-1" style="font-family: Georgia, 'Times New Roman', serif;">{{ $subscription->name }}</h3>
+                                            <div class="spanz-plan-card-stack">
+                                                <div class="spanz-plan-card-body text-center">
+                                                    <h3 class="spanz-plan-card-title text-2xl font-medium text-gray-900 mb-1" style="font-family: Georgia, 'Times New Roman', serif;">{{ $subscription->name }}</h3>
                                                     <p class="text-sm text-gray-600 mb-1">{{ $subscription->description ?? 'Buyer + Supplier' }}</p>
-                                                    <div class="text-3xl font-medium text-gray-900 leading-none mb-3" style="font-family: Georgia, 'Times New Roman', serif;">
+                                                    <div class="text-3xl font-medium text-gray-900 leading-snug mb-3" style="font-family: Georgia, 'Times New Roman', serif;">
                                                         AU${{ number_format((float) $subscription->price, 0) }}
                                                         <span class="text-sm font-medium text-gray-500" style="font-family: ui-sans-serif, system-ui, sans-serif;">/mo.</span>
                                                     </div>
@@ -133,24 +130,25 @@
                                                                 </li>
                                                             @endforeach
                                                         </ul>
+                                                    @elseif($isBasicPlan)
+                                                        <div class="spanz-plan-card-features-spacer text-left text-sm text-gray-600 space-y-1.5 mb-4" aria-hidden="true"></div>
                                                     @endif
 
-                                                     <!-- Quota/Credits Display -->
-                                                     <div class="bg-blue-50 rounded-lg p-3 mb-5">
-                                                         <div class="text-base font-semibold text-[#0D6AED] mb-1">
-                                                             @if($subscription->credits_per_month < 0)
-                                                                 Unlimited Credits
-                                                             @elseif($subscription->credits_per_month == 0)
-                                                                 No Credits
-                                                             @else
-                                                                 {{ $subscription->credits_per_month }} Credits
-                                                             @endif
-                                                         </div>
-                                                         <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
-                                                     </div>
+                                                    <div class="bg-blue-50 rounded-lg p-3 mb-2">
+                                                        <div class="text-base font-semibold text-[#0D6AED] mb-1">
+                                                            @if($subscription->credits_per_month < 0)
+                                                                Unlimited Credits
+                                                            @elseif($subscription->credits_per_month == 0)
+                                                                No Credits
+                                                            @else
+                                                                {{ $subscription->credits_per_month }} Credits
+                                                            @endif
+                                                        </div>
+                                                        <p class="text-xs text-gray-800 font-medium">To view tenders and buyers</p>
+                                                    </div>
                                                 </div>
 
-                                                <div class="text-center">
+                                                <div class="spanz-plan-card-actions text-center">
                                                     @auth
                                                         @if($user->getActiveSubscription() && $user->getActiveSubscription()->subscription_id == $subscription->id)
                                                             <button class="btn-primary btn-block is-disabled" disabled>
@@ -161,7 +159,7 @@
                                                                 Current Plan
                                                             </button>
                                                         @else
-                                                            <button class="btn-primary btn-block"
+                                                            <button type="button" class="btn-primary btn-block spanz-plan-selectable"
                                                                     onclick="selectSubscriptionPlan({{ $subscription->id }}, '{{ strtolower($subscription->name) }}', this)">
                                                                 Choose Plan
                                                             </button>
@@ -238,19 +236,17 @@
             selectedPlanName = planName;
 
             // Visual selection: only the clicked "Choose Plan" button changes color
-            const allButtons = document.querySelectorAll('.subscription-card button');
+            const allButtons = document.querySelectorAll('.subscription-card button.spanz-plan-selectable');
             allButtons.forEach(btn => {
                 const label = (btn.textContent || '').trim().toLowerCase();
                 if (btn.disabled || label === 'requested' || label === 'current plan' || label === 'request pending') return;
 
                 btn.textContent = 'Choose Plan';
-                btn.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
-                btn.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                btn.classList.remove('is-selected', 'bg-yellow-500', 'ring-2', 'ring-yellow-300');
             });
 
             button.textContent = 'Selected';
-            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
-            button.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+            button.classList.add('is-selected', 'bg-yellow-500', 'ring-2', 'ring-yellow-300');
 
             updateSubmitRequestButtonState();
         }
@@ -374,7 +370,7 @@
 
                     // Update button state to "Requested" immediately (don't close modal)
                     button.textContent = 'Requested';
-                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75');
+                    button.classList.remove('is-selected', 'opacity-75');
                     button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -428,7 +424,7 @@
             button.textContent = 'Requested';
 
             // Remove all existing classes that might interfere
-            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]', 'opacity-75', 'bg-yellow-500', 'cursor-not-allowed');
+            button.classList.remove('is-selected', 'opacity-75', 'bg-yellow-500', 'cursor-not-allowed');
 
             // Add new classes for requested state
             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
@@ -464,7 +460,7 @@
             button.textContent = originalText;
             button.disabled = false;
             button.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-yellow-500', 'bg-green-500', 'bg-gray-400');
-            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+            button.classList.remove('is-selected');
 
             // Reset inline styles
             button.style.removeProperty('background-color');
@@ -506,7 +502,7 @@
                     const requestStatus = localStorage.getItem(`subscription_request_${subscriptionId}`);
                     console.log('localStorage status for', subscriptionId, ':', requestStatus);
 
-                    if (requestStatus === 'requested') {
+                    if ((button.textContent || '').trim() !== 'Current Plan' && requestStatus === 'requested') {
                         hasRequestedCard = true;
                         requestedSubscriptionId = subscriptionId;
 
@@ -552,6 +548,13 @@
                         const subscriptionId = card.getAttribute('data-subscription-id');
                         const status = statuses[subscriptionId];
                         const button = card.querySelector('button');
+                        if (!button) {
+                            return;
+                        }
+                        const btnLabel = (button.textContent || '').trim();
+                        if (btnLabel === 'Current Plan') {
+                            return;
+                        }
 
                         // Clear localStorage for this subscription if no status from server
                         if (!status) {
@@ -563,7 +566,7 @@
                             pendingSubscriptionId = subscriptionId;
 
                             button.textContent = 'Requested';
-                            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                            button.classList.remove('is-selected');
                             button.classList.add('bg-yellow-500', 'cursor-not-allowed');
                             button.disabled = true;
 
@@ -576,7 +579,7 @@
                             localStorage.setItem(`subscription_request_${subscriptionId}`, 'requested');
                         } else if (status === 'approved') {
                             button.textContent = 'Current Plan';
-                            button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                            button.classList.remove('is-selected');
                             button.classList.add('bg-green-500', 'cursor-not-allowed');
                             button.disabled = true;
 
@@ -590,7 +593,7 @@
                         } else if (status === 'declined') {
                             button.textContent = 'Choose Plan';
                             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                            button.classList.remove('is-selected');
                             button.disabled = false;
 
                             // Clear localStorage for declined requests
@@ -602,7 +605,7 @@
                             // No status from server, reset button to default
                             button.textContent = 'Choose Plan';
                             button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                            button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                            button.classList.remove('is-selected');
                             button.disabled = false;
 
                             // Clear localStorage
@@ -640,7 +643,7 @@
                             const button = card.querySelector('button');
                             if (button && !button.disabled && button.textContent !== 'Current Plan') {
                                 button.textContent = 'Request Pending';
-                                button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                                button.classList.remove('is-selected');
                                 button.classList.add('bg-gray-400', 'cursor-not-allowed');
                                 button.disabled = true;
 
@@ -687,7 +690,7 @@
             buttons.forEach(button => {
                 button.textContent = 'Choose Plan';
                 button.classList.remove('bg-yellow-500', 'bg-green-500', 'cursor-not-allowed');
-                button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                button.classList.remove('is-selected');
                 button.disabled = false;
             });
 
@@ -708,9 +711,9 @@
                 }
 
                 // Disable all other cards
-                if (button && !button.disabled) {
+                if (button && !button.disabled && (button.textContent || '').trim() !== 'Current Plan') {
                     button.textContent = 'Request Pending';
-                    button.classList.remove('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                    button.classList.remove('is-selected');
                     button.classList.add('bg-gray-400', 'cursor-not-allowed');
                     button.disabled = true;
 
@@ -737,9 +740,9 @@
 
                 // Only re-enable cards that are not the current plan or already requested
                 if (button && button.textContent === 'Request Pending') {
-                    button.textContent = 'Request Subscription';
+                    button.textContent = 'Choose Plan';
                     button.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                    button.classList.add('bg-[#0d4f8b]', 'hover:bg-[#0b3f6f]');
+                    button.classList.remove('is-selected');
                     button.disabled = false;
 
                     // Reset inline styles
