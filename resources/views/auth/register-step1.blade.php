@@ -69,16 +69,17 @@
                     </div>
                 @endif
 
-                @if(isset($invitation) && $invitation)
+                @if(!empty($isSubSupplierRegistration) && isset($invitation) && $invitation)
                 <div class="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded">
-                    <p class="text-sm font-medium">You're invited by {{ $invitation->supplier->name }} to join as a Sub Supplier!</p>
+                    <p class="text-sm font-medium">You're invited by {{ $invitation->supplier->name }} to join as a sub-supplier.</p>
+                    <p class="text-xs mt-1">Company details are shared with your team and cannot be changed here.</p>
                     <p class="text-xs mt-1">This invitation expires on {{ $invitation->expires_at->format('M d, Y \a\t g:i A') }}.</p>
                 </div>
                 @endif
 
                 <form method="POST" action="{{ route('register.step1.submit') }}">
                     @csrf
-                    @if(isset($invitation) && $invitation)
+                    @if(!empty($isSubSupplierRegistration) && isset($invitation) && $invitation)
                     <input type="hidden" name="token" value="{{ $invitation->token }}">
                     @endif
                     @if(request()->has('token'))
@@ -90,9 +91,16 @@
                         <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-4 sm:p-5 space-y-4">
                             <h3 class="text-sm font-semibold text-gray-800 border-b border-gray-200 pb-2">Account & Business</h3>
                             <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Email <span class="text-red-500">*</span></label>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">Company Email <span class="text-red-500">*</span></label>
+                                @if(!empty($isSubSupplierRegistration))
+                                <input type="email" id="email" name="email" value="{{ old('email', $invitation->email ?? $progress->email ?? '') }}" readonly
+                                    class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md bg-gray-100 text-gray-700 cursor-not-allowed">
+                                <p class="text-xs text-gray-500 mt-1">Set by your invitation and cannot be changed.</p>
+                                @else
                                 <input type="email" id="email" name="email" value="{{ old('email', $progress->email ?? '') }}" required
                                     class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white">
+                                <p class="text-xs text-gray-500 mt-1">Use your company email. Personal addresses (Gmail, Yahoo, Hotmail, etc.) are not allowed.</p>
+                                @endif
                             </div>
                             <div>
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Password <span class="text-red-500">*</span></label>
@@ -131,6 +139,23 @@
                                     </button>
                                 </div>
                             </div>
+                            @if(!empty($isSubSupplierRegistration))
+                            <div class="rounded-lg border border-gray-200 bg-gray-100 p-4 space-y-3">
+                                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500">Shared company profile (read-only)</h4>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Registered Business Name</span>
+                                    <p class="text-sm font-medium text-gray-800">{{ old('registered_business_name', $progress->registered_business_name ?? '') }}</p>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Business Address</span>
+                                    <p class="text-sm text-gray-800">{{ old('business_address', $progress->business_address ?? '') }}</p>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-500">Location</span>
+                                    <p class="text-sm text-gray-800">{{ collect([old('city', $progress->city ?? ''), old('state', $progress->state ?? ''), old('country', $progress->country ?? '')])->filter()->implode(', ') }}</p>
+                                </div>
+                            </div>
+                            @else
                             <div>
                                 <label for="registered_business_name" class="block text-sm font-medium text-gray-700 mb-1.5">Registered Business Name <span class="text-red-500">*</span></label>
                                 <input type="text" id="registered_business_name" name="registered_business_name" value="{{ old('registered_business_name', $progress->registered_business_name ?? '') }}" required
@@ -141,11 +166,13 @@
                                 <textarea id="business_address" name="business_address" rows="3" required
                                     class="w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none bg-white">{{ old('business_address', $progress->business_address ?? '') }}</textarea>
                             </div>
+                            @endif
                         </div>
 
                         <!-- Card 2: Contact -->
                         <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-4 sm:p-5 space-y-4">
-                            <h3 class="text-sm font-semibold text-gray-800 border-b border-gray-200 pb-2">Contact Details</h3>
+                            <h3 class="text-sm font-semibold text-gray-800 border-b border-gray-200 pb-2">Your Details</h3>
+                            @if(empty($isSubSupplierRegistration))
                             <div>
                                 <label for="country" class="block text-sm font-medium text-gray-700 mb-1.5">Select Country <span class="text-red-500">*</span></label>
                                 <select id="country" name="country" required
@@ -197,6 +224,7 @@
                                     <option value="">Select City</option>
                                 </select>
                             </div>
+                            @endif
                             <div>
                                 <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1.5">Your Full Name – Point of Contact <span class="text-red-500">*</span></label>
                                 <input type="text" id="full_name" name="full_name" value="{{ old('full_name', $progress->full_name ?? '') }}" required

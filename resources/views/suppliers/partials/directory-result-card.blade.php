@@ -6,7 +6,10 @@
         $cd->country ?? null,
     ], fn ($v) => $v !== null && $v !== '' && strcasecmp((string) $v, 'Not provided') !== 0);
     $locationLine = $locationParts !== [] ? implode(', ', $locationParts) : ($cd->headquarter_location ?: 'Location not specified');
-    $interestCategories = $supplier->interests->map(fn ($i) => $i->category)->filter()->unique('id');
+    $profileCategoryIds = $cd ? array_merge($cd->getProfileCategoryIds(), $cd->getProfileSubcategoryIds()) : [];
+    $profileCategories = $profileCategoryIds !== []
+        ? \App\Models\Category::whereIn('id', $profileCategoryIds)->get()
+        : collect();
     $showSharePicker = $canShareDocuments && auth()->check() && auth()->id() !== (int) $supplier->id;
 @endphp
 
@@ -128,16 +131,16 @@
         </div>
     </div>
 
-    @if($interestCategories->isNotEmpty())
+    @if($profileCategories->isNotEmpty())
         <div class="border-t border-slate-100 bg-slate-50/40 px-4 py-4 sm:px-6 sm:py-5">
             <div class="mb-3 flex items-center gap-2">
                 <svg class="h-5 w-5 shrink-0 text-[#0d6aed]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
-                <h3 class="text-sm font-bold text-slate-900 sm:text-base">Registration interests</h3>
+                <h3 class="text-sm font-bold text-slate-900 sm:text-base">Profile categories</h3>
             </div>
             <div class="flex flex-wrap gap-2">
-                {!! $interestCategories->map(fn ($c) => '<span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm sm:text-sm">'.e($c->name).'</span>')->implode('') !!}
+                {!! $profileCategories->map(fn ($c) => '<span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm sm:text-sm">'.e($c->name).'</span>')->implode('') !!}
             </div>
         </div>
     @endif

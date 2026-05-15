@@ -115,6 +115,16 @@ class User extends Authenticatable
         return $this->hasMany(TenderInvitation::class);
     }
 
+    public function tenderNotifications()
+    {
+        return $this->hasMany(UserTenderNotification::class);
+    }
+
+    public function adminMessages()
+    {
+        return $this->hasMany(AdminUserMessage::class);
+    }
+
     public function savedTenders()
     {
         return $this->hasMany(SavedTender::class);

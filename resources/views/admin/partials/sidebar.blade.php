@@ -279,13 +279,20 @@
                     </a>
                 @endif
 
-                @if($user->isSupplier() || $user->isSubSupplier())
-                    <a href="{{ route('user.interests') }}" class="sb-link {{ request()->routeIs('user.interests') ? 'active' : '' }}">
+                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('user.rfx-received') }}" class="sb-link {{ request()->routeIs('user.rfx-received*') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M22 4 12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M4 20V10M9 20V4M14 20v-6M19 20V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M3 20h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
-                        <span>My Received RFXs</span>
+                        <span>RFXs Received</span>
+                    </a>
+                    <a href="{{ route('user.messages') }}" class="sb-link {{ request()->routeIs('user.messages*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>My Messages</span>
                     </a>
                 @endif
 
@@ -389,6 +396,14 @@
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <span>Users</span>
+                </a>
+
+                <a href="{{ route('admin.email-users.create') }}" class="sb-link {{ request()->routeIs('admin.email-users.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Email Users</span>
                 </a>
 
                 <a href="{{ route('admin.categories.index') }}" class="sb-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">

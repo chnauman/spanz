@@ -55,6 +55,9 @@
                                 <a href="{{ route('admin.users.index') }}" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
                                     Manage Users
                                 </a>
+                                <a href="{{ route('admin.email-users.create') }}" class="bg-slate-700 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors text-center">
+                                    Email Users
+                                </a>
                                 <a href="{{ route('admin.products.index') }}" style="background-color:rgb(25, 119, 99);" class=" text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
                                     Manage Products
                                 </a>
@@ -361,7 +364,7 @@
                             @if(auth()->user()->isAdmin())
                                 Recent Activity
                             @else
-                                Tenders Matching Your Interests
+                                RFXs Matching Your Profile Categories
                             @endif
                         </h3>
                     </div>
@@ -416,10 +419,10 @@
                                 @if(auth()->user()->isAdmin())
                                     Get started by creating your first tender.
                                 @else
-                                    @if(!auth()->user()->interests_set)
-                                        Set up your interests to see matching tenders.
+                                    @if(($profile_categories_count ?? 0) === 0)
+                                        Choose categories in your strengthen profile to see matching RFXs.
                                     @else
-                                        No new tenders match your interests and budget preferences at the moment.
+                                        No new RFXs match your profile categories at the moment.
                                     @endif
                                 @endif
                             </p>
@@ -429,13 +432,13 @@
                                         Create Tender
                                     </a>
                                 @else
-                                    @if(!auth()->user()->interests_set)
-                                        <a href="{{ route('user.interests') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                            Set Up Interests
+                                    @if(($profile_categories_count ?? 0) === 0)
+                                        <a href="{{ route('company.register', ['mode' => 'edit']) }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            Strengthen Profile
                                         </a>
                                     @else
-                                        <a href="{{ route('tenders.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                            Browse All Tenders
+                                        <a href="{{ route('user.rfx-received') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            View RFXs Received
                                         </a>
                                     @endif
                                 @endif

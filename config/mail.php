@@ -114,4 +114,19 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | No-reply address (admin broadcast emails)
+    |--------------------------------------------------------------------------
+    |
+    | Set MAIL_NOREPLY_ADDRESS in .env to a dedicated noreply@yourdomain.com
+    | address. Defaults to MAIL_FROM_ADDRESS if unset.
+    |
+    */
+
+    'noreply' => [
+        'address' => env('MAIL_NOREPLY_ADDRESS', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
+        'name' => env('MAIL_NOREPLY_NAME', env('MAIL_FROM_NAME', 'SPANZ')),
+    ],
+
 ];

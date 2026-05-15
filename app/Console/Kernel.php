@@ -20,23 +20,6 @@ class Kernel extends ConsoleKernel
                  ->withoutOverlapping()
                  ->runInBackground();
         
-        // Send daily tender notifications at 9:00 AM
-        $schedule->command('tenders:send-notifications daily')
-                 ->dailyAt('09:00')
-                 ->withoutOverlapping()
-                 ->runInBackground();
-        
-        // Send weekly tender notifications every Monday at 9:00 AM
-        $schedule->command('tenders:send-notifications weekly')
-                 ->weeklyOn(1, '09:00')
-                 ->withoutOverlapping()
-                 ->runInBackground();
-        
-        // Send monthly tender notifications on the 1st of each month at 9:00 AM
-        $schedule->command('tenders:send-notifications monthly')
-                 ->monthlyOn(1, '09:00')
-                 ->withoutOverlapping()
-                 ->runInBackground();
     }
 
     /**

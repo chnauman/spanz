@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\UserInterestController;
+use App\Http\Controllers\UserNotificationController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\SupplierDirectoryController;
 use App\Http\Controllers\SupplierDocumentShareController;
@@ -18,6 +18,7 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\ProductController as PublicProductController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\TenderViewPricingController;
+use App\Http\Controllers\Admin\AdminEmailController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -42,6 +43,11 @@ Route::post('/register/step2/resend', [\App\Http\Controllers\MultiStepRegistrati
 Route::get('/register/step3', [\App\Http\Controllers\MultiStepRegistrationController::class, 'showStep3'])->name('register.step3');
 Route::post('/register/step3', [\App\Http\Controllers\MultiStepRegistrationController::class, 'submitStep3'])->name('register.step3.submit');
 Route::get('/register/resume', [\App\Http\Controllers\MultiStepRegistrationController::class, 'resume'])->name('register.resume');
+
+Route::get('/sub-supplier/invitation/{token}', [\App\Http\Controllers\SupplierInvitationAcceptController::class, 'show'])
+    ->name('supplier.invitation.show');
+Route::post('/sub-supplier/invitation/{token}/accept', [\App\Http\Controllers\SupplierInvitationAcceptController::class, 'accept'])
+    ->name('supplier.invitation.accept');
 
 // Keep old register route for backward compatibility (redirects to step 1)
 // Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -69,15 +75,14 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
     Route::post('/company/register', [CompanyRegistrationController::class, 'store'])->name('company.register.store');
 });
 
-// User Interest Routes
+// User notifications (RFX matches + admin messages)
 Route::middleware(['auth', 'email.verified'])->group(function () {
-    Route::get('/user/interests', [UserInterestController::class, 'show'])->name('user.interests');
-    Route::post('/user/interests', [UserInterestController::class, 'store'])->name('user.interests.store');
-    Route::post('/user/interests/skip', [UserInterestController::class, 'skip'])->name('user.interests.skip');
-    Route::get('/user/interests/management', [UserInterestController::class, 'management'])->name('user.interests.management');
-    Route::delete('/user/interests/{interest}', [UserInterestController::class, 'delete'])->name('user.interests.delete');
-    Route::post('/user/interests/save-budget', [UserInterestController::class, 'saveBudget'])->name('user.interests.save-budget');
-    Route::delete('/user/interests/budget/{budgetRangeId}', [UserInterestController::class, 'deleteBudget'])->name('user.interests.delete-budget');
+    Route::get('/user/rfx-received', [UserNotificationController::class, 'rfxReceived'])->name('user.rfx-received');
+    Route::post('/user/rfx-received/{notification}/read', [UserNotificationController::class, 'markRfxRead'])->name('user.rfx-received.read');
+    Route::post('/user/rfx-received/read-all', [UserNotificationController::class, 'markAllRfxRead'])->name('user.rfx-received.read-all');
+    Route::get('/user/messages', [UserNotificationController::class, 'messages'])->name('user.messages');
+    Route::get('/user/messages/{message}', [UserNotificationController::class, 'showMessage'])->name('user.messages.show');
+    Route::post('/user/messages/read-all', [UserNotificationController::class, 'markAllMessagesRead'])->name('user.messages.read-all');
 });
 
 // Tender Routes
@@ -172,6 +177,9 @@ Route::middleware(['auth', 'email.verified', 'role:admin'])->prefix('admin')->na
     Route::post('users/{user}/approve', [\App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
     Route::post('users/{user}/reject', [\App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
     Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('email-users', [AdminEmailController::class, 'create'])->name('email-users.create');
+    Route::post('email-users', [AdminEmailController::class, 'send'])->name('email-users.send');
 
     // Subscription Management Routes
     Route::get('subscription-requests', [\App\Http\Controllers\Admin\SubscriptionController::class, 'requests'])->name('subscription-requests');

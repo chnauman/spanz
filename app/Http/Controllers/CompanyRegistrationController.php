@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Category;
 use App\Models\CompanyDetail;
 use App\Models\State;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,14 +13,9 @@ class CompanyRegistrationController extends Controller
 {
     public function show(Request $request)
     {
-        // User must be logged in (route already has auth middleware)
         $user = Auth::user();
         $companyDetail = $user?->companyDetail;
 
-        // For accounts that registered before location/phone began being
-        // saved on the users table, backfill those values from the
-        // company_details row so the dropdowns and inputs are pre-selected
-        // in edit mode without forcing the user to re-enter them.
         if ($user && $companyDetail) {
             $contactMap = [
                 'country' => $companyDetail->country,
@@ -39,10 +35,8 @@ class CompanyRegistrationController extends Controller
             }
         }
 
-        // When arriving from "Edit Profile" we render the page in edit mode.
         $isEditMode = $request->boolean('edit') || $request->get('mode') === 'edit';
 
-        // Derive first / last name from user's name for convenience
         $firstName = '';
         $lastName = '';
         if ($user && $user->name) {
@@ -51,21 +45,15 @@ class CompanyRegistrationController extends Controller
             $lastName = $parts[1] ?? '';
         }
 
-        // Decode JSON fields into arrays for easier use in the view
-        $selectedIndustries = [];
-        $selectedSubcategories = [];
         $selectedCompanyTypes = [];
         $selectedCertifications = [];
         $selectedDeliveryRegions = [];
         $selectedOfficeRegions = [];
 
+        $selectedProfileCategories = [1 => '', 2 => '', 3 => ''];
+        $selectedProfileSubcategories = [1 => [], 2 => [], 3 => []];
+
         if ($companyDetail) {
-            if (!empty($companyDetail->main_industries)) {
-                $selectedIndustries = json_decode($companyDetail->main_industries, true) ?: [];
-            }
-            if (!empty($companyDetail->subcategories_by_industry)) {
-                $selectedSubcategories = json_decode($companyDetail->subcategories_by_industry, true) ?: [];
-            }
             if (!empty($companyDetail->company_types)) {
                 $selectedCompanyTypes = json_decode($companyDetail->company_types, true) ?: [];
             }
@@ -78,7 +66,51 @@ class CompanyRegistrationController extends Controller
             if (!empty($companyDetail->office_locations)) {
                 $selectedOfficeRegions = json_decode($companyDetail->office_locations, true) ?: [];
             }
+
+            $mainIds = $companyDetail->getProfileCategoryIds();
+            $subIds = $companyDetail->getProfileSubcategoryIds();
+            foreach ($mainIds as $i => $id) {
+                $slot = $i + 1;
+                if ($slot <= 3) {
+                    $selectedProfileCategories[$slot] = (string) $id;
+                }
+            }
+            if ($subIds !== []) {
+                $subsByParent = Category::query()
+                    ->whereIn('id', $subIds)
+                    ->get(['id', 'parent_category_id'])
+                    ->groupBy('parent_category_id');
+                $slot = 1;
+                foreach ($mainIds as $mainId) {
+                    if ($slot > 3) {
+                        break;
+                    }
+                    $selectedProfileSubcategories[$slot] = $subsByParent
+                        ->get($mainId, collect())
+                        ->pluck('id')
+                        ->map(fn ($id) => (string) $id)
+                        ->all();
+                    $slot++;
+                }
+            }
         }
+
+        $categories = Category::where('is_active', true)
+            ->whereNull('parent_category_id')
+            ->with(['subcategories' => function ($q) {
+                $q->where('is_active', true)->orderBy('name');
+            }])
+            ->orderBy('name')
+            ->get();
+
+        $subcategoriesByCategory = $categories->mapWithKeys(function ($cat) {
+            return [
+                $cat->id => $cat->subcategories->map(fn ($sub) => [
+                    'id' => $sub->id,
+                    'name' => $sub->name,
+                ])->values()->all(),
+            ];
+        });
 
         $statesByCountry = State::with('cities:id,state_id,name')
             ->orderBy('name')
@@ -94,17 +126,18 @@ class CompanyRegistrationController extends Controller
                 })->values()->all();
             });
 
-        // Always show the profile form so the user can create or update their business profile.
         return view('company_register', compact(
             'companyDetail',
             'firstName',
             'lastName',
-            'selectedIndustries',
-            'selectedSubcategories',
             'selectedCompanyTypes',
             'selectedCertifications',
             'selectedDeliveryRegions',
             'selectedOfficeRegions',
+            'selectedProfileCategories',
+            'selectedProfileSubcategories',
+            'categories',
+            'subcategoriesByCategory',
             'statesByCountry',
             'isEditMode'
         ));
@@ -117,14 +150,13 @@ class CompanyRegistrationController extends Controller
             'last' => 'nullable|string|max:255',
             'company' => 'required|string|max:255',
             'website' => 'nullable|string|max:255',
-
-            // New profile fields from client requirements
             'headquarter_location' => 'nullable|string|max:255',
             'employees_range' => 'nullable|string|max:255',
-            'main_industries' => 'nullable|array',
-            'main_industries.*' => 'nullable|string|max:255',
-            'subcategories' => 'nullable|array',
-            'subcategories.*' => 'nullable|array',
+            'profile_categories' => 'nullable|array',
+            'profile_categories.*' => 'nullable|exists:categories,id',
+            'profile_subcategories' => 'nullable|array',
+            'profile_subcategories.*' => 'nullable|array',
+            'profile_subcategories.*.*' => 'exists:categories,id',
             'company_types' => 'nullable|array',
             'company_types.*' => 'nullable|string|max:255',
             'yearly_revenue_range' => 'nullable|string|max:255',
@@ -147,50 +179,78 @@ class CompanyRegistrationController extends Controller
                 ->withInput();
         }
 
-        // Check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please login to register your company.');
         }
 
-        // Create or update company details for this user
-        $companyDetail = CompanyDetail::updateOrCreate(
+        $profileCategoryIds = collect($request->input('profile_categories', []))
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $profileSubcategoryIds = collect($request->input('profile_subcategories', []))
+            ->flatten()
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $mainIndustryNames = [];
+        if ($profileCategoryIds !== []) {
+            $mainIndustryNames = Category::whereIn('id', $profileCategoryIds)->pluck('name')->all();
+        }
+
+        $subcategoriesByIndustry = [];
+        if ($profileSubcategoryIds !== []) {
+            $subs = Category::whereIn('id', $profileSubcategoryIds)
+                ->with('parentCategory')
+                ->get();
+            foreach ($subs as $sub) {
+                $parentName = $sub->parentCategory?->name ?? 'General';
+                $subcategoriesByIndustry[$parentName] = $subcategoriesByIndustry[$parentName] ?? [];
+                $subcategoriesByIndustry[$parentName][] = $sub->name;
+            }
+        }
+
+        CompanyDetail::updateOrCreate(
             ['user_id' => Auth::id()],
             [
-            'company_name' => $request->company,
-            'website' => $request->website ?: null,
-            // Set default values for required fields that aren't in the form
-            'address' => 'Not provided',
-            'city' => 'Not provided',
-            'state' => 'Not provided',
-            'postal_code' => '00000',
-            'country' => 'Not provided',
-            'phone' => 'Not provided',
+                'company_name' => $request->company,
+                'website' => $request->website ?: null,
+                'address' => 'Not provided',
+                'city' => 'Not provided',
+                'state' => 'Not provided',
+                'postal_code' => '00000',
+                'country' => 'Not provided',
+                'phone' => 'Not provided',
+                'headquarter_location' => $request->headquarter_location,
+                'employees_range' => $request->employees_range,
+                'profile_category_ids' => $profileCategoryIds !== [] ? json_encode($profileCategoryIds) : null,
+                'profile_subcategory_ids' => $profileSubcategoryIds !== [] ? json_encode($profileSubcategoryIds) : null,
+                'main_industries' => $mainIndustryNames !== [] ? json_encode(array_values($mainIndustryNames)) : null,
+                'subcategories_by_industry' => $subcategoriesByIndustry !== [] ? json_encode($subcategoriesByIndustry) : null,
+                'company_types' => $request->filled('company_types') ? json_encode($request->company_types) : null,
+                'yearly_revenue_range' => $request->yearly_revenue_range,
+                'quality_certifications' => $request->filled('quality_certifications') ? json_encode($request->quality_certifications) : null,
+                'brands_represented' => $request->brands_represented,
+                'industry_awards' => $request->industry_awards,
+                'industry_memberships' => $request->industry_memberships,
+                'unique_value_propositions' => $request->unique_value_propositions,
+                'major_projects' => $request->major_projects,
+                'delivery_capabilities' => $request->filled('delivery_capabilities') ? json_encode($request->delivery_capabilities) : null,
+                'office_locations' => $request->filled('office_locations') ? json_encode($request->office_locations) : null,
+            ]
+        );
 
-            // New structured profile data
-            'headquarter_location' => $request->headquarter_location,
-            'employees_range' => $request->employees_range,
-            'main_industries' => $request->filled('main_industries') ? json_encode($request->main_industries) : null,
-            'subcategories_by_industry' => $request->filled('subcategories') ? json_encode($request->subcategories) : null,
-            'company_types' => $request->filled('company_types') ? json_encode($request->company_types) : null,
-            'yearly_revenue_range' => $request->yearly_revenue_range,
-            'quality_certifications' => $request->filled('quality_certifications') ? json_encode($request->quality_certifications) : null,
-            'brands_represented' => $request->brands_represented,
-            'industry_awards' => $request->industry_awards,
-            'industry_memberships' => $request->industry_memberships,
-            'unique_value_propositions' => $request->unique_value_propositions,
-            'major_projects' => $request->major_projects,
-            'delivery_capabilities' => $request->filled('delivery_capabilities') ? json_encode($request->delivery_capabilities) : null,
-            'office_locations' => $request->filled('office_locations') ? json_encode($request->office_locations) : null,
-        ]);
-
-        // Name is managed in the profile section; only update here if explicitly sent.
         if ($request->filled('first') && $request->filled('last')) {
             Auth::user()->update([
                 'name' => trim($request->first . ' ' . $request->last),
             ]);
         }
 
-        // For AJAX requests, return JSON so the frontend can show a toast
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -198,7 +258,6 @@ class CompanyRegistrationController extends Controller
             ]);
         }
 
-        // Fallback for normal form posts – stay on page with flash message
         return redirect()->route('company.register')
             ->with('success', 'Your business profile has been saved successfully.');
     }

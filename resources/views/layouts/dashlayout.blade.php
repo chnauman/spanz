@@ -109,7 +109,8 @@
                                 @auth
                                     @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
                                         <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Saved Tenders</a>
-                                        <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Interests</a>
+                                        <a href="{{ route('user.rfx-received') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">RFXs Received</a>
+                                        <a href="{{ route('user.messages') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Messages</a>
                                         <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Viewed Tenders</a>
                                     @else
                                         <a href="{{ route('login') }}?redirect={{ urlencode(route('home')) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>

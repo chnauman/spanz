@@ -14,7 +14,7 @@ class SupplierDirectoryController extends Controller
     public function index(Request $request)
     {
         $query = User::query()
-            ->with(['companyDetail', 'interests.category', 'parentSupplier.companyDetail'])
+            ->with(['companyDetail', 'parentSupplier.companyDetail'])
             ->whereIn('role', ['supplier', 'sub_supplier'])
             ->where('is_approved', true)
             ->whereHas('companyDetail');
@@ -41,10 +41,13 @@ class SupplierDirectoryController extends Controller
                     ->unique()
                     ->values();
 
-                $filterIds = $selectedIds->merge($childIds)->unique()->values();
+                $filterIds = $selectedIds->merge($childIds)->unique()->values()->all();
 
-                $query->whereHas('interests', function ($q) use ($filterIds) {
-                    $q->whereIn('category_id', $filterIds->all());
+                $query->whereHas('companyDetail', function ($q) use ($filterIds) {
+                    foreach ($filterIds as $id) {
+                        $q->orWhereJsonContains('profile_category_ids', $id)
+                            ->orWhereJsonContains('profile_subcategory_ids', $id);
+                    }
                 });
             }
         }
@@ -66,16 +69,21 @@ class SupplierDirectoryController extends Controller
 
         if ($request->filled('search')) {
             $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
+            $matchingCategoryIds = Category::query()
+                ->where('name', 'like', '%' . $searchTerm . '%')
+                ->pluck('id');
+
+            $query->where(function ($q) use ($searchTerm, $matchingCategoryIds) {
                 $q->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                    ->orWhereHas('companyDetail', function ($cd) use ($searchTerm) {
+                    ->orWhereHas('companyDetail', function ($cd) use ($searchTerm, $matchingCategoryIds) {
                         $cd->where('company_name', 'like', '%' . $searchTerm . '%')
                             ->orWhere('description', 'like', '%' . $searchTerm . '%')
                             ->orWhere('headquarter_location', 'like', '%' . $searchTerm . '%');
-                    })
-                    ->orWhereHas('interests.category', function ($cq) use ($searchTerm) {
-                        $cq->where('name', 'like', '%' . $searchTerm . '%');
+                        foreach ($matchingCategoryIds as $catId) {
+                            $cd->orWhereJsonContains('profile_category_ids', $catId)
+                                ->orWhereJsonContains('profile_subcategory_ids', $catId);
+                        }
                     });
             });
         }
@@ -98,63 +106,39 @@ class SupplierDirectoryController extends Controller
         $categories = $allCategories;
 
         $locationPage = (int) $request->get('location_page', 1);
-        $locationsPerPage = 5;
-        $locations = collect($allLocationSlugs)
-            ->slice(($locationPage - 1) * $locationsPerPage, $locationsPerPage)
-            ->mapWithKeys(fn ($slug) => [$slug => $locationFilterOptions[$slug]])
-            ->all();
-        $hasMoreLocations = count($allLocationSlugs) > ($locationPage * $locationsPerPage);
-
-        $subscriptions = Subscription::where('is_active', true)
-            ->where('name', '!=', 'Basic')
-            ->orderBy('price', 'asc')
-            ->get();
-
-        $canShareDocuments = auth()->check()
-            && (auth()->user()->isBuyer() || auth()->user()->isSupplier() || auth()->user()->isSubSupplier());
-
-        if ($request->ajax() || $request->wantsJson()) {
-            $html = view('suppliers.partials.directory-results', compact('suppliers', 'canShareDocuments'))->render();
-
-            return response()->json(['html' => $html]);
-        }
+        $locationPerPage = 12;
+        $locationOffset = ($locationPage - 1) * $locationPerPage;
+        $paginatedLocationSlugs = array_slice($allLocationSlugs, $locationOffset, $locationPerPage);
+        $locationHasMore = count($allLocationSlugs) > $locationOffset + $locationPerPage;
 
         return view('suppliers.directory', compact(
             'suppliers',
             'categories',
-            'locations',
-            'hasMoreLocations',
-            'allCategories',
-            'subscriptions',
-            'canShareDocuments'
-        ))->with([
-            'allLocations' => $allLocationSlugs,
-            'locationFilterOptions' => $locationFilterOptions,
-        ]);
+            'locationFilterOptions',
+            'paginatedLocationSlugs',
+            'locationPage',
+            'locationHasMore'
+        ));
     }
 
-    /**
-     * @return array<string, string>
-     */
     private function buildSupplierLocationFilterOptions(): array
     {
         $labels = Tender::locationSlugLabels();
-        $userIds = User::query()
-            ->whereIn('role', ['supplier', 'sub_supplier'])
-            ->where('is_approved', true)
-            ->pluck('id');
+        $counts = [];
 
-        $slugs = CompanyDetail::whereIn('user_id', $userIds)
-            ->get(['country', 'state', 'headquarter_location'])
-            ->flatMap(fn (CompanyDetail $d) => CompanyDetail::resolveLocationSlugsForRow($d));
+        $details = CompanyDetail::query()
+            ->whereHas('user', function ($q) {
+                $q->whereIn('role', ['supplier', 'sub_supplier'])
+                    ->where('is_approved', true);
+            })
+            ->get();
 
-        $out = [];
-        foreach ($slugs->unique()->sort() as $slug) {
-            if (isset($labels[$slug])) {
-                $out[$slug] = $labels[$slug];
-            }
+        foreach ($labels as $slug => $label) {
+            $counts[$slug] = $details->filter(function (CompanyDetail $detail) use ($slug) {
+                return in_array($slug, CompanyDetail::resolveLocationSlugsForRow($detail), true);
+            })->count();
         }
 
-        return $out;
+        return array_filter($labels, fn ($label, $slug) => ($counts[$slug] ?? 0) > 0, ARRAY_FILTER_USE_BOTH);
     }
 }

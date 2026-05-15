@@ -18,12 +18,14 @@ class SupplierInvitation extends Model
         'supplier_id',
         'message',
         'is_used',
-        'expires_at'
+        'expires_at',
+        'accepted_at',
     ];
 
     protected $casts = [
         'is_used' => 'boolean',
-        'expires_at' => 'datetime'
+        'expires_at' => 'datetime',
+        'accepted_at' => 'datetime',
     ];
 
     /**

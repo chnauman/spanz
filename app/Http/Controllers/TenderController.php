@@ -7,7 +7,8 @@ use App\Models\Tender;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\State;
-use App\Models\UserInterest;
+use App\Models\UserTenderNotification;
+use App\Services\TenderProfileMatchingService;
 use App\Models\TenderInvitation;
 use App\Models\SavedTender;
 use App\Models\Subscription;
@@ -120,14 +121,32 @@ class TenderController extends Controller
             ->paginate(12)
             ->appends($request->query());
 
-        // Get all main categories (with children) for display
+        // Get all main categories (with children) and tender counts (active & not expired)
         $allCategories = Category::where('is_active', true)
             ->whereNull('parent_category_id')
-            ->with(['children' => function ($q) {
-                $q->where('is_active', true)->orderBy('name');
-            }])
+            ->with([
+                'children' => function ($q) {
+                    $q->where('is_active', true)
+                        ->orderBy('name')
+                        ->withCount([
+                            'tenders' => function ($t) {
+                                $t->where('status', 'active')
+                                    ->where('deadline', '>', now());
+                            },
+                        ]);
+                },
+            ])
+            ->withCount([
+                'tenders' => function ($t) {
+                    $t->where('status', 'active')
+                        ->where('deadline', '>', now());
+                },
+            ])
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->each(function ($category) {
+                $category->subcategories_tenders_total = (int) ($category->children?->sum('tenders_count') ?? 0);
+            });
 
         $locationFilterOptions = $this->buildLocationFilterOptions();
         $allLocationSlugs = array_keys($locationFilterOptions);
@@ -310,11 +329,10 @@ class TenderController extends Controller
             // Mark user as buyer
             $user->update(['is_buyer' => true]);
 
-            // Send invitations to users with matching interests
-            $this->sendTenderInvitations($tender);
+            $this->notifyMatchingProfileUsers($tender);
 
             return redirect()->route('tenders.my-tenders')
-                ->with('success', 'Tender posted successfully! Invitations have been sent to interested users.');
+                ->with('success', 'Tender posted successfully! Matching users have been notified.');
 
         // } catch (\Exception $e) {
         //     // Log the error for debugging
@@ -328,8 +346,17 @@ class TenderController extends Controller
     }
 
 
-    public function detail(Tender $tender)
+    public function detail(Request $request, Tender $tender)
     {
+        if (Auth::check() && $request->filled('rfx_notification')) {
+            UserTenderNotification::query()
+                ->where('id', $request->integer('rfx_notification'))
+                ->where('user_id', Auth::id())
+                ->where('tender_id', $tender->id)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+        }
+
         $tender->load(['user', 'category', 'city.state']);
         $subscriptions = Subscription::where('is_active', true)
             ->where('name', '!=', 'Basic')
@@ -447,12 +474,7 @@ class TenderController extends Controller
 
     public function invitations()
     {
-        $invitations = Auth::user()->tenderInvitations()
-            ->with(['tender.user', 'tender.category', 'tender.city.state'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
-        return view('tenders.invitations', compact('invitations'));
+        return redirect()->route('user.rfx-received');
     }
 
     public function viewedTenders()
@@ -580,31 +602,21 @@ class TenderController extends Controller
     }
 
     /**
-     * Send tender invitations to users with matching interests.
-     * Emails are queued for background processing to improve performance.
+     * Notify users whose strengthen-profile categories match this tender.
      */
-    private function sendTenderInvitations(Tender $tender)
+    private function notifyMatchingProfileUsers(Tender $tender): void
     {
-        // Get users with matching interests
-        $interestedUsers = UserInterest::where('category_id', $tender->category_id)
-            ->with('user')
-            ->get()
-            ->pluck('user')
-            ->unique('id');
+        $matcher = app(TenderProfileMatchingService::class);
+        $matchingUsers = $matcher->matchingUsers($tender);
 
-        foreach ($interestedUsers as $user) {
-            // Skip the tender creator
-            if ($user->id === $tender->user_id) {
-                continue;
-            }
+        foreach ($matchingUsers as $user) {
+            UserTenderNotification::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'tender_id' => $tender->id,
+                ]
+            );
 
-            // Create invitation
-            TenderInvitation::create([
-                'tender_id' => $tender->id,
-                'user_id' => $user->id,
-            ]);
-
-            // Queue email notification for background processing
             SendTenderInvitationJob::dispatch($tender, $user);
         }
     }

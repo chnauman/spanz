@@ -396,11 +396,14 @@
                             <!-- Primary Industry -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Primary Industry</label>
-                                    <select id="industry_1" name="main_industries[1]"
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Primary Category</label>
+                                    <select id="industry_1" name="profile_categories[1]"
                                             class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                             data-target="subcategories_1">
-                                        <option value="">Select an industry</option>
+                                        <option value="">Select a category</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[1] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div>
@@ -414,11 +417,14 @@
                             <!-- Secondary Industry -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Secondary Industry (Optional)</label>
-                                    <select id="industry_2" name="main_industries[2]"
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Secondary Category (Optional)</label>
+                                    <select id="industry_2" name="profile_categories[2]"
                                             class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                             data-target="subcategories_2">
-                                        <option value="">Select an industry</option>
+                                        <option value="">Select a category</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[2] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div>
@@ -432,11 +438,14 @@
                             <!-- Additional Industry -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Additional Industry (Optional)</label>
-                                    <select id="industry_3" name="main_industries[3]"
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Additional Category (Optional)</label>
+                                    <select id="industry_3" name="profile_categories[3]"
                                             class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                             data-target="subcategories_3">
-                                        <option value="">Select an industry</option>
+                                        <option value="">Select a category</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[3] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div>
@@ -632,154 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Industry → subcategory dynamic mapping
-    const INDUSTRY_SUBCATEGORIES = {
-        'Technology / IT': [
-            'Software Development',
-            'Mobile App Development',
-            'Web Development',
-            'Cybersecurity',
-            'Cloud Services',
-            'IT Consulting',
-            // extra (for testing > 6)
-            'DevOps & SRE',
-            'Data Engineering',
-            'AI / Machine Learning',
-            'QA & Testing',
-            'UI/UX Design',
-            'Network & Infrastructure',
-            'IT Support / Helpdesk',
-            'ERP / CRM Systems'
-        ],
-        'Retail / E-commerce': [
-            'Online Store',
-            'Marketplace Seller',
-            'Wholesale',
-            'Dropshipping',
-            'Fashion Retail',
-            'Electronics Retail',
-            // extra (for testing > 6)
-            'Grocery Retail',
-            'Beauty & Personal Care',
-            'Home & Furniture',
-            'Sports & Outdoors',
-            'Logistics / Fulfillment',
-            'Customer Support'
-        ],
-        'Marketing & Advertising': [
-            'Digital Marketing',
-            'SEO Services',
-            'Social Media Marketing',
-            'Branding & Design',
-            'Advertising Agency',
-            'Content Marketing',
-            // extra (for testing > 6)
-            'Email Marketing',
-            'Performance Marketing',
-            'PR & Communications',
-            'Influencer Marketing',
-            'Video Production',
-            'Event Marketing'
-        ],
-        'Healthcare': [
-            'Hospitals & Clinics',
-            'Medical Devices',
-            'Pharmaceuticals',
-            'Telemedicine',
-            'Healthcare IT',
-            'Diagnostics',
-            // extra (for testing > 6)
-            'Medical Billing',
-            'Lab Services',
-            'Healthcare Staffing',
-            'Health Insurance',
-            'EHR / EMR Systems'
-        ],
-        'Finance & Banking': [
-            'Retail Banking',
-            'Corporate Banking',
-            'Fintech',
-            'Insurance',
-            'Investment Services',
-            'Accounting & Audit',
-            // extra (for testing > 6)
-            'Risk & Compliance',
-            'Tax Services',
-            'Payroll',
-            'Wealth Management',
-            'Treasury & Cash Management'
-        ],
-        'Manufacturing': [
-            'Industrial Equipment',
-            'Automotive Components',
-            'Electronics Manufacturing',
-            'Contract Manufacturing',
-            'Packaging',
-            'Machinery',
-            // extra (for testing > 6)
-            'CNC Machining',
-            'Injection Molding',
-            '3D Printing',
-            'Metal Fabrication',
-            'Quality Control',
-            'Supply Chain'
-        ],
-        'Logistics & Transportation': [
-            'Freight Forwarding',
-            'Warehousing',
-            'Last-mile Delivery',
-            'Air Cargo',
-            'Sea Freight',
-            'Road Transport',
-            // extra (for testing > 6)
-            'Customs Brokerage',
-            'Cold Chain Logistics',
-            'Fleet Management',
-            'Rail Freight',
-            'Reverse Logistics',
-            '3PL Services'
-        ],
-        // added extra categories (for broader testing)
-        'Construction': [
-            'General Contracting',
-            'Civil Works',
-            'MEP Services',
-            'Project Management',
-            'Fit-out & Interiors',
-            'Safety & Compliance',
-            'Architecture',
-            'Structural Engineering',
-            'Quantity Surveying',
-            'Building Materials'
-        ],
-        'Energy & Utilities': [
-            'Solar',
-            'Wind',
-            'Oil & Gas',
-            'Power Generation',
-            'Transmission & Distribution',
-            'Water & Wastewater',
-            'Energy Storage',
-            'Smart Grid',
-            'EV Charging'
-        ]
-    };
-
-    const INDUSTRY_OPTIONS = Object.keys(INDUSTRY_SUBCATEGORIES);
-
-    function populateIndustrySelects() {
-        document.querySelectorAll('.industry-select').forEach(select => {
-            // Avoid duplicating options
-            if (select.dataset.initialized === '1') return;
-            INDUSTRY_OPTIONS.forEach(label => {
-                const opt = document.createElement('option');
-                opt.value = label;
-                opt.textContent = label;
-                select.appendChild(opt);
-            });
-            select.dataset.initialized = '1';
-        });
-    }
+    const SUBCATEGORIES_BY_CATEGORY = @json($subcategoriesByCategory ?? new \stdClass());
 
     function enforceMaxSubcategories(container, maxAllowed = 6) {
         if (!container) return;
@@ -810,27 +672,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById(targetId);
         if (!container) return;
 
-        const industry = selectEl.value;
+        const mainId = selectEl.value;
         container.innerHTML = '';
 
-        if (!industry || !INDUSTRY_SUBCATEGORIES[industry]) {
+        if (!mainId || !SUBCATEGORIES_BY_CATEGORY[mainId] || !SUBCATEGORIES_BY_CATEGORY[mainId].length) {
             return;
         }
 
-        const subs = INDUSTRY_SUBCATEGORIES[industry]; // render all, enforce max selection via checkbox logic
-        subs.forEach((label) => {
+        const subs = SUBCATEGORIES_BY_CATEGORY[mainId];
+        const slot = selectEl.id.split('_')[1];
+        subs.forEach((sub) => {
             const wrapper = document.createElement('label');
             wrapper.className = 'inline-flex items-center text-xs sm:text-sm text-gray-700';
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.name = `subcategories[${selectEl.id.split('_')[1]}][]`;
-            checkbox.value = label;
+            checkbox.name = `profile_subcategories[${slot}][]`;
+            checkbox.value = sub.id;
             checkbox.className = 'h-4 w-4 text-blue-600 border-gray-300 rounded';
 
             const span = document.createElement('span');
             span.className = 'ml-2';
-            span.textContent = label;
+            span.textContent = sub.name;
 
             wrapper.appendChild(checkbox);
             wrapper.appendChild(span);
@@ -841,33 +704,22 @@ document.addEventListener('DOMContentLoaded', function() {
         enforceMaxSubcategories(container, 6);
     }
 
-    populateIndustrySelects();
-
-    // Pre-select industries and subcategories from saved data
-    const SELECTED_INDUSTRIES = @json($selectedIndustries ?? []);
-    const SELECTED_SUBCATEGORIES = @json($selectedSubcategories ?? []);
+    const SELECTED_SUBCATEGORIES = @json($selectedProfileSubcategories ?? []);
 
     document.querySelectorAll('.industry-select').forEach(select => {
-        const index = select.id.split('_')[1]; // 1,2,3
-        const preSelectedIndustry = SELECTED_INDUSTRIES[index] ?? null;
-        if (preSelectedIndustry) {
-            select.value = preSelectedIndustry;
+        const index = select.id.split('_')[1];
+        if (select.value) {
             renderSubcategories(select);
-
-            const savedSubsForIndustry = SELECTED_SUBCATEGORIES[index] ?? [];
-            if (Array.isArray(savedSubsForIndustry) && savedSubsForIndustry.length) {
-                // After checkboxes rendered, mark them checked
-                const container = document.getElementById(`subcategories_${index}`);
-                if (container) {
-                    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                        if (savedSubsForIndustry.includes(cb.value)) {
-                            cb.checked = true;
-                        }
-                    });
-                    // If old saved data contains > 6 checked, trim to 6 to match UI rule
-                    trimToMaxChecked(container, 6);
-                    enforceMaxSubcategories(container, 6);
-                }
+            const savedSubs = SELECTED_SUBCATEGORIES[index] ?? [];
+            const container = document.getElementById(`subcategories_${index}`);
+            if (container && Array.isArray(savedSubs) && savedSubs.length) {
+                container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    if (savedSubs.includes(cb.value) || savedSubs.includes(parseInt(cb.value, 10))) {
+                        cb.checked = true;
+                    }
+                });
+                trimToMaxChecked(container, 6);
+                enforceMaxSubcategories(container, 6);
             }
         }
 

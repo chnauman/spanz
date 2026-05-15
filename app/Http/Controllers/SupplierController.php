@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SupplierInvitationMail;
+use App\Models\SupplierInvitation;
+use App\Models\User;
+use App\Rules\CompanyEmail;
+use App\Support\CompanyEmail as CompanyEmailSupport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Models\User;
-use App\Models\SupplierInvitation;
-use App\Mail\SupplierInvitationMail;
 
 class SupplierController extends Controller
 {
@@ -20,7 +22,9 @@ class SupplierController extends Controller
             return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can invite sub suppliers.');
         }
 
-        return view('suppliers.invite');
+        $companyDomain = CompanyEmailSupport::domainFrom($user->email);
+
+        return view('suppliers.invite', compact('companyDomain'));
     }
 
     public function sendInvitation(Request $request)
@@ -32,10 +36,26 @@ class SupplierController extends Controller
             return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can invite sub suppliers.');
         }
 
+        $companyDomain = CompanyEmailSupport::domainFrom($user->email);
+
+        if (! $companyDomain || ! CompanyEmailSupport::isCompanyEmail($user->email)) {
+            return redirect()->back()->with('error', 'Your account must use a company email before you can invite sub-suppliers.');
+        }
+
         $request->validate([
-            'email' => 'required|email|max:255',
+            'email_local' => ['required', 'string', 'max:64', 'regex:/^[a-zA-Z0-9._+-]+$/'],
             'name' => 'required|string|max:255',
             'message' => 'nullable|string|max:1000',
+        ], [
+            'email_local.regex' => 'Please enter a valid email username (letters, numbers, dots, hyphens only).',
+        ]);
+
+        $email = CompanyEmailSupport::build($request->email_local, $companyDomain);
+
+        $request->merge(['email' => $email]);
+
+        $request->validate([
+            'email' => ['required', 'email', 'max:255', new CompanyEmail($companyDomain)],
         ]);
 
         // Check if user already exists

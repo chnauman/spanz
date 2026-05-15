@@ -113,20 +113,10 @@ class AccountController extends Controller
     }
 
     /**
-     * Update notification frequency settings
+     * Legacy route — interest-based digest notifications were removed.
      */
     public function updateNotifications(Request $request)
     {
-        $request->validate([
-            'notification_frequency' => 'required|in:none,daily,weekly,monthly',
-        ]);
-
-        $user = Auth::user();
-        $user->update([
-            'notification_frequency' => $request->notification_frequency,
-        ]);
-
-        return redirect()->route('account.profile')
-            ->with('notification_success', 'Notification settings updated successfully!');
+        return redirect()->route('account.profile');
     }
 }

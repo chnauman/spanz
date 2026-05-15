@@ -27,6 +27,8 @@ class CompanyDetail extends Model
         'employees_range',
         'main_industries',
         'subcategories_by_industry',
+        'profile_category_ids',
+        'profile_subcategory_ids',
         'company_types',
         'yearly_revenue_range',
         'quality_certifications',
@@ -42,6 +44,37 @@ class CompanyDetail extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function getProfileCategoryIds(): array
+    {
+        return $this->decodeIdList($this->profile_category_ids);
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function getProfileSubcategoryIds(): array
+    {
+        return $this->decodeIdList($this->profile_subcategory_ids);
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function decodeIdList(mixed $raw): array
+    {
+        if (is_string($raw)) {
+            $raw = json_decode($raw, true);
+        }
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $raw))));
     }
 
     /**

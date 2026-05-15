@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RegistrationProgress;
-use App\Models\User;
+use App\Models\Credit;
 use App\Models\EmailVerificationOtp;
+use App\Models\RegistrationProgress;
+use App\Models\State;
 use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
-use App\Models\Credit;
 use App\Models\SupplierInvitation;
-use App\Models\State;
+use App\Models\User;
+use App\Rules\CompanyEmail;
+use App\Services\SubSupplierRegistrationService;
+use App\Support\CompanyEmail as CompanyEmailSupport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -28,26 +31,31 @@ class MultiStepRegistrationController extends Controller
             return redirect()->route('dashboard');
         }
 
-        // Check if user is coming from a supplier invitation
-        $invitation = null;
-        if ($request->has('token')) {
-            $invitation = SupplierInvitation::where('token', $request->token)
-                ->where('is_used', false)
-                ->where('expires_at', '>', now())
-                ->first();
+        $invitation = SubSupplierRegistrationService::resolveInvitation($request->token);
 
-            if (!$invitation) {
-                return redirect()->route('register')->with('error', 'Invalid or expired invitation link.');
-            }
+        if ($request->has('token') && ! $invitation) {
+            return redirect()->route('register')->with('error', 'Invalid or expired invitation link.');
         }
+
+        $isSubSupplierRegistration = (bool) $invitation;
 
         // Check if there's existing progress
         $progress = null;
         if ($request->has('email')) {
             $progress = RegistrationProgress::findByEmail($request->email);
         } elseif ($invitation) {
-            // Pre-fill email from invitation
             $progress = RegistrationProgress::findByEmail($invitation->email);
+            $prefill = SubSupplierRegistrationService::companyPrefillFromParent($invitation->supplier);
+
+            if (! $progress) {
+                $progress = RegistrationProgress::make(array_merge([
+                    'email' => $invitation->email,
+                    'full_name' => $invitation->name,
+                ], $prefill));
+            } else {
+                SubSupplierRegistrationService::applyProgressCompanyData($progress, $invitation->supplier);
+                $progress->refresh();
+            }
         }
 
         $statesByCountry = State::with('cities:id,state_id,name')
@@ -64,7 +72,12 @@ class MultiStepRegistrationController extends Controller
                 })->values()->all();
             });
 
-        return view('auth.register-step1', compact('progress', 'invitation', 'statesByCountry'));
+        return view('auth.register-step1', compact(
+            'progress',
+            'invitation',
+            'statesByCountry',
+            'isSubSupplierRegistration'
+        ));
     }
 
     /**
@@ -72,34 +85,59 @@ class MultiStepRegistrationController extends Controller
      */
     public function submitStep1(Request $request)
     {
-        $countryHasStates = State::where('country_name', $request->country)->exists();
+        $invitation = SubSupplierRegistrationService::resolveInvitation($request->token);
+        $isSubSupplierRegistration = (bool) $invitation;
 
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:255',
+        $countryHasStates = $isSubSupplierRegistration
+            ? State::where('country_name', $invitation->supplier->companyDetail?->country ?? $invitation->supplier->country)->exists()
+            : State::where('country_name', $request->country)->exists();
+
+        $rules = [
+            'email' => ['required', 'email', 'max:255', new CompanyEmail],
             'password' => 'required|string|min:8|confirmed',
-            'registered_business_name' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
-            'state' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::requiredIf($countryHasStates),
-            ],
-            'city' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::requiredIf($countryHasStates),
-            ],
-            'business_address' => 'required|string',
             'full_name' => 'required|string|max:255',
             'title_position' => 'required|string|max:255',
             'cell_mobile' => 'required|string|max:255',
             'whatsapp_wechat' => 'nullable|string|max:255',
-        ]);
+        ];
 
-        $validator->after(function ($validator) use ($request, $countryHasStates) {
-            if (!$countryHasStates) {
+        if (! $isSubSupplierRegistration) {
+            $rules = array_merge($rules, [
+                'registered_business_name' => 'required|string|max:255',
+                'country' => 'required|string|max:255',
+                'state' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                    Rule::requiredIf($countryHasStates),
+                ],
+                'city' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                    Rule::requiredIf($countryHasStates),
+                ],
+                'business_address' => 'required|string',
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        $validator->after(function ($validator) use ($request, $countryHasStates, $invitation, $isSubSupplierRegistration) {
+            if ($isSubSupplierRegistration && $invitation) {
+                if (strtolower($request->email) !== strtolower($invitation->email)) {
+                    $validator->errors()->add('email', 'This email must match your invitation.');
+                }
+
+                $parentDomain = CompanyEmailSupport::domainFrom($invitation->supplier->email);
+                if ($parentDomain && ! CompanyEmailSupport::matchesDomain($request->email, $parentDomain)) {
+                    $validator->errors()->add('email', 'You must use your company email (@' . $parentDomain . ').');
+                }
+
+                return;
+            }
+
+            if (! $countryHasStates) {
                 return;
             }
 
@@ -107,13 +145,13 @@ class MultiStepRegistrationController extends Controller
                 ->where('name', $request->state)
                 ->first();
 
-            if (!$state) {
+            if (! $state) {
                 $validator->errors()->add('state', 'Please select a valid state for the selected country.');
                 return;
             }
 
             $cityExists = $state->cities()->where('name', $request->city)->exists();
-            if (!$cityExists) {
+            if (! $cityExists) {
                 $validator->errors()->add('city', 'Please select a valid city for the selected state.');
             }
         });
@@ -135,86 +173,71 @@ class MultiStepRegistrationController extends Controller
         // Check if there's existing progress
         $progress = RegistrationProgress::findByEmail($request->email);
 
-        // Check if user is registering via supplier invitation
-        $invitation = null;
         $role = 'buyer';
         $isApproved = false;
         $parentSupplierId = null;
 
-        if ($request->has('token') && $request->token) {
-            $invitation = SupplierInvitation::where('token', $request->token)
-                ->where('is_used', false)
-                ->where('expires_at', '>', now())
-                ->first();
-
-            if ($invitation) {
-                $role = 'sub_supplier';
-                $isApproved = true; // Auto-approve since supplier already invited them
-                $parentSupplierId = $invitation->supplier_id;
-            }
+        if ($invitation) {
+            $role = 'sub_supplier';
+            $isApproved = true;
+            $parentSupplierId = $invitation->supplier_id;
         }
 
-        // Save or update registration progress
+        $companyData = $isSubSupplierRegistration && $invitation
+            ? SubSupplierRegistrationService::companyPrefillFromParent($invitation->supplier)
+            : [
+                'registered_business_name' => $request->registered_business_name,
+                'country' => $request->country,
+                'state' => $countryHasStates ? $request->state : null,
+                'city' => $countryHasStates ? $request->city : null,
+                'business_address' => $request->business_address,
+            ];
+
+        $progressPayload = array_merge([
+            'password' => Hash::make($request->password),
+            'full_name' => $request->full_name,
+            'title_position' => $request->title_position,
+            'cell_mobile' => $request->cell_mobile,
+            'whatsapp_wechat' => $request->whatsapp_wechat,
+            'current_step' => 1,
+        ], $companyData);
+
         if ($progress) {
-            // Update existing progress
-            $progress->update([
-                'password' => Hash::make($request->password),
-                'registered_business_name' => $request->registered_business_name,
-                'country' => $request->country,
-                'state' => $countryHasStates ? $request->state : null,
-                'city' => $countryHasStates ? $request->city : null,
-                'business_address' => $request->business_address,
-                'full_name' => $request->full_name,
-                'title_position' => $request->title_position,
-                'cell_mobile' => $request->cell_mobile,
-                'whatsapp_wechat' => $request->whatsapp_wechat,
-                'current_step' => 1,
-            ]);
+            $progress->update($progressPayload);
         } else {
-            // Create new progress
-            $progress = RegistrationProgress::create([
+            $progress = RegistrationProgress::create(array_merge([
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'registered_business_name' => $request->registered_business_name,
-                'country' => $request->country,
-                'state' => $countryHasStates ? $request->state : null,
-                'city' => $countryHasStates ? $request->city : null,
-                'business_address' => $request->business_address,
-                'full_name' => $request->full_name,
-                'title_position' => $request->title_position,
-                'cell_mobile' => $request->cell_mobile,
-                'whatsapp_wechat' => $request->whatsapp_wechat,
-                'current_step' => 1,
-            ]);
+            ], $progressPayload));
         }
 
-        // Get or create user (only create if doesn't exist)
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'email' => $request->email,
                 'name' => $request->full_name,
                 'password' => Hash::make($request->password),
                 'role' => $role,
                 'is_approved' => $isApproved,
+                'is_supplier' => $role === 'sub_supplier',
                 'parent_supplier_id' => $parentSupplierId,
                 'email_verified_at' => null,
+                'country' => $companyData['country'] ?? null,
+                'state' => $companyData['state'] ?? null,
+                'city' => $companyData['city'] ?? null,
+                'phone' => $request->cell_mobile,
             ]);
-        } else {
-            // Update user details if exists but not verified
-            if (!$user->email_verified_at) {
-                $user->update([
-                    'name' => $request->full_name,
-                    'password' => Hash::make($request->password),
-                    'role' => $role,
-                    'is_approved' => $isApproved,
-                    'parent_supplier_id' => $parentSupplierId,
-                ]);
-            }
-        }
-
-        // Mark invitation as used if it was a sub-supplier registration
-        if ($invitation) {
-            $invitation->markAsUsed();
+        } elseif (! $user->email_verified_at) {
+            $user->update([
+                'name' => $request->full_name,
+                'password' => Hash::make($request->password),
+                'role' => $role,
+                'is_approved' => $isApproved,
+                'is_supplier' => $role === 'sub_supplier',
+                'parent_supplier_id' => $parentSupplierId,
+                'country' => $companyData['country'] ?? null,
+                'state' => $companyData['state'] ?? null,
+                'city' => $companyData['city'] ?? null,
+                'phone' => $request->cell_mobile,
+            ]);
         }
 
         // Create OTP
@@ -274,7 +297,9 @@ class MultiStepRegistrationController extends Controller
                 ->with('error', 'User not found. Please start again.');
         }
 
-        return view('auth.register-step2', compact('progress', 'user', 'token'));
+        $isSubSupplierRegistration = $user->isSubSupplier() && $user->parent_supplier_id;
+
+        return view('auth.register-step2', compact('progress', 'user', 'token', 'isSubSupplierRegistration'));
     }
 
     /**
@@ -319,17 +344,32 @@ class MultiStepRegistrationController extends Controller
         $isValid = EmailVerificationOtp::verifyOtp($user->id, $otp);
 
         if ($isValid) {
-            // Mark email as verified
             $user->update([
                 'email_verified_at' => now(),
             ]);
 
-            // Update progress
             $progress->update([
                 'email_verified' => true,
                 'email_verified_at' => now(),
                 'current_step' => 2,
             ]);
+
+            if ($user->isSubSupplier() && $user->parent_supplier_id) {
+                $invitation = SubSupplierRegistrationService::resolveInvitation($request->token);
+
+                if (! $invitation) {
+                    $invitation = SupplierInvitation::where('email', $user->email)
+                        ->where('supplier_id', $user->parent_supplier_id)
+                        ->where('is_used', false)
+                        ->where('expires_at', '>', now())
+                        ->with('supplier.companyDetail')
+                        ->first();
+                }
+
+                if ($invitation) {
+                    return $this->completeSubSupplierRegistration($user, $progress, $invitation);
+                }
+            }
 
             $redirectParams = ['email' => $request->email];
             if ($request->has('token')) {
@@ -404,6 +444,12 @@ class MultiStepRegistrationController extends Controller
         if (!$progress->canProceedToStep(3)) {
             return redirect()->route('register.step2', ['email' => $email])
                 ->with('error', 'Please verify your email first.');
+        }
+
+        $user = User::where('email', $email)->first();
+        if ($user?->isSubSupplier()) {
+            return redirect()->route('dashboard')
+                ->with('info', 'Your registration is already complete.');
         }
 
         // Get active subscriptions
@@ -565,5 +611,38 @@ class MultiStepRegistrationController extends Controller
             default:
                 return redirect()->route('register.step1', ['email' => $email]);
         }
+    }
+
+    private function completeSubSupplierRegistration(User $user, RegistrationProgress $progress, SupplierInvitation $invitation)
+    {
+        $parentSupplier = $invitation->supplier;
+
+        $user->update([
+            'name' => $progress->full_name,
+            'password' => $progress->password,
+            'role' => 'sub_supplier',
+            'is_approved' => true,
+            'is_supplier' => true,
+            'email_verified_at' => $progress->email_verified_at ?? now(),
+            'parent_supplier_id' => $invitation->supplier_id,
+            'country' => $progress->country,
+            'state' => $progress->state,
+            'city' => $progress->city,
+            'phone' => $progress->cell_mobile,
+        ]);
+
+        SubSupplierRegistrationService::copyCompanyDetailFromParent($user, $parentSupplier);
+
+        $invitation->markAsUsed();
+
+        $progress->update([
+            'current_step' => 3,
+            'registration_complete' => true,
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Welcome to SPANZ! You have joined ' . ($parentSupplier->companyDetail?->company_name ?? $parentSupplier->name) . ' as a sub-supplier. You share your team\'s subscription and credits.');
     }
 }

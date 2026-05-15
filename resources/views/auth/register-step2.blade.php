@@ -20,7 +20,7 @@
                         <h1 class="text-xl sm:text-2xl md:text-3xl py-2 font-bold text-[#0D6AED] mb-1 hover:text-blue-600 transition-colors cursor-pointer">SPANZ</h1>
                     </a>
                     <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-0.5 sm:mb-1">Verify Your Email</h2>
-                    <p class="text-[11px] sm:text-xs md:text-sm text-gray-500 mb-1">Step 2 of 3</p>
+                    <p class="text-[11px] sm:text-xs md:text-sm text-gray-500 mb-1">Step 2 of {{ !empty($isSubSupplierRegistration) ? '2' : '3' }}</p>
                    
                 </div>
 
@@ -36,6 +36,7 @@
                             <div class="w-10 h-10 rounded-full bg-[#0D6AED] text-white flex items-center justify-center font-bold text-sm mb-2">2</div>
                             <span class="text-xs font-medium text-[#0D6AED] text-center">Verify Email</span>
                         </div>
+                        @if(empty($isSubSupplierRegistration))
                         <div class="flex-1 mx-2 h-0.5 bg-gray-200 mt-[-20px]">
                             <div class="h-0.5 bg-gray-200"></div>
                         </div>
@@ -43,6 +44,7 @@
                             <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-sm mb-2">3</div>
                             <span class="text-xs font-medium text-gray-500 text-center">Subscription</span>
                         </div>
+                        @endif
                     </div>
                 </div>
 

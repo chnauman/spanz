@@ -69,8 +69,8 @@
                 <div class="col-12">
                     <div class="text-center py-12">
                         <h4 class="text-muted">No tender invitations yet</h4>
-                        <p class="text-muted">You'll receive invitations when tenders are posted in categories you're interested in.</p>
-                        <a href="{{ route('user.interests') }}" class="btn btn-primary">Update My Interests</a>
+                        <p class="text-muted">You'll receive alerts when tenders are posted that match your strengthen profile categories.</p>
+                        <a href="{{ route('company.register', ['mode' => 'edit']) }}" class="btn btn-primary">Strengthen Profile</a>
                     </div>
                 </div>
                 @endforelse

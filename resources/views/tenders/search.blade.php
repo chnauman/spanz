@@ -260,8 +260,27 @@
             padding: 2px 0;
         }
 
-        .filter-section li.category-group:hover > div > .category-label {
+        .filter-section li.category-group:hover > div > .category-label,
+        .filter-section li.category-group:hover .category-label-row .category-label {
             color: var(--thomas-blue);
+        }
+
+        .filter-section .category-count {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4b5563;
+            white-space: nowrap;
+        }
+
+        .filter-section .category-toggle {
+            width: fit-content;
+            max-width: 100%;
+        }
+
+        .filter-section .category-label-row {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.35;
         }
 
         .thomas-sidebar-toggle {
@@ -592,17 +611,7 @@
                             </button>
                             <div class="dropdown-menu">
                                 <div class="py-1 whitespace-nowrap">
-                                    @auth
-                                        @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
-                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved Tenders</a>
-                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Interests</a>
-                                            <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Viewed Tenders</a>
-                                        @else
-                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Become a Supplier</a>
-                                        @endif
-                                    @else
-                                        <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
-                                    @endauth
+                                    @include('partials.nav-supplier-links')
                                 </div>
                             </div>
                         </div>
@@ -615,24 +624,7 @@
                         <a href="{{ route('tenders.search') }}" class="thomas-nav-link">Tenders</a>
                         <a href="{{ route('products.search') }}" class="thomas-nav-link">Products</a>
                         <a href="{{ route('suppliers.directory') }}" class="thomas-nav-link">Suppliers' Directory</a>
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
-                                Dashboard
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="inline">
-                                @csrf
-                                <button type="submit" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
-                                    Logout
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('login') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
-                                Login
-                            </a>
-                            <a href="{{ route('register') }}" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
-                                Register
-                            </a>
-                        @endauth
+                        @include('partials.header-auth-actions')
                     </div>
 
                     <!-- Mobile Burger -->
@@ -784,10 +776,10 @@
                                             data-parent-id="{{ $category->id }}"
                                             {{ $isParentChecked ? 'checked' : '' }}>
                                         <button type="button"
-                                            class="text-left text-base text-[#092C48] hover:underline select-none category-toggle category-label {{ $isExpanded ? 'font-semibold' : '' }}"
+                                            class="text-left text-base text-[#092C48] hover:underline select-none category-toggle {{ $isExpanded ? 'font-semibold' : '' }}"
                                             aria-controls="mobile-subcats-{{ $category->id }}"
                                             data-parent-id="{{ $category->id }}">
-                                            {{ $category->name }}
+                                            <span class="category-label">{{ $category->name }}</span><span class="category-count"> ({{ (int) ($category->subcategories_tenders_total ?? 0) }})</span>
                                         </button>
                                     </div>
 
@@ -802,7 +794,7 @@
                                                     class="category-filter category-child-filter mt-1"
                                                     data-parent-id="{{ $category->id }}"
                                                     {{ in_array((int) $child->id, $selectedCategories, true) ? 'checked' : '' }}>
-                                                <span class="text-base text-gray-700 select-none category-label">{{ $child->name }}</span>
+                                                <span class="text-base text-gray-700 select-none category-label-row"><span class="category-label">{{ $child->name }}</span><span class="category-count"> ({{ (int) ($child->tenders_count ?? 0) }})</span></span>
                                             </div>
                                         @endforeach
                                     </div>
@@ -902,10 +894,10 @@
                                             data-parent-id="{{ $category->id }}"
                                             {{ $isParentChecked ? 'checked' : '' }}>
                                         <button type="button"
-                                            class="thomas-filter-label text-left text-base lg:text-lg hover:underline select-none category-toggle category-label {{ $isExpanded ? 'font-semibold' : '' }}"
+                                            class="thomas-filter-label text-left text-base lg:text-lg hover:underline select-none category-toggle {{ $isExpanded ? 'font-semibold' : '' }}"
                                             aria-controls="desktop-subcats-{{ $category->id }}"
                                             data-parent-id="{{ $category->id }}">
-                                            {{ $category->name }}
+                                            <span class="category-label">{{ $category->name }}</span><span class="category-count"> ({{ (int) ($category->subcategories_tenders_total ?? 0) }})</span>
                                         </button>
                                     </div>
 
@@ -920,7 +912,7 @@
                                                     class="category-filter category-child-filter mt-1"
                                                     data-parent-id="{{ $category->id }}"
                                                     {{ in_array((int) $child->id, $selectedCategories, true) ? 'checked' : '' }}>
-                                                <span class="thomas-filter-label text-base text-gray-700 select-none category-label">{{ $child->name }}</span>
+                                                <span class="thomas-filter-label text-base text-gray-700 select-none category-label-row"><span class="category-label">{{ $child->name }}</span><span class="category-count"> ({{ (int) ($child->tenders_count ?? 0) }})</span></span>
                                             </div>
                                         @endforeach
                                     </div>

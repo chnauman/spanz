@@ -177,17 +177,7 @@
                             </button>
                             <div class="dropdown-menu">
                                 <div class="py-1 whitespace-nowrap">
-                                    @auth
-                                        @if(auth()->user()->isSupplier() || auth()->user()->isSubSupplier())
-                                            <a href="{{ route('tenders.saved') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Saved Tenders</a>
-                                            <a href="{{ route('user.interests') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">My Interests</a>
-                                            <a href="{{ route('tenders.viewed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Viewed Tenders</a>
-                                        @else
-                                            <a href="#" onclick="openSubscriptionModal(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">Become a Supplier</a>
-                                        @endif
-                                    @else
-                                        <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Become a Supplier</a>
-                                    @endauth
+                                    @include('partials.nav-supplier-links')
                                 </div>
                             </div>
                         </div>
@@ -199,24 +189,7 @@
                     <div class="hidden md:flex items-center space-x-4">
                         <a href="{{ route('tenders.search') }}" class="text-white hover:text-blue-400">Tenders</a>
                         <a href="{{ route('products.search') }}" class="text-white hover:text-blue-400">Products</a>
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
-                                Dashboard
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="inline">
-                                @csrf
-                                <button type="submit" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
-                                    Logout
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('login') }}" class="border border-white text-white px-3 py-1 rounded hover:bg-white hover:text-black">
-                                Login
-                            </a>
-                            <a href="{{ route('register') }}" class="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800">
-                                Register
-                            </a>
-                        @endauth
+                        @include('partials.header-auth-actions')
                     </div>
 
                     <!-- Mobile Burger -->
