@@ -49,7 +49,11 @@
         }
 
         #sidebar {
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .panel-top-dropdown-group {
@@ -259,7 +263,7 @@
         <div id="mobile-sidebar-overlay" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
         <!-- Sidebar -->
-        <div id="sidebar" class="fixed xl:static xl:block xl:w-64 w-64 bg-gradient-to-l from-[#092C48] to-[#1b3963] h-full xl:h-screen z-50 transform -translate-x-full xl:translate-x-0 xl:transform-none xl:left-auto transition-transform duration-300 ease-in-out flex-shrink-0" style="left: -256px;">
+        <div id="sidebar" class="fixed xl:static flex flex-col xl:w-64 w-64 bg-gradient-to-l from-[#092C48] to-[#1b3963] h-screen z-50 transform -translate-x-full xl:translate-x-0 xl:transform-none xl:left-auto transition-transform duration-300 ease-in-out flex-shrink-0 overflow-hidden min-h-0" style="left: -256px;">
             @include('admin.partials.sidebar')
         </div>
 

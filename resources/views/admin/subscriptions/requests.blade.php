@@ -29,8 +29,8 @@
         background: rgba(239, 68, 68, 0.9);
     }
 
-    .soft-alert.warning {
-        background: rgba(245, 158, 11, 0.9);
+    .soft-alert.info {
+        background: rgba(9, 44, 72, 0.95);
     }
 
     @keyframes bounce {
@@ -201,7 +201,7 @@
                                     <form action="{{ route('admin.subscriptions.approve-request', $request) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="button"
-                                                onclick="handleButtonClick('Are you sure you want to approve this subscription request?', 'warning', this, 'accept')"
+                                                onclick="handleButtonClick('Are you sure you want to approve this subscription request?', 'info', this, 'accept')"
                                                 class="accept-button">
                                             Accept
                                         </button>
@@ -218,7 +218,7 @@
                                     <form action="{{ route('admin.subscriptions.decline-request', $request) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="button"
-                                                onclick="handleButtonClick('Are you sure you want to decline this subscription request?', 'warning', this, 'reject')"
+                                                onclick="handleButtonClick('Are you sure you want to decline this subscription request?', 'info', this, 'reject')"
                                                 class="reject-button">
                                             Reject
                                         </button>
@@ -393,7 +393,7 @@ function showThrillAlert(actionType, button) {
 
     // Create thrill alert
     const alert = document.createElement('div');
-    alert.className = 'soft-alert warning';
+    alert.className = 'soft-alert info';
     alert.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px;">
             <span>🎯 I'm here! Click "Yes" to ${actionType === 'accept' ? 'approve' : 'decline'} this request!</span>

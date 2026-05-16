@@ -184,7 +184,8 @@
 
     /* Scrollbar */
     #sidebar .sb-scroll {
-        flex: 1;
+        flex: 1 1 0;
+        min-height: 0;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -226,7 +227,7 @@
     }
 @endphp
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full min-h-0 flex-1">
     <!-- Brand -->
     <div class="sb-brand">
         <a href="{{ route('home') }}">SPANZ</a>
@@ -403,7 +404,7 @@
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span>Email Users</span>
+                    <span>Message User</span>
                 </a>
 
                 <a href="{{ route('admin.categories.index') }}" class="sb-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
@@ -437,7 +438,7 @@
 
                 <div class="sb-section">Subscriptions</div>
 
-                <a href="{{ route('admin.subscriptions.index') }}" class="sb-link {{ request()->routeIs('admin.subscriptions.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.subscriptions.index') }}" class="sb-link {{ request()->routeIs(['admin.subscriptions.index', 'admin.subscriptions.create', 'admin.subscriptions.edit', 'admin.subscriptions.show']) ? 'active' : '' }}">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -445,15 +446,7 @@
                     <span>Manage Plans</span>
                 </a>
 
-                <a href="{{ route('admin.tender-view-pricing.index') }}" class="sb-link {{ request()->routeIs('admin.tender-view-pricing.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.8"/>
-                    </svg>
-                    <span>Tender View Pricing</span>
-                </a>
-
-                <a href="{{ route('admin.subscription-requests') }}" class="sb-link {{ request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}">
+                <a href="{{ route('admin.subscription-requests') }}" class="sb-link {{ request()->routeIs(['admin.subscription-requests', 'admin.subscriptions.show-request']) ? 'active' : '' }}">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -465,6 +458,14 @@
                         <path d="M12 5v14M19 12l-7 7-7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <span>Downgrade Requests</span>
+                </a>
+
+                <a href="{{ route('admin.tender-view-pricing.index') }}" class="sb-link {{ request()->routeIs('admin.tender-view-pricing.*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                    <span>Tender View Pricing</span>
                 </a>
 
                 <div class="sb-section">Account</div>

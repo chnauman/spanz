@@ -16,14 +16,25 @@ class AdminEmailController extends Controller
     public function create()
     {
         $users = User::query()
-            ->whereNotNull('email')
-            ->where('email', '!=', '')
+            ->orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END")
             ->orderBy('name')
             ->get(['id', 'name', 'email', 'role']);
 
-        $allRecipientCount = $users->count();
+        $usersForPicker = $users->map(fn (User $user) => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email ?? '',
+            'role' => $user->role,
+            'is_admin' => $user->role === 'admin',
+        ])->values();
 
-        return view('admin.email-users', compact('users', 'allRecipientCount'));
+        $allRecipientCount = $users->filter(
+            fn (User $user) => filled($user->email)
+        )->count();
+
+        $selectedUserIds = collect(old('user_ids', []))->map(fn ($id) => (int) $id)->all();
+
+        return view('admin.email-users', compact('usersForPicker', 'allRecipientCount', 'selectedUserIds'));
     }
 
     public function send(Request $request)

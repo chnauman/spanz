@@ -56,7 +56,7 @@
                                     Manage Users
                                 </a>
                                 <a href="{{ route('admin.email-users.create') }}" class="bg-slate-700 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors text-center">
-                                    Email Users
+                                    Message User
                                 </a>
                                 <a href="{{ route('admin.products.index') }}" style="background-color:rgb(25, 119, 99);" class=" text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center">
                                     Manage Products

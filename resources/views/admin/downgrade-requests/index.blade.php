@@ -33,8 +33,8 @@
         background: rgba(239, 68, 68, 0.9);
     }
 
-    .soft-alert.warning {
-        background: rgba(245, 158, 11, 0.9);
+    .soft-alert.info {
+        background: rgba(9, 44, 72, 0.95);
     }
 
     @keyframes bounce {
@@ -208,7 +208,7 @@
                                     <form action="{{ route('admin.downgrade-requests.approve', $request->id) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="button"
-                                                onclick="handleButtonClick('Are you sure you want to approve this downgrade request?', 'warning', this, 'accept')"
+                                                onclick="handleButtonClick('Are you sure you want to approve this downgrade request?', 'info', this, 'accept')"
                                                 class="accept-button">
                                             Approve
                                         </button>
@@ -224,7 +224,7 @@
                                     <form action="{{ route('admin.downgrade-requests.decline', $request->id) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="button"
-                                                onclick="handleButtonClick('Are you sure you want to decline this downgrade request?', 'warning', this, 'reject')"
+                                                onclick="handleButtonClick('Are you sure you want to decline this downgrade request?', 'info', this, 'reject')"
                                                 class="reject-button">
                                             Decline
                                         </button>
@@ -348,7 +348,7 @@ function showThrillAlert(actionType, button) {
 
     // Create thrill alert
     const alert = document.createElement('div');
-    alert.className = 'soft-alert warning';
+    alert.className = 'soft-alert info';
     alert.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px;">
             <span>🎯 I'm here! Click "Yes" to ${actionType === 'accept' ? 'approve' : 'decline'} this request!</span>
