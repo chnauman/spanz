@@ -30,7 +30,7 @@
                     @if($supplier->isSubSupplier())
                         <span class="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-violet-800">
                             <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-violet-600" aria-hidden="true"></span>
-                            Sub-supplier
+                            Colleague
                         </span>
                     @else
                         <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#0b5fd7]">

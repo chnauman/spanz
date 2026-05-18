@@ -191,6 +191,25 @@ class User extends Authenticatable
         return $this->role === 'sub_supplier';
     }
 
+    /** Human-readable role label for UI (sub_supplier → Colleague). */
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Administrator',
+            'buyer' => 'Buyer',
+            'supplier' => 'Supplier',
+            'sub_supplier' => 'Colleague',
+            'guest' => 'Guest',
+            default => ucfirst(str_replace('_', ' ', (string) $this->role)),
+        };
+    }
+
+    /** Whether this user may update company-level strengthen profile fields. */
+    public function canEditCompanyProfile(): bool
+    {
+        return ! $this->isSubSupplier();
+    }
+
     public function isGuest(): bool
     {
         return $this->role === 'guest';

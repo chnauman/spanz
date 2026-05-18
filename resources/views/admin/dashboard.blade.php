@@ -113,7 +113,7 @@
                                     <p class="text-2xl font-bold text-green-600 mt-1 group-hover:text-green-700 transition-colors">{{ $total_suppliers ?? 0 }}</p>
                                 </a>
                                 <a href="{{ route('admin.users.index', ['role' => 'sub_supplier']) }}" class="bg-purple-50 rounded-lg p-4 hover:bg-purple-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
-                                    <p class="text-sm font-medium text-gray-600">Sub Suppliers</p>
+                                    <p class="text-sm font-medium text-gray-600">Colleagues</p>
                                     <p class="text-2xl font-bold text-purple-600 mt-1 group-hover:text-purple-700 transition-colors">{{ $total_sub_suppliers ?? 0 }}</p>
                                 </a>
                                 <a href="{{ route('admin.users.index') }}" class="bg-yellow-50 rounded-lg p-4 hover:bg-yellow-100 hover:shadow-md transition-all duration-200 cursor-pointer group">
@@ -556,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(userDistributionCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Buyers', 'Suppliers', 'Sub Suppliers'],
+                labels: ['Buyers', 'Suppliers', 'Colleagues'],
                 datasets: [{
                     data: [totalBuyers, totalSuppliers, totalSubSuppliers],
                     backgroundColor: [

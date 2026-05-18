@@ -41,7 +41,7 @@
                     <option value="all" {{ request('role') === 'all' ? 'selected' : '' }}>All Roles</option>
                     <option value="buyer" {{ request('role') === 'buyer' ? 'selected' : '' }}>Buyers</option>
                     <option value="supplier" {{ request('role') === 'supplier' ? 'selected' : '' }}>Suppliers</option>
-                    <option value="sub_supplier" {{ request('role') === 'sub_supplier' ? 'selected' : '' }}>Sub Suppliers</option>
+                    <option value="sub_supplier" {{ request('role') === 'sub_supplier' ? 'selected' : '' }}>Colleagues</option>
                     <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admins</option>
                 </select>
             </div>

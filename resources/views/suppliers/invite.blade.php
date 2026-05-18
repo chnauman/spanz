@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Invite Sub Supplier - SPANZ')
+@section('title', 'Invite Colleague - SPANZ')
 @section('content')
 @php
     $companyDomain = $companyDomain ?? null;
@@ -9,21 +9,21 @@
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold">Invite Sub Supplier</h1>
-                    <p class="text-gray-300 mt-1">Invite a colleague from your company to join as a sub-supplier on SPANZ</p>
+                    <h1 class="text-xl sm:text-2xl font-bold">Invite Colleague</h1>
+                    <p class="text-gray-300 mt-1">Invite a colleague from your company to join your team on SPANZ</p>
                 </div>
                 <a href="{{ route('suppliers.sub-suppliers') }}"
                    class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors">
                     <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to Sub Suppliers
+                    Back to Colleagues
                 </a>
             </div>
 
             @if(!$companyDomain)
                 <div class="mt-6 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded">
-                    Your account must use a company email address before you can invite sub-suppliers.
+                    Your account must use a company email address before you can invite colleagues.
                 </div>
             @endif
 
@@ -46,7 +46,7 @@
 
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Sub Supplier Name <span class="text-red-500">*</span>
+                            Colleague Name <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
                                id="name"
@@ -63,7 +63,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Company Email Address <span class="text-red-500">*</span>
                         </label>
-                        <p class="text-xs text-gray-500 mb-2">Sub-suppliers must use the same company domain as you (@{{ $companyDomain }}).</p>
+                        <p class="text-xs text-gray-500 mb-2">Colleagues must use the same company domain as you ({{ '@' . $companyDomain }}).</p>
                         <div class="flex items-stretch">
                             <input type="text"
                                    id="email_local"
@@ -73,7 +73,7 @@
                                    autocomplete="off"
                                    class="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#0D6AED] focus:border-transparent @error('email_local') border-red-500 @enderror @error('email') border-red-500 @enderror"
                                    required>
-                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-700 text-sm rounded-r-md whitespace-nowrap">@{{ $companyDomain }}</span>
+                            <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-100 text-gray-700 text-sm rounded-r-md whitespace-nowrap">{{ '@' . $companyDomain }}</span>
                         </div>
                         @error('email_local')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

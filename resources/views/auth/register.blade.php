@@ -40,7 +40,7 @@
 
                 @if($invitation)
                 <div class="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded">
-                    <p class="text-sm font-medium">You're invited by {{ $invitation->supplier->name }} to join as a Sub Supplier!</p>
+                    <p class="text-sm font-medium">You're invited by {{ $invitation->supplier->name }} to join as a Colleague!</p>
                     <p class="text-xs mt-1">This invitation expires on {{ $invitation->expires_at->format('M d, Y \a\t g:i A') }}.</p>
                 </div>
                 @endif

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sub-Supplier Invitation - SPANZ</title>
+    <title>Colleague Invitation - SPANZ</title>
     <link rel="stylesheet" href="{{ asset('css/output.css') }}">
 </head>
 <body>
@@ -12,12 +12,12 @@
         <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-8">
             <div class="text-center mb-6">
                 <h1 class="text-2xl font-bold text-[#0D6AED]">SPANZ</h1>
-                <p class="text-gray-600 mt-2">Sub-Supplier Invitation</p>
+                <p class="text-gray-600 mt-2">Colleague Invitation</p>
             </div>
 
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <p class="text-gray-800">
-                    <strong>{{ $invitation->supplier->name }}</strong> has invited you to join SPANZ as a sub-supplier for
+                    <strong>{{ $invitation->supplier->name }}</strong> has invited you to join SPANZ as a colleague for
                     <strong>{{ $invitation->supplier->companyDetail?->company_name ?? 'their company' }}</strong>.
                 </p>
                 @if($invitation->message)

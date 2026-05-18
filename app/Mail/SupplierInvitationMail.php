@@ -33,7 +33,7 @@ class SupplierInvitationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->supplier->name . ' invited you to join SPANZ as a sub-supplier',
+            subject: $this->supplier->name . ' invited you to join SPANZ as a colleague',
         );
     }
 

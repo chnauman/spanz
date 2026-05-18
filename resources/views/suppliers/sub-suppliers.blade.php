@@ -1,20 +1,20 @@
 @extends('layouts.admin')
-@section('title', 'Sub Suppliers - SPANZ')
+@section('title', 'Colleagues - SPANZ')
 @section('content')
 <div class="bg-gray-100 min-h-screen">
     <div class="w-full">
         <div class="bg-white shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-[#092C48] to-[#1b3963] text-white p-6 space-y-2 sm:space-y-0">
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold">Sub Suppliers</h1>
-                    <p class="text-gray-300 mt-2">Manage your sub suppliers and their activities</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold">Colleagues</h1>
+                    <p class="text-gray-300 mt-2">Manage your colleagues and their activities</p>
                 </div>
                 <a href="{{ route('suppliers.invite') }}"
                    class="bg-[#0D6AED] text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                     <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
-                    Invite Sub Supplier
+                    Invite Colleague
                 </a>
             </div>
 
@@ -40,7 +40,7 @@
                 </div>
             @endif
 
-            <!-- Sub Suppliers List -->
+            <!-- Colleagues List -->
             @if($subSuppliers->count() > 0)
                 <div class="p-6">
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -48,7 +48,7 @@
                             <table class="w-full divide-y divide-gray-200">
                                 <thead class="bg-gradient-to-r from-[#092C48] to-[#1b3963]">
                                     <tr>
-                                        <th class="px-8 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Sub Supplier</th>
+                                        <th class="px-8 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Colleague</th>
                                         <th class="px-8 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Email</th>
                                         <th class="px-8 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">Joined</th>
                                         <th class="px-8 py-4 text-center text-sm font-semibold text-white uppercase tracking-wider">Actions</th>
@@ -68,7 +68,7 @@
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="text-lg font-semibold text-gray-900">{{ $subSupplier->name }}</div>
-                                                    <div class="text-sm text-gray-500">Sub Supplier</div>
+                                                    <div class="text-sm text-gray-500">Colleague</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -120,14 +120,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">No Sub Suppliers Yet</h3>
-                        <p class="text-lg text-gray-600 mb-8">Start building your supplier network by inviting your first sub supplier.</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">No Colleagues Yet</h3>
+                        <p class="text-lg text-gray-600 mb-8">Start building your supplier network by inviting your first colleague.</p>
                         <a href="{{ route('suppliers.invite') }}"
                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#0D6AED] to-[#1b3963] text-white font-semibold rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
-                            Invite Your First Sub Supplier
+                            Invite Your First Colleague
                         </a>
                     </div>
                 </div>
@@ -172,7 +172,7 @@
 <script>
 function viewSubSupplier(id, name, email, joinedDate) {
     Swal.fire({
-        title: 'Sub Supplier Details',
+        title: 'Colleague Details',
         html: `
             <div class="text-left">
                 <div class="mb-4">
@@ -182,7 +182,7 @@ function viewSubSupplier(id, name, email, joinedDate) {
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-gray-900">${name}</h3>
-                            <p class="text-gray-600">Sub Supplier</p>
+                            <p class="text-gray-600">Colleague</p>
                         </div>
                     </div>
                 </div>
@@ -216,7 +216,7 @@ function viewSubSupplier(id, name, email, joinedDate) {
 
 function removeSubSupplier(id, name) {
     Swal.fire({
-        title: 'Remove Sub Supplier',
+        title: 'Remove Colleague',
         html: `
             <div class="text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 mb-4">
@@ -226,7 +226,7 @@ function removeSubSupplier(id, name) {
                 </div>
                 <p class="text-lg text-gray-700 mb-2">Are you sure you want to remove</p>
                 <p class="text-xl font-bold text-gray-900 mb-2">${name}</p>
-                <p class="text-sm text-gray-600 mb-4">as your sub supplier?</p>
+                <p class="text-sm text-gray-600 mb-4">as your colleague?</p>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p class="text-sm text-blue-800">
                         <strong>Note:</strong> They will become a regular buyer and can still use the platform.

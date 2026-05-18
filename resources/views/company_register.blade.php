@@ -2,6 +2,45 @@
 
 @section('title', 'Strengthen Business Profile - SPANZ')
 
+@push('styles')
+<style>
+    .subcategory-checkboxes {
+        gap: 0.6rem 1rem;
+    }
+
+    .subcategory-checkboxes label {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 0.25rem 0;
+        font-size: 0.875rem;
+        color: #374151;
+    }
+
+    .subcategory-checkboxes label span {
+        margin-left: 0.6rem;
+        line-height: 1.2;
+    }
+
+    .subcategory-checkbox {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px;
+        min-height: 18px;
+        cursor: pointer;
+        accent-color: #2563eb;
+        flex-shrink: 0;
+        border: 1px solid #9ca3af;
+        border-radius: 4px;
+    }
+
+    .subcategory-checkbox:focus {
+        outline: 2px solid #2563eb;
+        outline-offset: 1px;
+    }
+</style>
+@endpush
+
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         <div class="mb-6">
@@ -221,7 +260,7 @@
                     if (removeFlag) removeFlag.value = '1';
                 };
 
-                // Country â†’ State â†’ City dropdown behavior (same as registration)
+                // Country ? State ? City dropdown behavior (same as registration)
                 const locationData = @json($statesByCountry ?? []);
                 const selectedState = @json(old('state', $authUser->state ?? ''));
                 const selectedCity = @json(old('city', $authUser->city ?? ''));
@@ -323,6 +362,14 @@
 
         <form id="company-profile-form" method="POST" action="{{ route('company.register.store') }}" class="space-y-6">
                 @csrf
+
+            @if(!empty($companyFieldsReadOnly))
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-sm">
+                    Company information is managed by your supplier. You can view it here but cannot edit it. Update your personal details in <strong>Account Details</strong> above or via <strong>View / Edit Profile</strong> in the sidebar.
+                </div>
+            @endif
+
+            <fieldset @disabled(!empty($companyFieldsReadOnly)) class="min-w-0 border-0 p-0 m-0">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left card -->
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6 lg:p-7 space-y-4 lg:col-span-2 w-full">
@@ -393,68 +440,37 @@
                         </p>
 
                         <div class="space-y-4">
-                            <!-- Primary Industry -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @php
+                                $profileCategorySlots = [
+                                    1 => 'Primary Category',
+                                    2 => 'Secondary Category (Optional)',
+                                    3 => 'Additional Category (Optional)',
+                                ];
+                            @endphp
+                            @foreach($profileCategorySlots as $slot => $slotLabel)
+                            <div class="profile-category-row border border-gray-200 rounded-md p-3 sm:p-4" data-slot="{{ $slot }}">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Primary Category</label>
-                                    <select id="industry_1" name="profile_categories[1]"
-                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                            data-target="subcategories_1">
+                                    <label for="industry_{{ $slot }}" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{{ $slotLabel }}</label>
+                                    <select id="industry_{{ $slot }}" name="profile_categories[{{ $slot }}]"
+                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                                         <option value="">Select a category</option>
                                         @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[1] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[$slot] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Subcategories</label>
-                                    <div id="subcategories_1" class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
-                                        <!-- checkboxes injected by JS -->
-                                    </div>
+                                <div class="subcategory-wrapper mt-3 hidden" data-slot="{{ $slot }}">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Subcategories
+                                        <span class="text-xs text-gray-500 font-normal">(select up to 6)</span>
+                                    </label>
+                                    <div id="subcategories_{{ $slot }}"
+                                         class="subcategory-checkboxes grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 p-3 border border-gray-200 rounded-md bg-gray-50"></div>
+                                    <p class="subcategory-hint text-xs text-gray-500 mt-1">Pick the subcategories that apply to this category.</p>
                                 </div>
                             </div>
-
-                            <!-- Secondary Industry -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Secondary Category (Optional)</label>
-                                    <select id="industry_2" name="profile_categories[2]"
-                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                            data-target="subcategories_2">
-                                        <option value="">Select a category</option>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[2] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Subcategories</label>
-                                    <div id="subcategories_2" class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
-                                        <!-- checkboxes injected by JS -->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Additional Industry -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Additional Category (Optional)</label>
-                                    <select id="industry_3" name="profile_categories[3]"
-                                            class="industry-select w-full px-3 py-2 sm:py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                            data-target="subcategories_3">
-                                        <option value="">Select a category</option>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}" {{ ($selectedProfileCategories[3] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Subcategories</label>
-                                    <div id="subcategories_3" class="grid grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
-                                        <!-- checkboxes injected by JS -->
-                                    </div>
-                                </div>
-                            </div>
+                            @endforeach
+                            <p class="text-xs text-gray-500">You can choose up to 3 main categories. Each category supports up to 6 subcategories.</p>
                         </div>
                     </div>
                 </div>
@@ -504,13 +520,13 @@
                             @php $yr = old('yearly_revenue_range', $companyDetail->yearly_revenue_range ?? ''); @endphp
                             <option value="">Select</option>
                             <option value="&lt;1M" {{ $yr == '&lt;1M' ? 'selected' : '' }}>Less than 1,000,000 AUD</option>
-                            <option value="1M-5M" {{ $yr == '1M-5M' ? 'selected' : '' }}>1,000,000 â€“ 5,000,000 AUD</option>
-                            <option value="5M-10M" {{ $yr == '5M-10M' ? 'selected' : '' }}>5,000,000 â€“ 10,000,000 AUD</option>
-                            <option value="10M-30M" {{ $yr == '10M-30M' ? 'selected' : '' }}>10,000,000 â€“ 30,000,000 AUD</option>
-                            <option value="30M-50M" {{ $yr == '30M-50M' ? 'selected' : '' }}>30,000,000 â€“ 50,000,000 AUD</option>
-                            <option value="50M-100M" {{ $yr == '50M-100M' ? 'selected' : '' }}>50,000,000 â€“ 100,000,000 AUD</option>
-                            <option value="100M-500M" {{ $yr == '100M-500M' ? 'selected' : '' }}>100,000,000 â€“ 500,000,000 AUD</option>
-                            <option value="500M-1B" {{ $yr == '500M-1B' ? 'selected' : '' }}>500,000,000 â€“ 1 Billion AUD</option>
+                            <option value="1M-5M" {{ $yr == '1M-5M' ? 'selected' : '' }}>1,000,000 – 5,000,000 AUD</option>
+                            <option value="5M-10M" {{ $yr == '5M-10M' ? 'selected' : '' }}>5,000,000 – 10,000,000 AUD</option>
+                            <option value="10M-30M" {{ $yr == '10M-30M' ? 'selected' : '' }}>10,000,000 – 30,000,000 AUD</option>
+                            <option value="30M-50M" {{ $yr == '30M-50M' ? 'selected' : '' }}>30,000,000 – 50,000,000 AUD</option>
+                            <option value="50M-100M" {{ $yr == '50M-100M' ? 'selected' : '' }}>50,000,000 – 100,000,000 AUD</option>
+                            <option value="100M-500M" {{ $yr == '100M-500M' ? 'selected' : '' }}>100,000,000 – 500,000,000 AUD</option>
+                            <option value="500M-1B" {{ $yr == '500M-1B' ? 'selected' : '' }}>500,000,000 – 1 Billion AUD</option>
                             <option value="&gt;1B" {{ $yr == '&gt;1B' ? 'selected' : '' }}>Over 1 Billion AUD</option>
                         </select>
                     </div>
@@ -557,7 +573,7 @@
                         <label for="unique_value_propositions" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">List Unique Value Propositions</label>
                         <textarea id="unique_value_propositions" name="unique_value_propositions" rows="3"
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                      placeholder="Example â€“ Faster lead times, customised solutions, same day delivery">{{ old('unique_value_propositions', $companyDetail->unique_value_propositions ?? '') }}</textarea>
+                                      placeholder="Example – Faster lead times, customised solutions, same day delivery">{{ old('unique_value_propositions', $companyDetail->unique_value_propositions ?? '') }}</textarea>
                     </div>
                 </div>
 
@@ -607,6 +623,7 @@
                 </div>
                 </div>
             </div>
+            </fieldset>
 
             <div class="w-full pt-6 border-t border-gray-200 mt-6" style="display:flex; justify-content:flex-end; width:100%;">
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-end" style="margin-left:auto;">
@@ -614,9 +631,11 @@
                        class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 sm:px-7 py-3 text-sm sm:text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
                         Skip for now
                     </a>
+                    @if(empty($companyFieldsReadOnly))
                     <button type="submit" class="btn-primary">
                         Save Profile
                     </button>
+                    @endif
                 </div>
             </div>
         </form>
@@ -642,89 +661,83 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const SUBCATEGORIES_BY_CATEGORY = @json($subcategoriesByCategory ?? new \stdClass());
+    const MAX_SUBCATEGORIES_PER_SLOT = 6;
+    const SELECTED_SUBCATEGORIES = @json($selectedProfileSubcategories ?? []);
 
-    function enforceMaxSubcategories(container, maxAllowed = 6) {
-        if (!container) return;
-        const checkboxes = Array.from(container.querySelectorAll('input[type="checkbox"]'));
-        checkboxes.forEach(cb => {
-            if (cb.dataset.maxBound === '1') return;
-            cb.dataset.maxBound = '1';
-            cb.addEventListener('change', function () {
-                if (!this.checked) return;
-                const checkedCount = container.querySelectorAll('input[type="checkbox"]:checked').length;
-                if (checkedCount > maxAllowed) {
-                    this.checked = false;
-                    alert(`You can select a maximum of ${maxAllowed} subcategories for this industry.`);
-                }
-            });
-        });
+    function enforceMaxSubcategoriesForRow(rowEl, justChanged) {
+        if (!rowEl) return;
+        const checkboxes = rowEl.querySelectorAll('.subcategory-checkbox');
+        const checked = Array.from(checkboxes).filter(cb => cb.checked);
+        if (checked.length > MAX_SUBCATEGORIES_PER_SLOT) {
+            if (justChanged && justChanged.checked) {
+                justChanged.checked = false;
+            }
+            alert(`You can select a maximum of ${MAX_SUBCATEGORIES_PER_SLOT} subcategories per category.`);
+        }
     }
 
-    function trimToMaxChecked(container, maxAllowed = 6) {
-        if (!container) return;
-        const checked = Array.from(container.querySelectorAll('input[type="checkbox"]:checked'));
-        if (checked.length <= maxAllowed) return;
-        checked.slice(maxAllowed).forEach(cb => { cb.checked = false; });
-    }
-
-    function renderSubcategories(selectEl) {
-        const targetId = selectEl.getAttribute('data-target');
-        const container = document.getElementById(targetId);
-        if (!container) return;
+    function renderSubcategoriesForRow(rowEl, preCheckedIds) {
+        if (!rowEl) return;
+        const slot = rowEl.getAttribute('data-slot');
+        const selectEl = rowEl.querySelector('.industry-select');
+        const wrapper = rowEl.querySelector('.subcategory-wrapper');
+        const container = rowEl.querySelector('.subcategory-checkboxes');
+        if (!selectEl || !wrapper || !container) return;
 
         const mainId = selectEl.value;
         container.innerHTML = '';
 
         if (!mainId || !SUBCATEGORIES_BY_CATEGORY[mainId] || !SUBCATEGORIES_BY_CATEGORY[mainId].length) {
+            wrapper.classList.add('hidden');
             return;
         }
 
+        const checkedSet = new Set(
+            (Array.isArray(preCheckedIds) ? preCheckedIds : []).map(id => String(id))
+        );
         const subs = SUBCATEGORIES_BY_CATEGORY[mainId];
-        const slot = selectEl.id.split('_')[1];
+
         subs.forEach((sub) => {
-            const wrapper = document.createElement('label');
-            wrapper.className = 'inline-flex items-center text-xs sm:text-sm text-gray-700';
+            const label = document.createElement('label');
+            label.className = 'inline-flex items-center text-xs sm:text-sm text-gray-700 cursor-pointer';
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.name = `profile_subcategories[${slot}][]`;
             checkbox.value = sub.id;
-            checkbox.className = 'h-4 w-4 text-blue-600 border-gray-300 rounded';
+            checkbox.className = 'subcategory-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded';
+            if (checkedSet.has(String(sub.id))) {
+                checkbox.checked = true;
+            }
+            checkbox.addEventListener('change', function () {
+                enforceMaxSubcategoriesForRow(rowEl, this);
+            });
 
             const span = document.createElement('span');
             span.className = 'ml-2';
             span.textContent = sub.name;
 
-            wrapper.appendChild(checkbox);
-            wrapper.appendChild(span);
-            container.appendChild(wrapper);
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            container.appendChild(label);
         });
 
-        // Enforce max 6 selections per industry group
-        enforceMaxSubcategories(container, 6);
+        wrapper.classList.remove('hidden');
+        enforceMaxSubcategoriesForRow(rowEl, null);
     }
 
-    const SELECTED_SUBCATEGORIES = @json($selectedProfileSubcategories ?? []);
+    document.querySelectorAll('.profile-category-row').forEach(row => {
+        const selectEl = row.querySelector('.industry-select');
+        if (!selectEl) return;
 
-    document.querySelectorAll('.industry-select').forEach(select => {
-        const index = select.id.split('_')[1];
-        if (select.value) {
-            renderSubcategories(select);
-            const savedSubs = SELECTED_SUBCATEGORIES[index] ?? [];
-            const container = document.getElementById(`subcategories_${index}`);
-            if (container && Array.isArray(savedSubs) && savedSubs.length) {
-                container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    if (savedSubs.includes(cb.value) || savedSubs.includes(parseInt(cb.value, 10))) {
-                        cb.checked = true;
-                    }
-                });
-                trimToMaxChecked(container, 6);
-                enforceMaxSubcategories(container, 6);
-            }
+        const slot = row.getAttribute('data-slot');
+        const savedSubs = SELECTED_SUBCATEGORIES[slot] ?? [];
+        if (selectEl.value) {
+            renderSubcategoriesForRow(row, savedSubs);
         }
 
-        select.addEventListener('change', function () {
-            renderSubcategories(this);
+        selectEl.addEventListener('change', function () {
+            renderSubcategoriesForRow(row, []);
         });
     });
 
@@ -733,9 +746,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const toast = document.getElementById('profile-toast');
     const toastMsg = document.getElementById('profile-toast-message');
 
+    const companyFormReadOnly = @json(!empty($companyFieldsReadOnly));
+
     if (form && toast && toastMsg) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
+            if (companyFormReadOnly) {
+                return;
+            }
 
             const formData = new FormData(form);
 

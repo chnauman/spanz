@@ -1,14 +1,14 @@
 @extends('emails.layout')
 
-@section('title', 'Sub Supplier Invitation - Spanz')
+@section('title', 'Colleague Invitation - Spanz')
 @php
-    $headerSubtitle = 'Sub Supplier Invitation';
+    $headerSubtitle = 'Colleague Invitation';
 @endphp
 
 @section('content')
 <h2>Hello {{ $invitee->name }},</h2>
 
-<p>You have received a sub supplier invitation from <strong>{{ $inviter->name }}</strong>.</p>
+<p>You have received a colleague invitation from <strong>{{ $inviter->name }}</strong>.</p>
 
 @if($invitation->message)
 <div class="content-box">
@@ -17,7 +17,7 @@
 </div>
 @endif
 
-<p>By accepting this invitation, you will become a sub supplier of {{ $inviter->name }} and will have access to their tender opportunities.</p>
+<p>By accepting this invitation, you will become a colleague of {{ $inviter->name }} and will have access to their tender opportunities.</p>
 
 <div class="button-center">
     <a href="{{ route('invitations.accept', $invitation->id) }}" class="button" style="background-color: #0D6AED; color: #ffffff !important; text-decoration: none; margin-right: 10px;">Accept Invitation</a>

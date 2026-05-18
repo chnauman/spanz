@@ -220,7 +220,7 @@
         } elseif (method_exists($user, 'isSupplier') && $user->isSupplier()) {
             $userRole = 'Supplier';
         } elseif (method_exists($user, 'isSubSupplier') && $user->isSubSupplier()) {
-            $userRole = 'Sub Supplier';
+            $userRole = 'Colleague';
         } elseif (method_exists($user, 'isBuyer') && $user->isBuyer()) {
             $userRole = 'Buyer';
         }
@@ -321,7 +321,7 @@
                             <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
                             <path d="M19 8v6M22 11h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
-                        <span>Add Colleagues</span>
+                        <span>Invite Colleagues</span>
                     </a>
                 @endif
 
@@ -332,7 +332,7 @@
                             <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>Sub Suppliers</span>
+                        <span>Colleagues</span>
                     </a>
                 @endif
 
@@ -343,6 +343,23 @@
                             <path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <span>Downloaded Documents</span>
+                    </a>
+                @endif
+
+                <a href="{{ route('account.profile') }}" class="sb-link {{ request()->routeIs('account.profile') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                    <span>View / Edit Profile</span>
+                </a>
+
+                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('company.register', ['mode' => 'edit']) }}" class="sb-link {{ request()->routeIs('company.register') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>{{ $user->canEditCompanyProfile() ? 'Strengthen Profile' : 'View Company Profile' }}</span>
                     </a>
                 @endif
 
@@ -358,13 +375,22 @@
                 {{-- ============================================ --}}
                 <div class="sb-section">My Account</div>
 
-                <a href="{{ route('account.profile') }}#notifications" class="sb-link {{ request()->routeIs('account.profile') ? 'active' : '' }}">
+                <a href="{{ route('account.profile') }}" class="sb-link {{ request()->routeIs('account.profile') ? 'active' : '' }}">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
                     </svg>
                     <span>View / Edit Profile</span>
                 </a>
+
+                @if($user->isBuyer() || $user->isSupplier() || $user->isSubSupplier())
+                    <a href="{{ route('company.register', ['mode' => 'edit']) }}" class="sb-link {{ request()->routeIs('company.register') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>{{ $user->canEditCompanyProfile() ? 'Strengthen Profile' : 'View Company Profile' }}</span>
+                    </a>
+                @endif
 
                 <a href="{{ route('account.plan') }}" class="sb-link {{ request()->routeIs('account.plan') ? 'active' : '' }}">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -475,7 +501,14 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
                     </svg>
-                    <span>My Profile</span>
+                    <span>View / Edit Profile</span>
+                </a>
+
+                <a href="{{ route('company.register', ['mode' => 'edit']) }}" class="sb-link {{ request()->routeIs('company.register') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Strengthen Profile</span>
                 </a>
             @endif
         </nav>

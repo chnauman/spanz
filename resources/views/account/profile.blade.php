@@ -8,6 +8,7 @@
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <h1 class="text-xl sm:text-2xl font-bold">My Profile</h1>
+                @if($user->canEditCompanyProfile())
                 <a href="{{ route('company.register', ['mode' => 'edit']) }}"
                         class="btn-primary btn-primary-sm">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,6 +17,12 @@
                     </svg>
                     Edit/Strengthen Profile
                 </a>
+                @else
+                <a href="{{ route('company.register', ['mode' => 'edit']) }}"
+                        class="btn-primary btn-primary-sm">
+                    View Company Profile
+                </a>
+                @endif
             </div>
 
             <div class="mt-6">
@@ -61,7 +68,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
                             <div class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900">
-                                {{ ucfirst(str_replace('_', ' ', $user->role)) }}
+                                {{ $user->roleLabel() }}
                             </div>
                         </div>
 

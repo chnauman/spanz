@@ -1,20 +1,20 @@
 @extends('layouts.admin')
-@section('title', 'Invite Sub Suppliers - SPANZ')
+@section('title', 'Invite Colleagues - SPANZ')
 @section('content')
 <div class="bg-gray-100 p-4 sm:p-6 lg:p-8 min-h-screen">
     <div class="w-full">
         <div class="border border-gray-300 p-3 sm:p-4 lg:p-6 bg-white rounded-lg shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold">Invite Sub Suppliers</h1>
-                    <p class="text-gray-300 mt-1">Search for suppliers to invite as your sub suppliers</p>
+                    <h1 class="text-xl sm:text-2xl font-bold">Invite Colleagues</h1>
+                    <p class="text-gray-300 mt-1">Search for suppliers to invite as your colleagues</p>
                 </div>
                 <a href="{{ route('suppliers.sub-suppliers') }}"
                    class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors">
                     <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to Sub Suppliers
+                    Back to Colleagues
                 </a>
             </div>
 

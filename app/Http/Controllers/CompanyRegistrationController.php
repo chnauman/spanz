@@ -36,6 +36,7 @@ class CompanyRegistrationController extends Controller
         }
 
         $isEditMode = $request->boolean('edit') || $request->get('mode') === 'edit';
+        $companyFieldsReadOnly = $user ? ! $user->canEditCompanyProfile() : false;
 
         $firstName = '';
         $lastName = '';
@@ -139,7 +140,8 @@ class CompanyRegistrationController extends Controller
             'categories',
             'subcategoriesByCategory',
             'statesByCountry',
-            'isEditMode'
+            'isEditMode',
+            'companyFieldsReadOnly'
         ));
     }
 
@@ -181,6 +183,19 @@ class CompanyRegistrationController extends Controller
 
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please login to register your company.');
+        }
+
+        $user = Auth::user();
+        if ($user && ! $user->canEditCompanyProfile()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Company profile details are read-only for colleagues. Update your personal details in View / Edit Profile.',
+                ], 403);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Company profile details are read-only for colleagues. Your supplier manages company information.');
         }
 
         $profileCategoryIds = collect($request->input('profile_categories', []))

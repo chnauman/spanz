@@ -19,7 +19,7 @@ class SupplierController extends Controller
 
         // Allow suppliers and admins to invite sub suppliers
         if (!$user->isSupplier() && !$user->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can invite sub suppliers.');
+            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can invite colleagues.');
         }
 
         $companyDomain = CompanyEmailSupport::domainFrom($user->email);
@@ -33,13 +33,13 @@ class SupplierController extends Controller
 
         // Allow suppliers and admins to invite sub suppliers
         if (!$user->isSupplier() && !$user->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can invite sub suppliers.');
+            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can invite colleagues.');
         }
 
         $companyDomain = CompanyEmailSupport::domainFrom($user->email);
 
         if (! $companyDomain || ! CompanyEmailSupport::isCompanyEmail($user->email)) {
-            return redirect()->back()->with('error', 'Your account must use a company email before you can invite sub-suppliers.');
+            return redirect()->back()->with('error', 'Your account must use a company email before you can invite colleagues.');
         }
 
         $request->validate([
@@ -96,7 +96,7 @@ class SupplierController extends Controller
 
         // Allow suppliers and admins to view sub suppliers
         if (!$user->isSupplier() && !$user->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can view sub suppliers.');
+            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can view colleagues.');
         }
 
         $subSuppliers = $user->subSuppliers()
@@ -113,12 +113,12 @@ class SupplierController extends Controller
 
         // Allow suppliers and admins to remove sub suppliers
         if (!$user->isSupplier() && !$user->isAdmin()) {
-            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can remove sub suppliers.');
+            return redirect()->route('dashboard')->with('error', 'Only suppliers and admins can remove colleagues.');
         }
 
         // Check if this sub supplier belongs to the current supplier
         if ($subSupplier->parent_supplier_id !== $user->id) {
-            return redirect()->route('suppliers.sub-suppliers')->with('error', 'You can only remove your own sub suppliers.');
+            return redirect()->route('suppliers.sub-suppliers')->with('error', 'You can only remove your own colleagues.');
         }
 
         // Convert sub-supplier back to buyer role instead of deleting
@@ -128,6 +128,6 @@ class SupplierController extends Controller
             'is_approved' => true // Buyers are auto-approved
         ]);
 
-        return redirect()->route('suppliers.sub-suppliers')->with('success', 'Sub supplier removed successfully. They are now a buyer.');
+        return redirect()->route('suppliers.sub-suppliers')->with('success', 'Colleague removed successfully. They are now a buyer.');
     }
 }

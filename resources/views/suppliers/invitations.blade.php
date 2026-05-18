@@ -7,7 +7,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-sm bg-[#092C48] text-white p-4 mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-0">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-bold">Invitations</h1>
-                    <p class="text-gray-300 mt-1">Manage your sub supplier invitations</p>
+                    <p class="text-gray-300 mt-1">Manage your colleague invitations</p>
                 </div>
                 <a href="{{ route('invite.sub-suppliers') }}"
                    class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors">

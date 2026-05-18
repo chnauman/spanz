@@ -643,6 +643,6 @@ class MultiStepRegistrationController extends Controller
         Auth::login($user);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Welcome to SPANZ! You have joined ' . ($parentSupplier->companyDetail?->company_name ?? $parentSupplier->name) . ' as a sub-supplier. You share your team\'s subscription and credits.');
+            ->with('success', 'Welcome to SPANZ! You have joined ' . ($parentSupplier->companyDetail?->company_name ?? $parentSupplier->name) . ' as a colleague. You share your team\'s subscription and credits.');
     }
 }

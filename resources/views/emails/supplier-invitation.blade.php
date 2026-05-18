@@ -9,7 +9,7 @@
 @section('content')
 <h2>Hello {{ $invitation->name }},</h2>
 
-<p><strong>{{ $supplier->name }}</strong> wants you to join SPANZ as a sub-supplier@if($companyName) for <strong>{{ $companyName }}</strong>@endif.</p>
+<p><strong>{{ $supplier->name }}</strong> wants you to join SPANZ as a colleague@if($companyName) for <strong>{{ $companyName }}</strong>@endif.</p>
 
 <p>You have received an invitation from <strong>{{ $supplier->name }}</strong> to join the Spanz platform as part of their supplier team.</p>
 
@@ -20,7 +20,7 @@
 </div>
 @endif
 
-<p>As a sub-supplier you will:</p>
+<p>As a colleague you will:</p>
 <ul>
     <li>Use your company email: <strong>{{ $invitation->email }}</strong></li>
     <li>Share the same company profile as your team</li>
